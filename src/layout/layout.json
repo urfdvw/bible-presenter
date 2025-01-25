@@ -1,0 +1,121 @@
+{
+    "global": {
+        "tabEnableClose": false,
+        "tabEnableFloat": false,
+        "tabEnableRename": false
+    },
+    "borders": [
+        {
+            "type": "border",
+            "location": "left",
+            "size": 300,
+            "selected": 0,
+            "children": [
+                {
+                    "type": "tab",
+                    "name": "快速投影",
+                    "altName": "(Q)快速投影",
+                    "helpText": "快速投影",
+                    "id": "quick_locate_tab",
+                    "component": "quick_locate",
+                    "enableClose": false
+                },
+                {
+                    "type": "tab",
+                    "name": "圣经目录",
+                    "altName": "(M)圣经目录",
+                    "helpText": "圣经目录",
+                    "id": "bible_menu_tab",
+                    "component": "placeholder",
+                    "enableClose": false
+                },
+                {
+                    "type": "tab",
+                    "name": "经文搜索",
+                    "altName": "(S)经文搜索",
+                    "helpText": "经文搜索",
+                    "id": "search_tab",
+                    "component": "placeholder",
+                    "enableClose": false
+                },
+                {
+                    "type": "tab",
+                    "name": "投影历史",
+                    "altName": "(H)投影历史",
+                    "helpText": "投影历史",
+                    "id": "history_tab",
+                    "component": "placeholder",
+                    "enableClose": false
+                }
+            ]
+        },
+        {
+            "type": "border",
+            "location": "right",
+            "size": 300,
+            "children": [
+                {
+                    "type": "tab",
+                    "name": "设置",
+                    "component": "config",
+                    "enableClose": false
+                },
+                {
+                    "type": "tab",
+                    "name": "帮助",
+                    "id": "help_tab",
+                    "component": "help",
+                    "enableClose": false
+                }
+            ]
+        },
+        {
+            "type": "border",
+            "location": "bottom",
+            "size": 300,
+            "children": [
+                {
+                    "type": "tab",
+                    "name": "笔记",
+                    "altName": "(N)笔记",
+                    "helpText": "笔记",
+                    "id": "notes_tab",
+                    "component": "placeholder",
+                    "enableClose": false
+                }
+            ]
+        }
+    ],
+    "layout": {
+        "type": "row",
+        "weight": 100,
+        "children": [
+            {
+                "type": "tabset",
+                "weight": 50,
+                "selected": 0,
+                "id": "initial_tabset",
+                "children": [
+                    {
+                        "type": "tab",
+                        "name": "预览",
+                        "component": "placeholder"
+                    }
+                ]
+            },
+            {
+                "type": "tabset",
+                "weight": 50,
+                "selected": 0,
+                "children": [
+                    {
+                        "type": "tab",
+                        "name": "投影",
+                        "component": "placeholder",
+                        "enableClose": false
+                    }
+                ]
+            }
+        ]
+    }
+}

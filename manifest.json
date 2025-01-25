@@ -1,0 +1,27 @@
+{
+    "name": "圣经投影工具",
+    "description": "无需安装，在线使用。快速定位圣经经节，并显示在投影仪上。方便好用的讲道小工具。",
+    "icons": [
+        {
+            "src": "/bible-icon.svg",
+            "type": "image/svg+xml",
+            "sizes": "800x800"
+        },
+        {
+            "src": "/bible-icon-192.png",
+            "type": "image/png",
+            "sizes": "192x192"
+        },
+        {
+            "src": "/bible-icon-512.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ],
+    "start_url": ".",
+    "background_color": "#eb5534",
+    "display": "standalone",
+    "scope": "/",
+    "theme_color": "#eb5534",
+    "screenshots": []
+}
