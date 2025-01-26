@@ -111,7 +111,7 @@
                     {
                         "type": "tab",
                         "name": "投影",
-                        "component": "placeholder",
+                        "component": "projector",
                         "enableClose": false
                     }
                 ]

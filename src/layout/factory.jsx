@@ -3,6 +3,7 @@ import Placeholder from "../tabs/placeholder";
 import UserConfigs from "../tabs/UserConfigs";
 import Help from "../tabs/Help";
 import QuickLocate from "../tabs/QuickLocate";
+import Projector from "../tabs/Projector";
 
 const fullSize = { height: "100%", width: "100%" };
 
@@ -30,6 +31,12 @@ const Factory = (node) => {
         return (
             <div className="tab_content" style={fullSize}>
                 <QuickLocate />
+            </div>
+        );
+    } else if (component === "projector") {
+        return (
+            <div className="tab_content" style={fullSize}>
+                <Projector />
             </div>
         );
     }
