@@ -1,6 +1,7 @@
 import { useState } from "react";
 import PopUp from "../utilComponents/PopUp";
 import Button from "@mui/material/Button";
+import BibleDisplay from "../appComponents/BibleDisplay";
 
 export default function Projector() {
     const [popped, setPopped] = useState(false);
@@ -36,7 +37,7 @@ export default function Projector() {
             >
                 Popup the window
             </Button>
-            <p>Bible should display here</p>
+            <BibleDisplay />
         </PopUp>
     );
 }
