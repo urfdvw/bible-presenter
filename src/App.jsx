@@ -49,6 +49,15 @@ function App() {
     }, [showDevFeatures, showBetaFeatures]);
     // projector popup
     const [projectorWindowPopped, setProjectorWindowPopped] = useState(false);
+    // Bible control
+    const [displayVerse, setDisplayVerse] = useState({
+        book: 43,
+        chapter: 3,
+        verse: 16,
+        context: true,
+        chapter_end: null,
+        verse_end: null,
+    });
 
     if (isMobile) {
         return <MobileSupportInfo />;
@@ -73,13 +82,15 @@ function App() {
     return (
         <AppContext.Provider
             value={{
-                testCount: testCount,
-                setTestCount: setTestCount,
-                flexModel: flexModel,
-                appConfig: appConfig,
-                helpTabSelection: helpTabSelection,
+                testCount,
+                setTestCount,
+                flexModel,
+                appConfig,
+                helpTabSelection,
                 projectorWindowPopped,
                 setProjectorWindowPopped,
+                displayVerse,
+                setDisplayVerse,
             }}
         >
             <DarkTheme dark={dark} highContrast={highContrast} />
