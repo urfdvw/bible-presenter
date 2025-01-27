@@ -1,9 +1,13 @@
 import MenuBar from "../utilComponents/MenuBar";
 import { grey, red } from "@mui/material/colors";
+import { useContext } from "react";
+import AppContext from "../AppContext";
+
+const DARK_RED = red[900];
+const DARK_GREY = grey[900];
 
 export default function AppMenu() {
-    const DARK_RED = red[900];
-    const DARK_GREY = grey[900];
+    const { setProjectorWindowPopped } = useContext(AppContext);
 
     const menuStructure = [
         {
@@ -19,10 +23,10 @@ export default function AppMenu() {
             ],
         },
         {
-            text: "Help",
+            text: "投影窗口",
             color: DARK_GREY,
             handler: () => {
-                console.log("App menu bar -> Help");
+                setProjectorWindowPopped((popped) => !popped);
             },
         },
     ];

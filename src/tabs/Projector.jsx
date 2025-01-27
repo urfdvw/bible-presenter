@@ -1,20 +1,21 @@
-import { useState } from "react";
 import PopUp from "../utilComponents/PopUp";
 import Button from "@mui/material/Button";
 import BibleDisplay from "../appComponents/BibleDisplay";
+import { useContext } from "react";
+import AppContext from "../AppContext";
 
 export default function Projector() {
-    const [popped, setPopped] = useState(false);
+    const { projectorWindowPopped, setProjectorWindowPopped } = useContext(AppContext);
     return (
         <PopUp
-            popped={popped}
-            setPopped={setPopped}
+            popped={projectorWindowPopped}
+            setPopped={setProjectorWindowPopped}
             altChildren={
                 <>
                     <p>This tab is opened in a popup window.</p>
                     <Button
                         onClick={() => {
-                            setPopped(false);
+                            setProjectorWindowPopped(false);
                         }}
                         style={{
                             textTransform: "none",
@@ -26,17 +27,6 @@ export default function Projector() {
                 </>
             }
         >
-            <Button
-                onClick={() => {
-                    setPopped(true);
-                }}
-                style={{
-                    textTransform: "none",
-                }}
-                variant="contained"
-            >
-                Popup the window
-            </Button>
             <BibleDisplay />
         </PopUp>
     );

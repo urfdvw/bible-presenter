@@ -47,6 +47,8 @@ function App() {
     useEffect(() => {
         console.log("[showDevFeatures, showBetaFeatures]", [showDevFeatures, showBetaFeatures]);
     }, [showDevFeatures, showBetaFeatures]);
+    // projector popup
+    const [projectorWindowPopped, setProjectorWindowPopped] = useState(false);
 
     if (isMobile) {
         return <MobileSupportInfo />;
@@ -76,6 +78,8 @@ function App() {
                 flexModel: flexModel,
                 appConfig: appConfig,
                 helpTabSelection: helpTabSelection,
+                projectorWindowPopped,
+                setProjectorWindowPopped,
             }}
         >
             <DarkTheme dark={dark} highContrast={highContrast} />
