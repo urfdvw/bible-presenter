@@ -8,7 +8,7 @@ import layout from "./layout/layout.json";
 import Factory from "./layout/Factory";
 import "flexlayout-react/style/light.css";
 // menu bar
-import AppMenu from "./tabs/AppMenu";
+import AppMenu from "./appComponents/AppMenu";
 // config
 import { useConfig } from "react-user-config";
 import schemas from "./configs";

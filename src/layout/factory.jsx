@@ -1,9 +1,9 @@
 import * as FlexLayout from "flexlayout-react";
-import Placeholder from "../tabs/placeholder";
-import UserConfigs from "../tabs/UserConfigs";
-import Help from "../tabs/Help";
-import QuickLocate from "../tabs/QuickLocate";
-import Projector from "../tabs/Projector";
+import Placeholder from "../appComponents/placeholder";
+import UserConfigs from "../appComponents/UserConfigs";
+import Help from "../appComponents/Help";
+import QuickLocate from "../appComponents/QuickLocate";
+import Projector from "../appComponents/Projector";
 
 const fullSize = { height: "100%", width: "100%" };
 
