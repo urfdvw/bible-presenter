@@ -18,3 +18,22 @@
 
 备选功能
 - 回放预设功能的时候可以加入markdown 撰写的 notes
+
+## 功能实现
+- useBibleData
+    - input
+        - bible data files
+        - bible version config
+    - output
+        - getNextVerse
+        - getVerseText
+            - given start and end verse
+            - return verse text, all version
+        - getRangeText
+            - given start and end verse
+            - return a text mentioning verse range
+
+## 变量名
+- Verse：一组 bcv数字组合
+- VerseText：经文内容
+- RangeText：经文范围的说明

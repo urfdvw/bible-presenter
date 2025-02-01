@@ -1,0 +1,19 @@
+{
+    "name": "bible_version",
+    "title": "圣经版本",
+    "type": "object",
+    "properties": {
+        "language": {
+            "title": "语言",
+            "type": "string",
+            "enum": ["中文", "English", "对照"],
+            "default": "中文"
+        },
+        "chinese": {
+            "title": "中文版本",
+            "type": "string",
+            "enum": ["简体", "繁體"],
+            "default": "简体"
+        }
+    }
+}

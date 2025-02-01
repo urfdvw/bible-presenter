@@ -1,6 +1,5 @@
 import PopUp from "../utilComponents/PopUp";
 import Button from "@mui/material/Button";
-import BibleDisplay from "../utilComponents/BibleDisplay";
 import { useContext } from "react";
 import AppContext from "../AppContext";
 
@@ -26,8 +25,6 @@ export default function Projector() {
                     </Button>
                 </>
             }
-        >
-            <BibleDisplay />
-        </PopUp>
+        ></PopUp>
     );
 }

@@ -3,18 +3,6 @@
     "title": "通用设置",
     "type": "object",
     "properties": {
-        "language": {
-            "title": "语言",
-            "type": "string",
-            "enum": ["中文", "英文", "对照"],
-            "default": "中文"
-        },
-        "chinese": {
-            "title": "中文版本",
-            "type": "string",
-            "enum": ["简体", "繁体"],
-            "default": "简体"
-        },
         "theme": {
             "title": "主题",
             "type": "string",

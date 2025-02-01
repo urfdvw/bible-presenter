@@ -3,9 +3,9 @@ import cuvt from "./chinese_union_trad.json";
 import asv from "./asv.json";
 
 const bible = {
-    chinese_simplified: cuvs,
-    chinese_traditional: cuvt,
-    english: asv,
+    cuvs: cuvs,
+    cuvt: cuvt,
+    asv: asv,
 };
 
 export default bible;

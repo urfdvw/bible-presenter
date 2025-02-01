@@ -1,3 +1,4 @@
 import generalConfigSchema from "./general.json";
-const schemas = [generalConfigSchema];
+import bibleVersionConfigSchema from "./bible_version.json";
+const schemas = [generalConfigSchema, bibleVersionConfigSchema];
 export default schemas;
