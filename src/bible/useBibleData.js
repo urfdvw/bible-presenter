@@ -4,20 +4,33 @@ export default function useBibleData(
     EnglishVersion,
     BibleVersionConfig
 ) {
-    function _getSelectedVersions() {
-        console.log(BibleVersionConfig.chinese === "简体");
-        const ChineseVersion =
-            BibleVersionConfig.chinese === "简体" ? ChineseSimplifiedVersion : ChineseTraditionalVersion;
+    function _getVerseInVersion(version, book, chapter, verse) {
+        const indexInput = version.verses
+            .map((verse, index) => {
+                return { ...verse, index: index };
+            })
+            .filter((verseObj) => {
+                return verseObj.book === book && verseObj.chapter === chapter && verseObj.verse === verse;
+            })[0].index;
+        return version.verses[indexInput];
+    }
 
-        console.log(ChineseSimplifiedVersion.verses[0]);
-        if (BibleVersionConfig.language === "中文") {
-            return [ChineseVersion];
-        } else if (BibleVersionConfig.language === "English") {
-            return [EnglishVersion];
-        } else if (BibleVersionConfig.language === "对照") {
-            return [ChineseVersion, EnglishVersion];
+    function _getNextVerseInVersion(version, book, chapter, verse) {
+        const indexInput = version.verses
+            .map((verse, index) => {
+                return { ...verse, index: index };
+            })
+            .filter((verseObj) => {
+                return verseObj.book === book && verseObj.chapter === chapter && verseObj.verse === verse;
+            })[0].index;
+        try {
+            return version.verses[indexInput + 1];
+        } catch (error) {
+            console.error(error);
+            return version.verses[indexInput];
         }
     }
+
     function getNextVerse(book, chapter, verse) {
         let nextBook = book;
         let nextChapter = chapter;
@@ -25,10 +38,31 @@ export default function useBibleData(
 
         const versions = _getSelectedVersions();
 
-        console.log(
-            "versions",
-            versions.map((version) => version.verses[0])
-        );
+        // verify given verse valid
+        let badGivenVerseIndex = true;
+        for (let version of versions) {
+            if (
+                version.verses.filter(
+                    (verse) => verse.book === book && verse.chapter === chapter && verse.verse === verse
+                )
+            ) {
+                badGivenVerseIndex = false;
+            }
+        }
+        if (badGivenVerseIndex) {
+            console.error("invalid verse index");
+            return {
+                nextBook: book,
+                nextChapter: chapter,
+                nextVerse: verse,
+            };
+        }
+
+        // console.log(
+        //     "check selected versions",
+        //     versions.map((version) => version.verses[0])
+        // );
+
         return {
             nextBook: nextBook,
             nextChapter: nextChapter,

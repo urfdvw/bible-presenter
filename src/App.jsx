@@ -69,7 +69,7 @@ function App() {
     });
     useEffect(() => {
         try {
-            console.log([appConfig, getNextVerse(43, 3, 16), getVerseText(43, 3, 16), getRangeText(43, 3, 16)]);
+            console.log([getNextVerse(43, 3, 16), getVerseText(43, 3, 16), getRangeText(43, 3, 16)]);
         } catch (error) {
             console.error(error);
         }
