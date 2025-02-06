@@ -38,6 +38,7 @@
 
 ## 变量名
 - verse/verse obj: 数据库里的 verse object
-- VerseIndex：一组 bcv数字组合
+- VersePosition：一组 bcv数字组合
+- VerseIndex：经节在全书数据中的位置
 - VerseText：经文内容
 - RangeText：经文范围的说明

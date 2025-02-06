@@ -1,7 +1,13 @@
-import { getSelectedVersions } from "../bible/utils";
+import {
+    getSelectedVersions,
+    verseExists,
+    getVerseInVersion,
+    getVerseIndexInVersion,
+    getMultipleVerses,
+} from "../bible/utils";
 
 describe("Test getSelectedVersions", () => {
-    test("version selection 1", () => {
+    test("中文, 繁體", () => {
         expect(
             getSelectedVersions("cuvs", "cuvt", "ASV", {
                 language: "中文",
@@ -10,7 +16,7 @@ describe("Test getSelectedVersions", () => {
         ).toStrictEqual(["cuvt"]);
     });
 
-    test("version selection 1", () => {
+    test("中文, 简体", () => {
         expect(
             getSelectedVersions("cuvs", "cuvt", "ASV", {
                 language: "中文",
@@ -19,7 +25,7 @@ describe("Test getSelectedVersions", () => {
         ).toStrictEqual(["cuvs"]);
     });
 
-    test("version selection 1", () => {
+    test("English, 繁體", () => {
         expect(
             getSelectedVersions("cuvs", "cuvt", "ASV", {
                 language: "English",
@@ -28,7 +34,7 @@ describe("Test getSelectedVersions", () => {
         ).toStrictEqual(["ASV"]);
     });
 
-    test("version selection 1", () => {
+    test("English, 简体", () => {
         expect(
             getSelectedVersions("cuvs", "cuvt", "ASV", {
                 language: "English",
@@ -37,7 +43,7 @@ describe("Test getSelectedVersions", () => {
         ).toStrictEqual(["ASV"]);
     });
 
-    test("version selection 1", () => {
+    test("对照, 繁體", () => {
         expect(
             getSelectedVersions("cuvs", "cuvt", "ASV", {
                 language: "对照",
@@ -46,12 +52,388 @@ describe("Test getSelectedVersions", () => {
         ).toStrictEqual(["cuvt", "ASV"]);
     });
 
-    test("version selection 1", () => {
+    test("对照, 简体", () => {
         expect(
             getSelectedVersions("cuvs", "cuvt", "ASV", {
                 language: "对照",
                 chinese: "简体",
             })
         ).toStrictEqual(["cuvs", "ASV"]);
+    });
+});
+
+describe("Test verseExists", () => {
+    test("HE single version", () => {
+        expect(
+            verseExists(
+                [
+                    {
+                        verses: [
+                            { book: 43, chapter: 3, verse: 16 },
+                            { book: 43, chapter: 3, verse: 17 },
+                        ],
+                    },
+                ],
+                43,
+                3,
+                16
+            )
+        ).toBe(true);
+    });
+
+    test("BE single version", () => {
+        expect(
+            verseExists(
+                [
+                    {
+                        verses: [
+                            { book: 43, chapter: 3, verse: 16 },
+                            { book: 43, chapter: 3, verse: 17 },
+                        ],
+                    },
+                ],
+                43,
+                3,
+                18
+            )
+        ).toBe(false);
+    });
+
+    test("HE multiple version match all", () => {
+        expect(
+            verseExists(
+                [
+                    {
+                        verses: [
+                            { book: 43, chapter: 3, verse: 16 },
+                            { book: 43, chapter: 3, verse: 17 },
+                        ],
+                    },
+                    {
+                        verses: [
+                            { book: 43, chapter: 3, verse: 15 },
+                            { book: 43, chapter: 3, verse: 16 },
+                        ],
+                    },
+                ],
+                43,
+                3,
+                16
+            )
+        ).toBe(true);
+    });
+
+    test("HE multiple version match one", () => {
+        expect(
+            verseExists(
+                [
+                    {
+                        verses: [
+                            { book: 43, chapter: 3, verse: 16 },
+                            { book: 43, chapter: 3, verse: 17 },
+                        ],
+                    },
+                    {
+                        verses: [
+                            { book: 43, chapter: 3, verse: 15 },
+                            { book: 43, chapter: 3, verse: 16 },
+                        ],
+                    },
+                ],
+                43,
+                3,
+                15
+            )
+        ).toBe(true);
+    });
+
+    test("BE multiple version", () => {
+        expect(
+            verseExists(
+                [
+                    {
+                        verses: [
+                            { book: 43, chapter: 3, verse: 16 },
+                            { book: 43, chapter: 3, verse: 17 },
+                        ],
+                    },
+                    {
+                        verses: [
+                            { book: 43, chapter: 3, verse: 15 },
+                            { book: 43, chapter: 3, verse: 16 },
+                        ],
+                    },
+                ],
+                43,
+                3,
+                14
+            )
+        ).toBe(false);
+    });
+});
+
+describe("Test getVerseInVersion", () => {
+    test("HE", () => {
+        expect(
+            getVerseInVersion(
+                {
+                    verses: [
+                        { book: 43, chapter: 3, verse: 16, text: "43, 3, 16" },
+                        { book: 43, chapter: 3, verse: 17, text: "43, 3, 17" },
+                    ],
+                },
+                43,
+                3,
+                16
+            )
+        ).toStrictEqual({ book: 43, chapter: 3, verse: 16, text: "43, 3, 16" });
+    });
+
+    test("BE", () => {
+        expect(
+            getVerseInVersion(
+                {
+                    verses: [
+                        { book: 43, chapter: 3, verse: 16, text: "43, 3, 16" },
+                        { book: 43, chapter: 3, verse: 17, text: "43, 3, 17" },
+                    ],
+                },
+                43,
+                3,
+                18
+            )
+        ).toStrictEqual(null);
+    });
+});
+
+describe("Test getVerseInVersion", () => {
+    test("HE", () => {
+        expect(
+            getVerseIndexInVersion(
+                {
+                    verses: [
+                        { book: 43, chapter: 3, verse: 15, text: "43, 3, 15" },
+                        { book: 43, chapter: 3, verse: 16, text: "43, 3, 16" },
+                        { book: 43, chapter: 3, verse: 17, text: "43, 3, 17" },
+                    ],
+                },
+                43,
+                3,
+                16
+            )
+        ).toBe(1);
+    });
+
+    test("BE", () => {
+        expect(
+            getVerseIndexInVersion(
+                {
+                    verses: [
+                        { book: 43, chapter: 3, verse: 15, text: "43, 3, 15" },
+                        { book: 43, chapter: 3, verse: 16, text: "43, 3, 16" },
+                        { book: 43, chapter: 3, verse: 17, text: "43, 3, 17" },
+                    ],
+                },
+                43,
+                3,
+                18
+            )
+        ).toBe(null);
+    });
+});
+
+describe("Test getMultipleVerses", () => {
+    test("HE single version", () => {
+        expect(
+            getMultipleVerses(
+                [
+                    {
+                        verses: [
+                            { book: 43, chapter: 3, verse: 15 },
+                            { book: 43, chapter: 3, verse: 16 },
+                            { book: 43, chapter: 3, verse: 17 },
+                            { book: 43, chapter: 3, verse: 18 },
+                        ],
+                    },
+                ],
+                43,
+                3,
+                16,
+                3,
+                17
+            )
+        ).toStrictEqual([[{ book: 43, chapter: 3, verse: 16 }], [{ book: 43, chapter: 3, verse: 17 }]]);
+    });
+
+    test("HE multi chapter", () => {
+        expect(
+            getMultipleVerses(
+                [
+                    {
+                        verses: [
+                            { book: 43, chapter: 3, verse: 15 },
+                            { book: 43, chapter: 3, verse: 16 },
+                            { book: 43, chapter: 3, verse: 17 },
+                            { book: 43, chapter: 3, verse: 18 },
+                            { book: 43, chapter: 4, verse: 1 },
+                            { book: 43, chapter: 4, verse: 2 },
+                            { book: 43, chapter: 4, verse: 3 },
+                        ],
+                    },
+                ],
+                43,
+                3,
+                16,
+                4,
+                2
+            )
+        ).toStrictEqual([
+            [{ book: 43, chapter: 3, verse: 16 }],
+            [{ book: 43, chapter: 3, verse: 17 }],
+            [{ book: 43, chapter: 3, verse: 18 }],
+            [{ book: 43, chapter: 4, verse: 1 }],
+            [{ book: 43, chapter: 4, verse: 2 }],
+        ]);
+    });
+
+    test("HE multi version", () => {
+        expect(
+            getMultipleVerses(
+                [
+                    {
+                        verses: [
+                            { book: 43, chapter: 3, verse: 15, text: "version1" },
+                            { book: 43, chapter: 3, verse: 16, text: "version1" },
+                            { book: 43, chapter: 3, verse: 17, text: "version1" },
+                            { book: 43, chapter: 3, verse: 18, text: "version1" },
+                        ],
+                    },
+                    {
+                        verses: [
+                            { book: 43, chapter: 3, verse: 15, text: "version2" },
+                            { book: 43, chapter: 3, verse: 16, text: "version2" },
+                            { book: 43, chapter: 3, verse: 18, text: "version2" },
+                        ],
+                    },
+                ],
+                43,
+                3,
+                16,
+                3,
+                17
+            )
+        ).toStrictEqual([
+            [
+                { book: 43, chapter: 3, verse: 16, text: "version1" },
+                { book: 43, chapter: 3, verse: 16, text: "version2" },
+            ],
+            [{ book: 43, chapter: 3, verse: 17, text: "version1" }, null],
+        ]);
+    });
+
+    test("Auto complete, both", () => {
+        expect(
+            getMultipleVerses(
+                [
+                    {
+                        verses: [
+                            { book: 43, chapter: 3, verse: 15 },
+                            { book: 43, chapter: 3, verse: 16 },
+                            { book: 43, chapter: 3, verse: 17 },
+                            { book: 43, chapter: 3, verse: 18 },
+                        ],
+                    },
+                ],
+                43,
+                3,
+                16
+            )
+        ).toStrictEqual([[{ book: 43, chapter: 3, verse: 16 }]]);
+    });
+
+    test("Auto complete, chapter only", () => {
+        expect(
+            getMultipleVerses(
+                [
+                    {
+                        verses: [
+                            { book: 43, chapter: 3, verse: 15 },
+                            { book: 43, chapter: 3, verse: 16 },
+                            { book: 43, chapter: 3, verse: 17 },
+                            { book: 43, chapter: 3, verse: 18 },
+                        ],
+                    },
+                ],
+                43,
+                3,
+                16,
+                null,
+                17
+            )
+        ).toStrictEqual([[{ book: 43, chapter: 3, verse: 16 }], [{ book: 43, chapter: 3, verse: 17 }]]);
+    });
+
+    test("BE, starting verse does not exist", () => {
+        expect(
+            getMultipleVerses(
+                [
+                    {
+                        verses: [
+                            { book: 43, chapter: 3, verse: 15 },
+                            { book: 43, chapter: 3, verse: 16 },
+                            { book: 43, chapter: 3, verse: 17 },
+                            { book: 43, chapter: 3, verse: 18 },
+                        ],
+                    },
+                ],
+                43,
+                2,
+                16
+            )
+        ).toStrictEqual([]);
+    });
+
+    test("BE, ending verse does not exist", () => {
+        expect(
+            getMultipleVerses(
+                [
+                    {
+                        verses: [
+                            { book: 43, chapter: 3, verse: 15 },
+                            { book: 43, chapter: 3, verse: 16 },
+                            { book: 43, chapter: 3, verse: 17 },
+                            { book: 43, chapter: 3, verse: 18 },
+                        ],
+                    },
+                ],
+                43,
+                3,
+                16,
+                4,
+                99
+            )
+        ).toStrictEqual([]);
+    });
+
+    test("BE, starting verse after ending verse", () => {
+        expect(
+            getMultipleVerses(
+                [
+                    {
+                        verses: [
+                            { book: 43, chapter: 3, verse: 15 },
+                            { book: 43, chapter: 3, verse: 16 },
+                            { book: 43, chapter: 3, verse: 17 },
+                            { book: 43, chapter: 3, verse: 18 },
+                        ],
+                    },
+                ],
+                43,
+                3,
+                18,
+                3,
+                16
+            )
+        ).toStrictEqual([]);
     });
 });
