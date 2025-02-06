@@ -4,7 +4,6 @@ export function getSelectedVersions(
     EnglishVersion,
     BibleVersionConfig
 ) {
-    console.log(BibleVersionConfig.chinese === "简体");
     const ChineseVersion = BibleVersionConfig.chinese === "简体" ? ChineseSimplifiedVersion : ChineseTraditionalVersion;
     if (BibleVersionConfig.language === "中文") {
         return [ChineseVersion];

@@ -5,7 +5,7 @@ import AppContext from "../AppContext";
 import MarkdownExtended from "../utilComponents/MarkdownExtended";
 
 export default function Projector() {
-    const { projectorWindowPopped, setProjectorWindowPopped, getVerseText } = useContext(AppContext);
+    const { appConfig, projectorWindowPopped, setProjectorWindowPopped, getVerseText } = useContext(AppContext);
     // const { rangeList, textList } = getVerseText(43, 3, 16);
     const { rangeList, textList } = getVerseText(43, 3, 16, 3, 18);
     // const { rangeList, textList } = getVerseText(43, 3, 16, 4, 3);
@@ -36,7 +36,9 @@ export default function Projector() {
                 </>
             }
         >
-            <MarkdownExtended>{paragraphs.join("\n\n")}</MarkdownExtended>
+            <div style={{ zoom: appConfig.config.bible_display.zoom / 100 }}>
+                <MarkdownExtended>{paragraphs.join("\n\n")}</MarkdownExtended>
+            </div>
         </PopUp>
     );
 }

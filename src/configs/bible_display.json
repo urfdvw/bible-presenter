@@ -1,19 +1,24 @@
 {
-    "name": "bible_version",
-    "title": "圣经版本",
+    "name": "bible_display",
+    "title": "圣经显示",
     "type": "object",
     "properties": {
         "language": {
-            "title": "语言",
+            "title": "圣经语言",
             "type": "string",
             "enum": ["中文", "English", "对照"],
             "default": "中文"
         },
         "chinese": {
-            "title": "中文版本",
+            "title": "中文圣经版本",
             "type": "string",
             "enum": ["简体", "繁體"],
             "default": "简体"
+        },
+        "zoom": {
+            "title": "字体大小(%)",
+            "type": "integer",
+            "default": 100
         }
     }
 }
