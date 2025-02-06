@@ -4,6 +4,8 @@ import {
     getVerseInVersion,
     getVerseIndexInVersion,
     getMultipleVerses,
+    versesToRangeText,
+    versesToParagraphsMD,
 } from "../bible/utils";
 
 describe("Test getSelectedVersions", () => {
@@ -435,5 +437,72 @@ describe("Test getMultipleVerses", () => {
                 16
             )
         ).toStrictEqual([]);
+    });
+});
+
+describe("Test versesToRangeText", () => {
+    test("same chapter", () => {
+        expect(
+            versesToRangeText([
+                [{ book_name: "book name", book: 43, chapter: 3, verse: 16 }],
+                [{ book_name: "book name", book: 43, chapter: 3, verse: 17 }],
+            ])
+        ).toBe("book name 3:16-17");
+    });
+
+    test("different chapter", () => {
+        expect(
+            versesToRangeText([
+                [{ book_name: "book name", book: 43, chapter: 3, verse: 16 }],
+                [{ book_name: "book name", book: 43, chapter: 3, verse: 17 }],
+                [{ book_name: "book name", book: 43, chapter: 4, verse: 1 }],
+                [{ book_name: "book name", book: 43, chapter: 4, verse: 2 }],
+            ])
+        ).toBe("book name 3:16-4:2");
+    });
+});
+
+describe("Test versesToParagraphsMD", () => {
+    test("same chapter", () => {
+        expect(
+            versesToParagraphsMD([
+                [{ book_name: "book name", book: 43, chapter: 3, verse: 16, text: "text" }],
+                [{ book_name: "book name", book: 43, chapter: 3, verse: 17, text: "text" }],
+            ])
+        ).toStrictEqual(["<sup>16</sup>text <sup>17</sup>text"]);
+    });
+
+    test("different chapter", () => {
+        expect(
+            versesToParagraphsMD([
+                [{ book_name: "book name", book: 43, chapter: 3, verse: 16, text: "text" }],
+                [{ book_name: "book name", book: 43, chapter: 3, verse: 17, text: "text" }],
+                [{ book_name: "book name", book: 43, chapter: 4, verse: 1, text: "text" }],
+                [{ book_name: "book name", book: 43, chapter: 4, verse: 2, text: "text" }],
+            ])
+        ).toStrictEqual(["<sup>3:16</sup>text <sup>17</sup>text <sup>4:1</sup>text <sup>2</sup>text"]);
+    });
+
+    test("multiple versions", () => {
+        expect(
+            versesToParagraphsMD([
+                [
+                    { book_name: "book name", book: 43, chapter: 3, verse: 16, text: "text1" },
+                    { book_name: "book name", book: 43, chapter: 3, verse: 16, text: "text2" },
+                ],
+                [
+                    { book_name: "book name", book: 43, chapter: 3, verse: 17, text: "text1" },
+                    { book_name: "book name", book: 43, chapter: 3, verse: 17, text: "text2" },
+                ],
+                [{ book_name: "book name", book: 43, chapter: 3, verse: 18, text: "text1" }, null],
+                [
+                    { book_name: "book name", book: 43, chapter: 3, verse: 19, text: "text1" },
+                    { book_name: "book name", book: 43, chapter: 3, verse: 19, text: "text2" },
+                ],
+            ])
+        ).toStrictEqual([
+            "<sup>16</sup>text1 <sup>17</sup>text1 <sup>18</sup>text1 <sup>19</sup>text1",
+            "<sup>16</sup>text2 <sup>17</sup>text2 <sup>19</sup>text2",
+        ]);
     });
 });

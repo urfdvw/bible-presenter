@@ -94,3 +94,39 @@ export function getMultipleVerses(versions, book, chapter, verse, endChapter, en
         versions.map((version) => getVerseInVersion(version, position.book, position.chapter, position.verse))
     );
 }
+
+export function versesToRangeText(verses) {
+    const bookName = verses[0][0].book_name;
+    const startVerse = verses[0][0];
+    const endVerse = verses.at(-1)[0];
+
+    if (startVerse.chapter === endVerse.chapter) {
+        return `${bookName} ${startVerse.chapter}:${startVerse.verse}-${endVerse.verse}`;
+    } else {
+        return `${bookName} ${startVerse.chapter}:${startVerse.verse}-${endVerse.chapter}:${endVerse.verse}`;
+    }
+}
+
+export function versesToParagraphsMD(verses) {
+    const returnParagraphs = [];
+    const multipleChapters = verses[0][0].chapter !== verses.at(-1)[0].chapter;
+    for (var i = 0; i < verses[0].length; i++) {
+        const paragraph = verses
+            .map((versionVerse, index) => {
+                if (!versionVerse[i]) {
+                    return null;
+                }
+                var positionText;
+                if (multipleChapters && (positionText = index === 0 || versionVerse[i].verse === 1)) {
+                    positionText = `${versionVerse[i].chapter}:${versionVerse[i].verse}`;
+                } else {
+                    positionText = `${versionVerse[i].verse}`;
+                }
+                return `<sup>${positionText}</sup>${versionVerse[i].text}`;
+            })
+            .filter((x) => x)
+            .join(" ");
+        returnParagraphs.push(paragraph);
+    }
+    return returnParagraphs;
+}
