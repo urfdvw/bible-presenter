@@ -96,15 +96,25 @@ export function getMultipleVerses(versions, book, chapter, verse, endChapter, en
 }
 
 export function versesToRangeText(verses) {
-    const bookName = verses[0][0].book_name;
-    const startVerse = verses[0][0];
-    const endVerse = verses.at(-1)[0];
+    const returnRanges = [];
+    for (var i = 0; i < verses[0].length; i++) {
+        const bookName = verses[0][i].book_name;
+        const startVerse = verses[0][i];
+        const endVerse = verses.at(-1)[i];
 
-    if (startVerse.chapter === endVerse.chapter) {
-        return `${bookName} ${startVerse.chapter}:${startVerse.verse}-${endVerse.verse}`;
-    } else {
-        return `${bookName} ${startVerse.chapter}:${startVerse.verse}-${endVerse.chapter}:${endVerse.verse}`;
+        if (startVerse.chapter === endVerse.chapter) {
+            if (startVerse.verse === endVerse.verse) {
+                returnRanges.push(`${bookName} ${startVerse.chapter}:${startVerse.verse}`);
+            } else {
+                returnRanges.push(`${bookName} ${startVerse.chapter}:${startVerse.verse}-${endVerse.verse}`);
+            }
+        } else {
+            returnRanges.push(
+                `${bookName} ${startVerse.chapter}:${startVerse.verse}-${endVerse.chapter}:${endVerse.verse}`
+            );
+        }
     }
+    return returnRanges;
 }
 
 export function versesToParagraphsMD(verses) {

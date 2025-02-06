@@ -441,16 +441,22 @@ describe("Test getMultipleVerses", () => {
 });
 
 describe("Test versesToRangeText", () => {
-    test("same chapter", () => {
+    test("single verse", () => {
+        expect(versesToRangeText([[{ book_name: "book name", book: 43, chapter: 3, verse: 16 }]])).toStrictEqual([
+            "book name 3:16",
+        ]);
+    });
+
+    test("single version, same chapter", () => {
         expect(
             versesToRangeText([
                 [{ book_name: "book name", book: 43, chapter: 3, verse: 16 }],
                 [{ book_name: "book name", book: 43, chapter: 3, verse: 17 }],
             ])
-        ).toBe("book name 3:16-17");
+        ).toStrictEqual(["book name 3:16-17"]);
     });
 
-    test("different chapter", () => {
+    test("single version, different chapter", () => {
         expect(
             versesToRangeText([
                 [{ book_name: "book name", book: 43, chapter: 3, verse: 16 }],
@@ -458,7 +464,22 @@ describe("Test versesToRangeText", () => {
                 [{ book_name: "book name", book: 43, chapter: 4, verse: 1 }],
                 [{ book_name: "book name", book: 43, chapter: 4, verse: 2 }],
             ])
-        ).toBe("book name 3:16-4:2");
+        ).toStrictEqual(["book name 3:16-4:2"]);
+    });
+
+    test("multi version, same chapter", () => {
+        expect(
+            versesToRangeText([
+                [
+                    { book_name: "book name1", book: 43, chapter: 3, verse: 16 },
+                    { book_name: "book name2", book: 43, chapter: 3, verse: 16 },
+                ],
+                [
+                    { book_name: "book name1", book: 43, chapter: 3, verse: 17 },
+                    { book_name: "book name2", book: 43, chapter: 3, verse: 17 },
+                ],
+            ])
+        ).toStrictEqual(["book name1 3:16-17", "book name2 3:16-17"]);
     });
 });
 

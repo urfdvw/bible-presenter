@@ -14,8 +14,8 @@ export default function useBibleData(
         );
         const verses = getMultipleVerses(versions, book, chapter, verse, endChapter, endVerse);
         return {
-            range: versesToRangeText(verses),
-            text: versesToParagraphsMD(verses),
+            rangeList: versesToRangeText(verses),
+            textList: versesToParagraphsMD(verses),
         };
     }
 

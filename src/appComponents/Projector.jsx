@@ -5,9 +5,16 @@ import AppContext from "../AppContext";
 import MarkdownExtended from "../utilComponents/MarkdownExtended";
 
 export default function Projector() {
-    const { projectorWindowPopped, setProjectorWindowPopped, getVerseText, displayVerse } = useContext(AppContext);
-    const { range, text } = getVerseText(displayVerse.book, displayVerse.chapter, displayVerse.verse);
-    console.log("here ++++++", range, text.join("\n\n"));
+    const { projectorWindowPopped, setProjectorWindowPopped, getVerseText } = useContext(AppContext);
+    // const { rangeList, textList } = getVerseText(43, 3, 16);
+    const { rangeList, textList } = getVerseText(43, 3, 16, 3, 18);
+    // const { rangeList, textList } = getVerseText(43, 3, 16, 4, 3);
+
+    const paragraphs = rangeList.map((range, versionIndex) => {
+        // return `(${range}) ${textList[versionIndex]}`;
+        return `${textList[versionIndex]}\n\n——${range}`;
+    });
+
     return (
         <PopUp
             popped={projectorWindowPopped}
@@ -29,7 +36,7 @@ export default function Projector() {
                 </>
             }
         >
-            <MarkdownExtended>{`(${range}) ${text.join("\n\n")}`}</MarkdownExtended>
+            <MarkdownExtended>{paragraphs.join("\n\n")}</MarkdownExtended>
         </PopUp>
     );
 }
