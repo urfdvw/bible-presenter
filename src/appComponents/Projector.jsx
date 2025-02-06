@@ -36,7 +36,7 @@ export default function Projector() {
                 </>
             }
         >
-            <div style={{ zoom: appConfig.config.bible_display.zoom / 100 }}>
+            <div style={{ height: "100%", zoom: appConfig.config.bible_display.zoom / 100, overflowY: "scroll" }}>
                 <MarkdownExtended>{paragraphs.join("\n\n")}</MarkdownExtended>
             </div>
         </PopUp>
