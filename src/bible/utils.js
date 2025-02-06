@@ -119,7 +119,10 @@ export function versesToRangeText(verses) {
 
 export function versesToParagraphsMD(verses) {
     const returnParagraphs = [];
-    const multipleChapters = verses[0][0].chapter !== verses.at(-1)[0].chapter;
+    const startVerse = verses[0][0];
+    const endVerse = verses.at(-1)[0];
+    const isMultipleChapters = startVerse.chapter !== endVerse.chapter;
+    const isSingleVerse = !isMultipleChapters && startVerse.verse === endVerse.verse;
     for (var i = 0; i < verses[0].length; i++) {
         const paragraph = verses
             .map((versionVerse, index) => {
@@ -127,7 +130,10 @@ export function versesToParagraphsMD(verses) {
                     return null;
                 }
                 var positionText;
-                if (multipleChapters && (positionText = index === 0 || versionVerse[i].verse === 1)) {
+                if (isSingleVerse) {
+                    return versionVerse[i].text;
+                }
+                if (isMultipleChapters && (positionText = index === 0 || versionVerse[i].verse === 1)) {
                     positionText = `${versionVerse[i].chapter}:${versionVerse[i].verse}`;
                 } else {
                     positionText = `${versionVerse[i].verse}`;

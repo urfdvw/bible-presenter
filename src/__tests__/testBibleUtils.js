@@ -484,6 +484,12 @@ describe("Test versesToRangeText", () => {
 });
 
 describe("Test versesToParagraphsMD", () => {
+    test("single verse", () => {
+        expect(
+            versesToParagraphsMD([[{ book_name: "book name", book: 43, chapter: 3, verse: 16, text: "text" }]])
+        ).toStrictEqual(["text"]);
+    });
+
     test("same chapter", () => {
         expect(
             versesToParagraphsMD([
