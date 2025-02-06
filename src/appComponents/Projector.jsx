@@ -2,9 +2,12 @@ import PopUp from "../utilComponents/PopUp";
 import Button from "@mui/material/Button";
 import { useContext } from "react";
 import AppContext from "../AppContext";
+import MarkdownExtended from "../utilComponents/MarkdownExtended";
 
 export default function Projector() {
-    const { projectorWindowPopped, setProjectorWindowPopped } = useContext(AppContext);
+    const { projectorWindowPopped, setProjectorWindowPopped, getVerseText, displayVerse } = useContext(AppContext);
+    const { range, text } = getVerseText(displayVerse.book, displayVerse.chapter, displayVerse.verse);
+    console.log("here ++++++", range, text.join("\n\n"));
     return (
         <PopUp
             popped={projectorWindowPopped}
@@ -25,6 +28,8 @@ export default function Projector() {
                     </Button>
                 </>
             }
-        ></PopUp>
+        >
+            <MarkdownExtended>{`(${range}) ${text.join("\n\n")}`}</MarkdownExtended>
+        </PopUp>
     );
 }

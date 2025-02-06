@@ -469,7 +469,7 @@ describe("Test versesToParagraphsMD", () => {
                 [{ book_name: "book name", book: 43, chapter: 3, verse: 16, text: "text" }],
                 [{ book_name: "book name", book: 43, chapter: 3, verse: 17, text: "text" }],
             ])
-        ).toStrictEqual(["<sup>16</sup>text <sup>17</sup>text"]);
+        ).toStrictEqual(["^16^text ^17^text"]);
     });
 
     test("different chapter", () => {
@@ -480,7 +480,7 @@ describe("Test versesToParagraphsMD", () => {
                 [{ book_name: "book name", book: 43, chapter: 4, verse: 1, text: "text" }],
                 [{ book_name: "book name", book: 43, chapter: 4, verse: 2, text: "text" }],
             ])
-        ).toStrictEqual(["<sup>3:16</sup>text <sup>17</sup>text <sup>4:1</sup>text <sup>2</sup>text"]);
+        ).toStrictEqual(["^3:16^text ^17^text ^4:1^text ^2^text"]);
     });
 
     test("multiple versions", () => {
@@ -500,9 +500,6 @@ describe("Test versesToParagraphsMD", () => {
                     { book_name: "book name", book: 43, chapter: 3, verse: 19, text: "text2" },
                 ],
             ])
-        ).toStrictEqual([
-            "<sup>16</sup>text1 <sup>17</sup>text1 <sup>18</sup>text1 <sup>19</sup>text1",
-            "<sup>16</sup>text2 <sup>17</sup>text2 <sup>19</sup>text2",
-        ]);
+        ).toStrictEqual(["^16^text1 ^17^text1 ^18^text1 ^19^text1", "^16^text2 ^17^text2 ^19^text2"]);
     });
 });

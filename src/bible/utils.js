@@ -122,7 +122,7 @@ export function versesToParagraphsMD(verses) {
                 } else {
                     positionText = `${versionVerse[i].verse}`;
                 }
-                return `<sup>${positionText}</sup>${versionVerse[i].text}`;
+                return `^${positionText}^${versionVerse[i].text}`;
             })
             .filter((x) => x)
             .join(" ");

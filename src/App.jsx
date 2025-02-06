@@ -53,12 +53,7 @@ function App() {
     // projector popup
     const [projectorWindowPopped, setProjectorWindowPopped] = useState(false);
     // Bible Data
-    const { getNextVerse, getVerseText, getRangeText } = useBibleData(
-        Bible.cuvs,
-        Bible.cuvt,
-        Bible.asv,
-        appConfig.config.bible_version
-    );
+    const { getVerseText } = useBibleData(Bible.cuvs, Bible.cuvt, Bible.asv, appConfig.config.bible_version);
     // Bible control
     const [displayVerse, setDisplayVerse] = useState({
         book: 43,
@@ -67,13 +62,6 @@ function App() {
         endChapter: null,
         endVerse: null,
     });
-    useEffect(() => {
-        try {
-            console.log([getNextVerse(43, 3, 16), getVerseText(43, 3, 16), getRangeText(43, 3, 16)]);
-        } catch (error) {
-            console.error(error);
-        }
-    }, [appConfig]);
 
     if (isMobile) {
         return <MobileSupportInfo />;
@@ -107,6 +95,7 @@ function App() {
                 setProjectorWindowPopped,
                 displayVerse,
                 setDisplayVerse,
+                getVerseText,
             }}
         >
             <DarkTheme dark={dark} highContrast={highContrast} />

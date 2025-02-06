@@ -2,13 +2,15 @@ import Typography from "@mui/material/Typography";
 import PropTypes from "prop-types";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import supersub from "remark-supersub";
 
 export default function MarkdownExtended({ children }) {
     return (
         <Typography component="div">
             <Markdown
                 className="markdown-body"
-                remarkPlugins={[remarkGfm]}
+                remarkPlugins={[[remarkGfm, { singleTilde: false }], remarkMath, supersub]}
                 components={{
                     a: (props) => {
                         return props.href.startsWith("http") ? (
