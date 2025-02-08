@@ -6,6 +6,7 @@ import {
     getMultipleVerses,
     versesToRangeText,
     versesToParagraphsMD,
+    getChapterEndVerse,
 } from "../bible/utils";
 
 describe("Test getSelectedVersions", () => {
@@ -528,5 +529,43 @@ describe("Test versesToParagraphsMD", () => {
                 ],
             ])
         ).toStrictEqual(["^16^text1 ^17^text1 ^18^text1 ^19^text1", "^16^text2 ^17^text2 ^19^text2"]);
+    });
+});
+
+describe("Test getChapterEndVerse", () => {
+    const version1 = {
+        verses: [
+            { book: 1, chapter: 1, verse: 1 },
+            { book: 1, chapter: 1, verse: 2 },
+            { book: 1, chapter: 1, verse: 3 },
+            { book: 1, chapter: 1, verse: 4 },
+            { book: 1, chapter: 1, verse: 5 },
+            { book: 1, chapter: 1, verse: 6 },
+            { book: 1, chapter: 2, verse: 1 },
+            { book: 1, chapter: 2, verse: 2 },
+            { book: 1, chapter: 2, verse: 3 },
+            { book: 1, chapter: 2, verse: 4 },
+        ],
+    };
+    const version2 = {
+        verses: [
+            { book: 1, chapter: 1, verse: 1 },
+            { book: 1, chapter: 1, verse: 2 },
+            { book: 1, chapter: 1, verse: 3 },
+            { book: 1, chapter: 1, verse: 4 },
+            { book: 1, chapter: 1, verse: 5 },
+            { book: 1, chapter: 2, verse: 1 },
+            { book: 1, chapter: 2, verse: 2 },
+            { book: 1, chapter: 2, verse: 4 },
+        ],
+    };
+
+    test("single version", () => {
+        expect(getChapterEndVerse([version1], 1, 1)).toBe(6);
+        expect(getChapterEndVerse([version1], 1, 2)).toBe(4);
+    });
+    test("multiple version", () => {
+        expect(getChapterEndVerse([version1, version2], 1, 1)).toBe(6);
+        expect(getChapterEndVerse([version1, version2], 1, 2)).toBe(4);
     });
 });

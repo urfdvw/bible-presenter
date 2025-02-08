@@ -145,3 +145,15 @@ export function versesToParagraphsMD(verses) {
     }
     return returnParagraphs;
 }
+
+export function getChapterEndVerse(versions, book, chapter) {
+    return Math.max(
+        ...versions.map((version) =>
+            Math.max(
+                ...version.verses
+                    .filter((verseObj) => verseObj.book === book && verseObj.chapter === chapter)
+                    .map((verseObj) => verseObj.verse)
+            )
+        )
+    );
+}
