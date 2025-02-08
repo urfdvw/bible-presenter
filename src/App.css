@@ -22,3 +22,8 @@
     flex-grow: 1;
     position: relative;
 }
+
+.app-tail {
+    background-color: lightgray;
+    flex-grow: 0;
+}

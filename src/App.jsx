@@ -9,6 +9,9 @@ import Factory from "./layout/Factory";
 import "flexlayout-react/style/light.css";
 // menu bar
 import AppMenu from "./appComponents/AppMenu";
+// notification
+import useNotification from "./utilHooks/useNotification";
+import Typography from "@mui/material/Typography";
 // config
 import { useConfig } from "react-user-config";
 import schemas from "./configs";
@@ -33,6 +36,8 @@ function App() {
     const [testCount, setTestCount] = useState(0);
     // layout
     const [flexModel, setFlexModel] = useState(FlexLayout.Model.fromJson(layout));
+    // notification
+    const { notify, clearNotification, notificationText, notificationHeight } = useNotification();
     // config
     const appConfig = useConfig(schemas);
     useEffect(() => {
@@ -89,6 +94,8 @@ function App() {
                 testCount,
                 setTestCount,
                 flexModel,
+                notify,
+                clearNotification,
                 appConfig,
                 helpTabSelection,
                 projectorWindowPopped,
@@ -110,6 +117,13 @@ function App() {
                 <div className="app-body">
                     <FlexLayout.Layout model={flexModel} factory={Factory} />
                 </div>
+                <Typography
+                    component="div"
+                    className="app-tail"
+                    style={{ paddingLeft: "5pt", maxHeight: notificationHeight, transition: "max-height 1s ease" }}
+                >
+                    {notificationText}
+                </Typography>
             </div>
         </AppContext.Provider>
     );
