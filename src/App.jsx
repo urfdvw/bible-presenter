@@ -107,13 +107,15 @@ function App() {
         >
             <DarkTheme dark={dark} highContrast={highContrast} />
             <div className="app">
-                {appConfig.config.general.show_menu_bar ? (
-                    <div className="app-header">
-                        <AppMenu />
-                    </div>
-                ) : (
-                    <></>
-                )}
+                <div
+                    className="app-header"
+                    style={{
+                        maxHeight: appConfig.config.general.show_menu_bar ? "30px" : "0px",
+                        transition: "max-height 1s ease",
+                    }}
+                >
+                    <AppMenu />
+                </div>
                 <div className="app-body">
                     <FlexLayout.Layout model={flexModel} factory={Factory} />
                 </div>
