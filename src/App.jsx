@@ -58,7 +58,12 @@ function App() {
     // projector popup
     const [projectorWindowPopped, setProjectorWindowPopped] = useState(false);
     // Bible Data
-    const { getVerseText } = useBibleData(Bible.cuvs, Bible.cuvt, Bible.asv, appConfig.config.bible_display);
+    const { getVerseText, getChapterVerses } = useBibleData(
+        Bible.cuvs,
+        Bible.cuvt,
+        Bible.asv,
+        appConfig.config.bible_display
+    );
     // Bible control
     const [displayVerse, setDisplayVerse] = useState({
         book: 43,
@@ -103,6 +108,7 @@ function App() {
                 displayVerse,
                 setDisplayVerse,
                 getVerseText,
+                getChapterVerses,
             }}
         >
             <DarkTheme dark={dark} highContrast={highContrast} />

@@ -7,7 +7,10 @@ import {
     versesToRangeText,
     versesToParagraphsMD,
     getChapterEndVerse,
+    getChapterVerses,
 } from "../bible/utils";
+
+import Bible from "../bible";
 
 describe("Test getSelectedVersions", () => {
     test("中文, 繁體", () => {
@@ -532,40 +535,103 @@ describe("Test versesToParagraphsMD", () => {
     });
 });
 
-describe("Test getChapterEndVerse", () => {
+describe("Test getChapterEndVerse, getChapterVerses", () => {
     const version1 = {
         verses: [
-            { book: 1, chapter: 1, verse: 1 },
-            { book: 1, chapter: 1, verse: 2 },
-            { book: 1, chapter: 1, verse: 3 },
-            { book: 1, chapter: 1, verse: 4 },
-            { book: 1, chapter: 1, verse: 5 },
-            { book: 1, chapter: 1, verse: 6 },
-            { book: 1, chapter: 2, verse: 1 },
-            { book: 1, chapter: 2, verse: 2 },
-            { book: 1, chapter: 2, verse: 3 },
-            { book: 1, chapter: 2, verse: 4 },
+            { book: 1, chapter: 1, verse: 1, text: "version1" },
+            { book: 1, chapter: 1, verse: 2, text: "version1" },
+            { book: 1, chapter: 1, verse: 3, text: "version1" },
+            { book: 1, chapter: 1, verse: 4, text: "version1" },
+            { book: 1, chapter: 1, verse: 5, text: "version1" },
+            { book: 1, chapter: 1, verse: 6, text: "version1" },
+            { book: 1, chapter: 2, verse: 1, text: "version1" },
+            { book: 1, chapter: 2, verse: 2, text: "version1" },
+            { book: 1, chapter: 2, verse: 3, text: "version1" },
+            { book: 1, chapter: 2, verse: 4, text: "version1" },
         ],
     };
     const version2 = {
         verses: [
-            { book: 1, chapter: 1, verse: 1 },
-            { book: 1, chapter: 1, verse: 2 },
-            { book: 1, chapter: 1, verse: 3 },
-            { book: 1, chapter: 1, verse: 4 },
-            { book: 1, chapter: 1, verse: 5 },
-            { book: 1, chapter: 2, verse: 1 },
-            { book: 1, chapter: 2, verse: 2 },
-            { book: 1, chapter: 2, verse: 4 },
+            { book: 1, chapter: 1, verse: 1, text: "version2" },
+            { book: 1, chapter: 1, verse: 2, text: "version2" },
+            { book: 1, chapter: 1, verse: 3, text: "version2" },
+            { book: 1, chapter: 1, verse: 4, text: "version2" },
+            { book: 1, chapter: 1, verse: 5, text: "version2" },
+            { book: 1, chapter: 2, verse: 1, text: "version2" },
+            { book: 1, chapter: 2, verse: 2, text: "version2" },
+            { book: 1, chapter: 2, verse: 4, text: "version2" },
         ],
     };
 
-    test("single version", () => {
+    test("single version, find end", () => {
         expect(getChapterEndVerse([version1], 1, 1)).toBe(6);
         expect(getChapterEndVerse([version1], 1, 2)).toBe(4);
     });
-    test("multiple version", () => {
+
+    test("multiple version, find end", () => {
         expect(getChapterEndVerse([version1, version2], 1, 1)).toBe(6);
         expect(getChapterEndVerse([version1, version2], 1, 2)).toBe(4);
+    });
+
+    test("real version, find end", () => {
+        expect(getChapterEndVerse([Bible.cuvs, Bible.asv], 43, 3)).toBe(36);
+    });
+
+    test("single version, get chapter verses", () => {
+        expect(getChapterVerses([version1], 1, 1)).toStrictEqual([
+            [{ book: 1, chapter: 1, verse: 1, text: "version1" }],
+            [{ book: 1, chapter: 1, verse: 2, text: "version1" }],
+            [{ book: 1, chapter: 1, verse: 3, text: "version1" }],
+            [{ book: 1, chapter: 1, verse: 4, text: "version1" }],
+            [{ book: 1, chapter: 1, verse: 5, text: "version1" }],
+            [{ book: 1, chapter: 1, verse: 6, text: "version1" }],
+        ]);
+        expect(getChapterVerses([version1], 1, 2)).toStrictEqual([
+            [{ book: 1, chapter: 2, verse: 1, text: "version1" }],
+            [{ book: 1, chapter: 2, verse: 2, text: "version1" }],
+            [{ book: 1, chapter: 2, verse: 3, text: "version1" }],
+            [{ book: 1, chapter: 2, verse: 4, text: "version1" }],
+        ]);
+    });
+
+    test("multiple version, get chapter verses", () => {
+        expect(getChapterVerses([version1, version2], 1, 1)).toStrictEqual([
+            [
+                { book: 1, chapter: 1, verse: 1, text: "version1" },
+                { book: 1, chapter: 1, verse: 1, text: "version2" },
+            ],
+            [
+                { book: 1, chapter: 1, verse: 2, text: "version1" },
+                { book: 1, chapter: 1, verse: 2, text: "version2" },
+            ],
+            [
+                { book: 1, chapter: 1, verse: 3, text: "version1" },
+                { book: 1, chapter: 1, verse: 3, text: "version2" },
+            ],
+            [
+                { book: 1, chapter: 1, verse: 4, text: "version1" },
+                { book: 1, chapter: 1, verse: 4, text: "version2" },
+            ],
+            [
+                { book: 1, chapter: 1, verse: 5, text: "version1" },
+                { book: 1, chapter: 1, verse: 5, text: "version2" },
+            ],
+            [{ book: 1, chapter: 1, verse: 6, text: "version1" }, null],
+        ]);
+        expect(getChapterVerses([version1, version2], 1, 2)).toStrictEqual([
+            [
+                { book: 1, chapter: 2, verse: 1, text: "version1" },
+                { book: 1, chapter: 2, verse: 1, text: "version2" },
+            ],
+            [
+                { book: 1, chapter: 2, verse: 2, text: "version1" },
+                { book: 1, chapter: 2, verse: 2, text: "version2" },
+            ],
+            [{ book: 1, chapter: 2, verse: 3, text: "version1" }, null],
+            [
+                { book: 1, chapter: 2, verse: 4, text: "version1" },
+                { book: 1, chapter: 2, verse: 4, text: "version2" },
+            ],
+        ]);
     });
 });
