@@ -27,7 +27,7 @@ function Icon({ tooltip, children, onClick }) {
 }
 
 const verseBoxStyle = {
-    border: "1px solid #ccc",
+    border: "2px solid #ccc",
     borderRadius: 2,
     padding: 1,
     display: "flex",
@@ -36,7 +36,9 @@ const verseBoxStyle = {
     cursor: "pointer",
 };
 
-export function PreviewVerseBox({ book, chapter, verse }) {
+const selectedVerseBoxStyle = { ...verseBoxStyle, border: "2px solid black", background: "#F0F0F0" };
+
+export function PreviewVerseBox({ book, chapter, verse, selected }) {
     const { getMultipleVerses } = useContext(AppContext);
     function showVerse(book, chapter, verse, endChapter, endVerse) {
         console.log("showing", book, chapter, verse, endChapter, endVerse);
@@ -62,7 +64,7 @@ export function PreviewVerseBox({ book, chapter, verse }) {
     };
 
     return (
-        <Box onClick={handleShow} sx={verseBoxStyle}>
+        <Box onClick={handleShow} sx={selected ? selectedVerseBoxStyle : verseBoxStyle}>
             <Typography sx={{ paddingRight: 1 }}>{verse}</Typography>
             <MarkdownExtended>{mdText}</MarkdownExtended>
 
@@ -78,7 +80,7 @@ export function PreviewVerseBox({ book, chapter, verse }) {
     );
 }
 
-export function HistoryVerseBox({ book, chapter, verse, endChapter, endVerse }) {
+export function HistoryVerseBox({ book, chapter, verse, endChapter, endVerse, selected }) {
     const { getMultipleVerses } = useContext(AppContext);
     function showVerse(book, chapter, verse, endChapter, endVerse) {
         console.log("showing", book, chapter, verse, endChapter, endVerse);
@@ -112,7 +114,7 @@ export function HistoryVerseBox({ book, chapter, verse, endChapter, endVerse }) 
     };
 
     return (
-        <Box onClick={handleShow} sx={verseBoxStyle}>
+        <Box onClick={handleShow} sx={selected ? selectedVerseBoxStyle : verseBoxStyle}>
             <Typography>{range[0]}</Typography>
 
             <Box>
@@ -130,7 +132,7 @@ export function HistoryVerseBox({ book, chapter, verse, endChapter, endVerse }) 
     );
 }
 
-export function NoteVerseBox({ book, chapter, verse, endChapter, endVerse }) {
+export function NoteVerseBox({ book, chapter, verse, endChapter, endVerse, selected }) {
     const { getMultipleVerses } = useContext(AppContext);
     function showVerse(book, chapter, verse, endChapter, endVerse) {
         console.log("showing", book, chapter, verse, endChapter, endVerse);
@@ -164,7 +166,7 @@ export function NoteVerseBox({ book, chapter, verse, endChapter, endVerse }) {
     };
 
     return (
-        <Box onClick={handleShow} sx={verseBoxStyle}>
+        <Box onClick={handleShow} sx={selected ? selectedVerseBoxStyle : verseBoxStyle}>
             <Typography>{range[0]}</Typography>
 
             <Box>
