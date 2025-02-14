@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import AppContext from "../AppContext";
-import NoteVerseBox from "./VerseBox";
+import { NoteVerseBox, HistoryVerseBox, PreviewVerseBox } from "./VerseBox";
 
 export default function Placeholder({ node }) {
     const { testCount, setTestCount, notify, clearNotification } = useContext(AppContext);
@@ -18,6 +18,8 @@ export default function Placeholder({ node }) {
             <br />
 
             <NoteVerseBox book={43} chapter={3} verse={16} endVerse={18}></NoteVerseBox>
+            <HistoryVerseBox book={43} chapter={3} verse={16} endVerse={18}></HistoryVerseBox>
+            <PreviewVerseBox book={43} chapter={3} verse={16}></PreviewVerseBox>
         </div>
     );
 }
