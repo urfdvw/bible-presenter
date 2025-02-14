@@ -58,7 +58,7 @@ function App() {
     // projector popup
     const [projectorWindowPopped, setProjectorWindowPopped] = useState(false);
     // Bible Data
-    const { getVerseText, getChapterVerses } = useBibleData(
+    const { getMultipleVerses, getChapterVerses } = useBibleData(
         Bible.cuvs,
         Bible.cuvt,
         Bible.asv,
@@ -107,7 +107,7 @@ function App() {
                 setProjectorWindowPopped,
                 displayVerse,
                 setDisplayVerse,
-                getVerseText,
+                getMultipleVerses,
                 getChapterVerses,
             }}
         >

@@ -6,7 +6,12 @@ import { versesToParagraphsMD, versesToRangeText } from "../bible/utils";
 
 import MarkdownExtended from "../utilComponents/MarkdownExtended";
 
-export default function NoteVerseBox({ verses }) {
+import AppContext from "../AppContext";
+import { useContext } from "react";
+
+export default function NoteVerseBox({ book, chapter, verse, endChapter, endVerse }) {
+    const { getMultipleVerses } = useContext(AppContext);
+    const verses = getMultipleVerses(book, chapter, verse, endChapter, endVerse);
     const range = versesToRangeText(verses);
 
     const handleBoxClick = () => {

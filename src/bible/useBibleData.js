@@ -1,28 +1,18 @@
-import {
-    getSelectedVersions,
-    getMultipleVerses,
-    versesToRangeText,
-    versesToParagraphsMD,
-    getChapterVerses,
-} from "./utils";
+import { getSelectedVersions, getMultipleVerses, getChapterVerses } from "./utils";
 export default function useBibleData(
     ChineseSimplifiedVersion,
     ChineseTraditionalVersion,
     EnglishVersion,
     BibleVersionConfig
 ) {
-    function getVerseText(book, chapter, verse, endChapter, endVerse) {
+    function _getMultipleVerses(book, chapter, verse, endChapter, endVerse) {
         const versions = getSelectedVersions(
             ChineseSimplifiedVersion,
             ChineseTraditionalVersion,
             EnglishVersion,
             BibleVersionConfig
         );
-        const verses = getMultipleVerses(versions, book, chapter, verse, endChapter, endVerse);
-        return {
-            rangeList: versesToRangeText(verses),
-            textList: versesToParagraphsMD(verses),
-        };
+        return getMultipleVerses(versions, book, chapter, verse, endChapter, endVerse);
     }
 
     function _getChapterVerses(book, chapter) {
@@ -35,5 +25,5 @@ export default function useBibleData(
         return getChapterVerses(versions, book, chapter);
     }
 
-    return { getVerseText, getChapterVerses: _getChapterVerses };
+    return { getMultipleVerses: _getMultipleVerses, getChapterVerses: _getChapterVerses };
 }

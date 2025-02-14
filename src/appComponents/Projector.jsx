@@ -3,12 +3,15 @@ import Button from "@mui/material/Button";
 import { useContext } from "react";
 import AppContext from "../AppContext";
 import MarkdownExtended from "../utilComponents/MarkdownExtended";
+import { versesToRangeText, versesToParagraphsMD } from "../bible/utils";
 
 export default function Projector() {
-    const { appConfig, projectorWindowPopped, setProjectorWindowPopped, getVerseText } = useContext(AppContext);
-    // const { rangeList, textList } = getVerseText(43, 3, 16);
-    const { rangeList, textList } = getVerseText(43, 3, 16, 3, 18);
-    // const { rangeList, textList } = getVerseText(43, 3, 16, 4, 3);
+    const { appConfig, projectorWindowPopped, setProjectorWindowPopped, getMultipleVerses } = useContext(AppContext);
+    // const verses = getMultipleVerses(43, 3, 16)
+    const verses = getMultipleVerses(43, 3, 16, 3, 18);
+    // const verses = getMultipleVerses(43, 3, 16, 4, 3)
+    const rangeList = versesToRangeText(verses);
+    const textList = versesToParagraphsMD(verses);
 
     const paragraphs = rangeList.map((range, versionIndex) => {
         // return `(${range}) ${textList[versionIndex]}`;
