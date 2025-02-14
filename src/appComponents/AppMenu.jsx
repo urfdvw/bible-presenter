@@ -7,7 +7,8 @@ const DARK_RED = red[900];
 const DARK_GREY = grey[900];
 
 export default function AppMenu() {
-    const { setProjectorWindowPopped } = useContext(AppContext);
+    const { projectorWindowPopped, setProjectorWindowPopped, projectorDisplay, setProjectorDisplay } =
+        useContext(AppContext);
 
     const menuStructure = [
         {
@@ -23,10 +24,17 @@ export default function AppMenu() {
             ],
         },
         {
-            text: "投影窗口",
+            text: projectorWindowPopped ? "收回投影窗口" : "弹出投影窗口",
             color: DARK_GREY,
             handler: () => {
                 setProjectorWindowPopped((popped) => !popped);
+            },
+        },
+        {
+            text: projectorDisplay ? "隐藏投影内容" : "显示投影内容",
+            color: DARK_GREY,
+            handler: () => {
+                setProjectorDisplay((displayStatus) => !displayStatus);
             },
         },
     ];

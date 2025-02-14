@@ -55,8 +55,9 @@ function App() {
     useEffect(() => {
         console.log("[showDevFeatures, showBetaFeatures]", [showDevFeatures, showBetaFeatures]);
     }, [showDevFeatures, showBetaFeatures]);
-    // projector popup
+    // projector control
     const [projectorWindowPopped, setProjectorWindowPopped] = useState(false);
+    const [projectorDisplay, setProjectorDisplay] = useState(true);
     // Bible Data
     const { getMultipleVerses, getChapterVerses } = useBibleData(
         Bible.cuvs,
@@ -105,6 +106,8 @@ function App() {
                 helpTabSelection,
                 projectorWindowPopped,
                 setProjectorWindowPopped,
+                projectorDisplay,
+                setProjectorDisplay,
                 displayVerse,
                 setDisplayVerse,
                 getMultipleVerses,
