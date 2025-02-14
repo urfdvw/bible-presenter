@@ -68,10 +68,12 @@ export function PreviewVerseBox({ book, chapter, verse, selected }) {
 
     return (
         <Box onClick={handleShow} sx={selected ? selectedVerseBoxStyle : verseBoxStyle}>
-            <Typography sx={{ paddingRight: 1 }}>{verse}</Typography>
-            <MarkdownExtended>{mdText}</MarkdownExtended>
+            <Typography sx={{ paddingRight: 1, flexShrink: 0 }}>{verse}</Typography>
+            <div style={{ flexGrow: 1 }}>
+                <MarkdownExtended>{mdText}</MarkdownExtended>
+            </div>
 
-            <Box>
+            <Box sx={{ flexShrink: 0 }}>
                 <Icon tooltip={"加入笔记"} onClick={handleAddToNote}>
                     <NoteAdd />
                 </Icon>
@@ -120,9 +122,9 @@ export function HistoryVerseBox({ book, chapter, verse, endChapter, endVerse, se
 
     return (
         <Box onClick={handleShow} sx={selected ? selectedVerseBoxStyle : verseBoxStyle}>
-            <Typography>{range[0]}</Typography>
+            <Typography sx={{ flexGrow: 1 }}>{range[0]}</Typography>
 
-            <Box>
+            <Box sx={{ flexShrink: 0 }}>
                 <Icon tooltip={"预览"} onClick={handlePreview}>
                     <Preview />
                 </Icon>
@@ -175,9 +177,9 @@ export function NoteVerseBox({ book, chapter, verse, endChapter, endVerse, selec
 
     return (
         <Box onClick={handleShow} sx={selected ? selectedVerseBoxStyle : verseBoxStyle}>
-            <Typography>{range[0]}</Typography>
+            <Typography sx={{ flexGrow: 1 }}>{range[0]}</Typography>
 
-            <Box>
+            <Box sx={{ flexShrink: 0 }}>
                 <Icon tooltip={"预览"} onClick={handlePreview}>
                     <Preview />
                 </Icon>
