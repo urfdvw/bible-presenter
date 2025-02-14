@@ -22,7 +22,7 @@ export default function Placeholder({ node }) {
             <HistoryVerseBox book={43} chapter={3} verse={16} endVerse={18}></HistoryVerseBox>
             <HistoryVerseBox book={43} chapter={3} verse={16} endVerse={18} selected={true}></HistoryVerseBox>
             <PreviewVerseBox book={43} chapter={3} verse={16}></PreviewVerseBox>
-            <PreviewVerseBox book={43} chapter={3} verse={16} selected={true}></PreviewVerseBox>
+            <PreviewVerseBox book={43} chapter={3} verse={17} selected={true}></PreviewVerseBox>
         </div>
     );
 }

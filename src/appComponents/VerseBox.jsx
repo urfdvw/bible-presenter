@@ -39,10 +39,7 @@ const verseBoxStyle = {
 const selectedVerseBoxStyle = { ...verseBoxStyle, border: "2px solid #700000", background: "#FFF0F0" };
 
 export function PreviewVerseBox({ book, chapter, verse, selected }) {
-    const { getMultipleVerses } = useContext(AppContext);
-    function showVerse(book, chapter, verse, endChapter, endVerse) {
-        console.log("showing", book, chapter, verse, endChapter, endVerse);
-    } // will be imported form context
+    const { getMultipleVerses, setDisplayVerse } = useContext(AppContext);
 
     function addToNote(book, chapter, verse, endChapter, endVerse) {
         console.log("adding to note", book, chapter, verse, endChapter, endVerse);
@@ -52,7 +49,13 @@ export function PreviewVerseBox({ book, chapter, verse, selected }) {
     const mdText = versesToParagraphsMD(verses).join("\n\n");
 
     const handleShow = () => {
-        showVerse(book, chapter, verse, null, null); // need to implement select multiple
+        setDisplayVerse({
+            book: book,
+            chapter: chapter,
+            verse: verse,
+            endChapter: null,
+            endVerse: null,
+        });
     };
 
     const handleAddToNote = () => {
@@ -81,11 +84,7 @@ export function PreviewVerseBox({ book, chapter, verse, selected }) {
 }
 
 export function HistoryVerseBox({ book, chapter, verse, endChapter, endVerse, selected }) {
-    const { getMultipleVerses } = useContext(AppContext);
-    function showVerse(book, chapter, verse, endChapter, endVerse) {
-        console.log("showing", book, chapter, verse, endChapter, endVerse);
-    } // will be imported form context
-
+    const { getMultipleVerses, setDisplayVerse } = useContext(AppContext);
     function addToNote(book, chapter, verse) {
         console.log("adding to note", book, chapter, verse);
     } // will be imported form context
@@ -98,7 +97,13 @@ export function HistoryVerseBox({ book, chapter, verse, endChapter, endVerse, se
     const range = versesToRangeText(verses);
 
     const handleShow = () => {
-        showVerse(book, chapter, verse, endChapter, endVerse);
+        setDisplayVerse({
+            book: book,
+            chapter: chapter,
+            verse: verse,
+            endChapter: endChapter,
+            endVerse: endVerse,
+        });
     };
 
     const handlePreview = () => {
@@ -133,10 +138,7 @@ export function HistoryVerseBox({ book, chapter, verse, endChapter, endVerse, se
 }
 
 export function NoteVerseBox({ book, chapter, verse, endChapter, endVerse, selected }) {
-    const { getMultipleVerses } = useContext(AppContext);
-    function showVerse(book, chapter, verse, endChapter, endVerse) {
-        console.log("showing", book, chapter, verse, endChapter, endVerse);
-    } // will be imported form context
+    const { getMultipleVerses, setDisplayVerse } = useContext(AppContext);
 
     function previewVerse(book, chapter, verse, endChapter, endVerse) {
         console.log("previewing", book, chapter, verse, endChapter, endVerse);
@@ -146,7 +148,13 @@ export function NoteVerseBox({ book, chapter, verse, endChapter, endVerse, selec
     const range = versesToRangeText(verses);
 
     const handleShow = () => {
-        showVerse(book, chapter, verse, endChapter, endVerse);
+        setDisplayVerse({
+            book: book,
+            chapter: chapter,
+            verse: verse,
+            endChapter: endChapter,
+            endVerse: endVerse,
+        });
     };
 
     const handlePreview = () => {

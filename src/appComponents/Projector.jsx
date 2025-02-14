@@ -5,7 +5,8 @@ import AppContext from "../AppContext";
 import VerseParagraph from "./VerseParagraph";
 
 export default function Projector() {
-    const { appConfig, projectorWindowPopped, setProjectorWindowPopped } = useContext(AppContext);
+    const { appConfig, projectorWindowPopped, setProjectorWindowPopped, displayVerse } = useContext(AppContext);
+
     return (
         <PopUp
             popped={projectorWindowPopped}
@@ -28,7 +29,13 @@ export default function Projector() {
             }
         >
             <div style={{ height: "100%", zoom: appConfig.config.bible_display.zoom / 100, overflowY: "scroll" }}>
-                <VerseParagraph book={43} chapter={3} verse={16} endVerse={18} />
+                <VerseParagraph
+                    book={displayVerse.book}
+                    chapter={displayVerse.chapter}
+                    verse={displayVerse.verse}
+                    endChapter={displayVerse.endChapter}
+                    endVerse={displayVerse.endVerse}
+                />
             </div>
         </PopUp>
     );
