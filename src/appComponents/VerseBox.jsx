@@ -36,7 +36,7 @@ const verseBoxStyle = {
     cursor: "pointer",
 };
 
-const selectedVerseBoxStyle = { ...verseBoxStyle, border: "2px solid black", background: "#F0F0F0" };
+const selectedVerseBoxStyle = { ...verseBoxStyle, border: "2px solid #700000", background: "#FFF0F0" };
 
 export function PreviewVerseBox({ book, chapter, verse, selected }) {
     const { getMultipleVerses } = useContext(AppContext);
