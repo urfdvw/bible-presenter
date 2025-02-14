@@ -19,6 +19,12 @@
             "title": "字体大小(%)",
             "type": "integer",
             "default": 100
+        },
+        "range_location": {
+            "title": "经节范围注释位置",
+            "type": "string",
+            "enum": ["开头", "结尾"],
+            "default": "开头"
         }
     }
 }

@@ -2,22 +2,10 @@ import PopUp from "../utilComponents/PopUp";
 import Button from "@mui/material/Button";
 import { useContext } from "react";
 import AppContext from "../AppContext";
-import MarkdownExtended from "../utilComponents/MarkdownExtended";
-import { versesToRangeText, versesToParagraphsMD } from "../bible/utils";
+import VerseParagraph from "./VerseParagraph";
 
 export default function Projector() {
-    const { appConfig, projectorWindowPopped, setProjectorWindowPopped, getMultipleVerses } = useContext(AppContext);
-    // const verses = getMultipleVerses(43, 3, 16)
-    const verses = getMultipleVerses(43, 3, 16, 3, 18);
-    // const verses = getMultipleVerses(43, 3, 16, 4, 3)
-    const rangeList = versesToRangeText(verses);
-    const textList = versesToParagraphsMD(verses);
-
-    const paragraphs = rangeList.map((range, versionIndex) => {
-        // return `(${range}) ${textList[versionIndex]}`;
-        return `${textList[versionIndex]}\n\n——${range}`;
-    });
-
+    const { appConfig, projectorWindowPopped, setProjectorWindowPopped } = useContext(AppContext);
     return (
         <PopUp
             popped={projectorWindowPopped}
@@ -40,7 +28,7 @@ export default function Projector() {
             }
         >
             <div style={{ height: "100%", zoom: appConfig.config.bible_display.zoom / 100, overflowY: "scroll" }}>
-                <MarkdownExtended>{paragraphs.join("\n\n")}</MarkdownExtended>
+                <VerseParagraph book={43} chapter={3} verse={16} endVerse={18} />
             </div>
         </PopUp>
     );
