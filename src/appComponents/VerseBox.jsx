@@ -1,4 +1,4 @@
-import { Box, Typography, IconButton } from "@mui/material";
+import { Box, Typography, IconButton, Tooltip } from "@mui/material";
 // Import any icons you want to use from Material-UI icons
 import { Preview, ArrowUpward, ArrowDownward, Close } from "@mui/icons-material";
 
@@ -9,24 +9,59 @@ import MarkdownExtended from "../utilComponents/MarkdownExtended";
 import AppContext from "../AppContext";
 import { useContext } from "react";
 
+function Icon({ tooltip, children, onClick }) {
+    return (
+        <Tooltip title={tooltip}>
+            <IconButton
+                onClick={(event) => {
+                    // Prevent the box click event from firing
+                    event.stopPropagation();
+                    onClick(event);
+                }}
+                size="small"
+            >
+                {children}
+            </IconButton>
+        </Tooltip>
+    );
+}
+
 export default function NoteVerseBox({ book, chapter, verse, endChapter, endVerse }) {
     const { getMultipleVerses } = useContext(AppContext);
+    function showVerse(book, chapter, verse, endChapter, endVerse) {
+        console.log("showing", book, chapter, verse, endChapter, endVerse);
+    } // will be imported form context
+
+    function previewVerse(book, chapter, verse, endChapter, endVerse) {
+        console.log("previewing", book, chapter, verse, endChapter, endVerse);
+    } // will be imported form context
+
     const verses = getMultipleVerses(book, chapter, verse, endChapter, endVerse);
     const range = versesToRangeText(verses);
 
-    const handleBoxClick = () => {
-        console.log("Box clicked");
+    const handleShow = () => {
+        showVerse(book, chapter, verse, endChapter, endVerse);
     };
 
-    const handleIconClick = (event, iconName) => {
-        // Prevent the box click event from firing
-        event.stopPropagation();
-        console.log(`${iconName} icon clicked`);
+    const handlePreview = () => {
+        previewVerse(book, chapter, verse, endChapter, endVerse);
+    };
+
+    const handleMoveUp = () => {
+        console.log("verse moved up in notes"); // will be imported form context
+    };
+
+    const handleMoveDown = () => {
+        console.log("verse moved up in notes"); // will be imported form context
+    };
+
+    const handleRemove = () => {
+        console.log("verse moved up in notes"); // will be imported form context
     };
 
     return (
         <Box
-            onClick={handleBoxClick}
+            onClick={handleShow}
             sx={{
                 border: "1px solid #ccc",
                 borderRadius: 2,
@@ -40,18 +75,18 @@ export default function NoteVerseBox({ book, chapter, verse, endChapter, endVers
             <Typography>{range[0]}</Typography>
 
             <Box>
-                <IconButton onClick={(e) => handleIconClick(e, "Home")} size="small">
+                <Icon tooltip={"Preview"} onClick={handlePreview}>
                     <Preview />
-                </IconButton>
-                <IconButton onClick={(e) => handleIconClick(e, "Settings")} size="small">
+                </Icon>
+                <Icon tooltip={"Move Up"} onClick={handleMoveUp}>
                     <ArrowUpward />
-                </IconButton>
-                <IconButton onClick={(e) => handleIconClick(e, "Settings")} size="small">
+                </Icon>
+                <Icon tooltip={"Move Down"} onClick={handleMoveDown}>
                     <ArrowDownward />
-                </IconButton>
-                <IconButton onClick={(e) => handleIconClick(e, "Settings")} size="small">
+                </Icon>
+                <Icon tooltip={"Remove"} onClick={handleRemove}>
                     <Close />
-                </IconButton>
+                </Icon>
             </Box>
         </Box>
     );
