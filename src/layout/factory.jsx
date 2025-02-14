@@ -4,6 +4,7 @@ import UserConfigs from "../appComponents/UserConfigs";
 import Help from "../appComponents/Help";
 import QuickLocate from "../appComponents/QuickLocate";
 import Projector from "../appComponents/Projector";
+import PreviewList from "../appComponents/PreviewList";
 
 const fullSize = { height: "100%", width: "100%" };
 
@@ -37,6 +38,12 @@ const Factory = (node) => {
         return (
             <div className="tab_content" style={fullSize}>
                 <Projector />
+            </div>
+        );
+    } else if (component === "preview") {
+        return (
+            <div className="tab_content" style={fullSize}>
+                <PreviewList />
             </div>
         );
     }

@@ -73,6 +73,13 @@ function App() {
         endChapter: null,
         endVerse: null,
     });
+    const [previewVerse, setPreviewVerse] = useState({
+        book: 43,
+        chapter: 3,
+        verse: 16,
+        endChapter: null,
+        endVerse: null,
+    });
 
     if (isMobile) {
         return <MobileSupportInfo />;
@@ -108,10 +115,12 @@ function App() {
                 setProjectorWindowPopped,
                 projectorDisplay,
                 setProjectorDisplay,
-                displayVerse,
-                setDisplayVerse,
                 getMultipleVerses,
                 getChapterVerses,
+                displayVerse,
+                setDisplayVerse,
+                previewVerse,
+                setPreviewVerse,
             }}
         >
             <DarkTheme dark={dark} highContrast={highContrast} />

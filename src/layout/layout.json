@@ -99,7 +99,7 @@
                     {
                         "type": "tab",
                         "name": "预览",
-                        "component": "placeholder"
+                        "component": "preview"
                     }
                 ]
             },
