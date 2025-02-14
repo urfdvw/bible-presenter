@@ -1,3 +1,9 @@
+import { compareLists } from "../utilFunctions/jsHelper";
+
+/**
+ * Version util
+ */
+
 export function getSelectedVersions(
     ChineseSimplifiedVersion,
     ChineseTraditionalVersion,
@@ -14,7 +20,11 @@ export function getSelectedVersions(
     }
 }
 
-export function verseExists(versions, book, chapter, verse) {
+/**
+ * Get verses from index
+ */
+
+export function _verseExists(versions, book, chapter, verse) {
     let badGivenVersePosition = true;
     for (let version of versions) {
         if (
@@ -28,14 +38,14 @@ export function verseExists(versions, book, chapter, verse) {
     return !badGivenVersePosition;
 }
 
-export function getVerseInVersion(version, book, chapter, verse) {
+export function _getVerseInVersion(version, book, chapter, verse) {
     const foundVerse = version.verses.filter((verseObj) => {
         return verseObj.book === book && verseObj.chapter === chapter && verseObj.verse === verse;
     });
     return foundVerse.length > 0 ? foundVerse[0] : null;
 }
 
-export function getVerseIndexInVersion(version, book, chapter, verse) {
+export function _getVerseIndexInVersion(version, book, chapter, verse) {
     const foundVerse = version.verses
         .map((verse, index) => {
             return { ...verse, index: index };
@@ -49,35 +59,6 @@ export function getVerseIndexInVersion(version, book, chapter, verse) {
         return foundVerse[0].index;
     }
 }
-/**
- * Compare two arrays (arr1, arr2) in a Python-like lexicographical manner.
- * Returns:
- *  -1 if arr1 < arr2
- *   0 if arr1 == arr2
- *   1 if arr1 > arr2
- */
-function compareLists(arr1, arr2) {
-    const len = Math.min(arr1.length, arr2.length);
-
-    for (let i = 0; i < len; i++) {
-        if (arr1[i] < arr2[i]) {
-            return -1;
-        }
-        if (arr1[i] > arr2[i]) {
-            return 1;
-        }
-        // if equal, move on to the next element
-    }
-
-    // If all compared elements are equal, then the shorter array is "less"
-    if (arr1.length < arr2.length) {
-        return -1;
-    }
-    if (arr1.length > arr2.length) {
-        return 1;
-    }
-    return 0; // same length and same elements
-}
 
 export function getMultipleVerses(versions, book, chapter, verse, endChapter, endVerse) {
     // auto fill
@@ -88,11 +69,11 @@ export function getMultipleVerses(versions, book, chapter, verse, endChapter, en
         endVerse = verse;
     }
     // verify
-    if (!verseExists(versions, book, chapter, verse)) {
+    if (!_verseExists(versions, book, chapter, verse)) {
         console.error("starting verse does not exist", [book, chapter, verse]);
         return [];
     }
-    if (!verseExists(versions, book, endChapter, endVerse)) {
+    if (!_verseExists(versions, book, endChapter, endVerse)) {
         console.error("ending verse does not exist", [book, endChapter, endVerse]);
         return [];
     }
@@ -103,7 +84,7 @@ export function getMultipleVerses(versions, book, chapter, verse, endChapter, en
     // get position list
     const verseUniquePositions = new Set();
     for (const version of versions) {
-        let index = getVerseIndexInVersion(version, book, chapter, verse);
+        let index = _getVerseIndexInVersion(version, book, chapter, verse);
         let verseObj = version.verses[index];
         while (compareLists([verseObj.chapter, verseObj.verse], [endChapter, endVerse]) <= 0) {
             verseUniquePositions.add(
@@ -119,9 +100,30 @@ export function getMultipleVerses(versions, book, chapter, verse, endChapter, en
     const versePositions = Array.from(verseUniquePositions).map((str) => JSON.parse(str));
     // get verses
     return versePositions.map((position) =>
-        versions.map((version) => getVerseInVersion(version, position.book, position.chapter, position.verse))
+        versions.map((version) => _getVerseInVersion(version, position.book, position.chapter, position.verse))
     );
 }
+
+export function _getChapterEndVerse(versions, book, chapter) {
+    return Math.max(
+        ...versions.map((version) =>
+            Math.max(
+                ...version.verses
+                    .filter((verseObj) => verseObj.book === book && verseObj.chapter === chapter)
+                    .map((verseObj) => verseObj.verse)
+            )
+        )
+    );
+}
+
+export function getChapterVerses(versions, book, chapter) {
+    const endVerse = _getChapterEndVerse(versions, book, chapter);
+    return getMultipleVerses(versions, book, chapter, 1, null, endVerse);
+}
+
+/**
+ * Get Expressions of Verses
+ */
 
 export function versesToRangeText(verses) {
     const returnRanges = [];
@@ -173,21 +175,4 @@ export function versesToParagraphsMD(verses) {
         returnParagraphs.push(paragraph);
     }
     return returnParagraphs;
-}
-
-export function getChapterEndVerse(versions, book, chapter) {
-    return Math.max(
-        ...versions.map((version) =>
-            Math.max(
-                ...version.verses
-                    .filter((verseObj) => verseObj.book === book && verseObj.chapter === chapter)
-                    .map((verseObj) => verseObj.verse)
-            )
-        )
-    );
-}
-
-export function getChapterVerses(versions, book, chapter) {
-    const endVerse = getChapterEndVerse(versions, book, chapter);
-    return getMultipleVerses(versions, book, chapter, 1, null, endVerse);
 }

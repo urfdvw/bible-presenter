@@ -1,12 +1,12 @@
 import {
     getSelectedVersions,
-    verseExists,
-    getVerseInVersion,
-    getVerseIndexInVersion,
+    _verseExists,
+    _getVerseInVersion,
+    _getVerseIndexInVersion,
     getMultipleVerses,
     versesToRangeText,
     versesToParagraphsMD,
-    getChapterEndVerse,
+    _getChapterEndVerse,
     getChapterVerses,
 } from "../bible/utils";
 
@@ -71,7 +71,7 @@ describe("Test getSelectedVersions", () => {
 describe("Test verseExists", () => {
     test("HE single version", () => {
         expect(
-            verseExists(
+            _verseExists(
                 [
                     {
                         verses: [
@@ -89,7 +89,7 @@ describe("Test verseExists", () => {
 
     test("BE single version", () => {
         expect(
-            verseExists(
+            _verseExists(
                 [
                     {
                         verses: [
@@ -107,7 +107,7 @@ describe("Test verseExists", () => {
 
     test("HE multiple version match all", () => {
         expect(
-            verseExists(
+            _verseExists(
                 [
                     {
                         verses: [
@@ -131,7 +131,7 @@ describe("Test verseExists", () => {
 
     test("HE multiple version match one", () => {
         expect(
-            verseExists(
+            _verseExists(
                 [
                     {
                         verses: [
@@ -155,7 +155,7 @@ describe("Test verseExists", () => {
 
     test("BE multiple version", () => {
         expect(
-            verseExists(
+            _verseExists(
                 [
                     {
                         verses: [
@@ -181,7 +181,7 @@ describe("Test verseExists", () => {
 describe("Test getVerseInVersion", () => {
     test("HE", () => {
         expect(
-            getVerseInVersion(
+            _getVerseInVersion(
                 {
                     verses: [
                         { book: 43, chapter: 3, verse: 16, text: "43, 3, 16" },
@@ -197,7 +197,7 @@ describe("Test getVerseInVersion", () => {
 
     test("BE", () => {
         expect(
-            getVerseInVersion(
+            _getVerseInVersion(
                 {
                     verses: [
                         { book: 43, chapter: 3, verse: 16, text: "43, 3, 16" },
@@ -215,7 +215,7 @@ describe("Test getVerseInVersion", () => {
 describe("Test getVerseInVersion", () => {
     test("HE", () => {
         expect(
-            getVerseIndexInVersion(
+            _getVerseIndexInVersion(
                 {
                     verses: [
                         { book: 43, chapter: 3, verse: 15, text: "43, 3, 15" },
@@ -232,7 +232,7 @@ describe("Test getVerseInVersion", () => {
 
     test("BE", () => {
         expect(
-            getVerseIndexInVersion(
+            _getVerseIndexInVersion(
                 {
                     verses: [
                         { book: 43, chapter: 3, verse: 15, text: "43, 3, 15" },
@@ -564,17 +564,17 @@ describe("Test getChapterEndVerse, getChapterVerses", () => {
     };
 
     test("single version, find end", () => {
-        expect(getChapterEndVerse([version1], 1, 1)).toBe(6);
-        expect(getChapterEndVerse([version1], 1, 2)).toBe(4);
+        expect(_getChapterEndVerse([version1], 1, 1)).toBe(6);
+        expect(_getChapterEndVerse([version1], 1, 2)).toBe(4);
     });
 
     test("multiple version, find end", () => {
-        expect(getChapterEndVerse([version1, version2], 1, 1)).toBe(6);
-        expect(getChapterEndVerse([version1, version2], 1, 2)).toBe(4);
+        expect(_getChapterEndVerse([version1, version2], 1, 1)).toBe(6);
+        expect(_getChapterEndVerse([version1, version2], 1, 2)).toBe(4);
     });
 
     test("real version, find end", () => {
-        expect(getChapterEndVerse([Bible.cuvs, Bible.asv], 43, 3)).toBe(36);
+        expect(_getChapterEndVerse([Bible.cuvs, Bible.asv], 43, 3)).toBe(36);
     });
 
     test("single version, get chapter verses", () => {
