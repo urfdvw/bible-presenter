@@ -25,8 +25,8 @@
                     "name": "圣经目录",
                     "altName": "(M)圣经目录",
                     "helpText": "圣经目录",
-                    "id": "bible_menu_tab",
-                    "component": "placeholder",
+                    "id": "bible_toc_tab",
+                    "component": "table_of_contents",
                     "enableClose": false
                 },
                 {
