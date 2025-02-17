@@ -78,8 +78,12 @@ export function getMultipleVerses(versions, book, chapter, verse, endChapter, en
         return [];
     }
     if (compareLists([chapter, verse], [endChapter, endVerse]) > 0) {
-        console.error("starting verse should locate before ending verse");
-        return [];
+        var cup = chapter;
+        chapter = endChapter;
+        endChapter = cup;
+        cup = verse;
+        verse = endVerse;
+        endVerse = cup;
     }
     // get position list
     const verseUniquePositions = new Set();

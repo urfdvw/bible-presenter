@@ -38,9 +38,9 @@ const verseBoxStyle = {
     cursor: "pointer",
 };
 
-const selectedVerseBoxStyle = { ...verseBoxStyle, border: "2px solid #700000", background: "#FFF0F0" };
+const highlightedVerseBoxStyle = { ...verseBoxStyle, border: "2px solid #700000", background: "#FFF0F0" };
 
-export function PreviewVerseBox({ book, chapter, verse, selected }) {
+export function PreviewVerseBox({ book, chapter, verse, highlighted, selected, setSelected }) {
     const { getMultipleVerses, setDisplayVerse, setHistory } = useContext(AppContext);
 
     function addToNote(book, chapter, verse, endChapter, endVerse) {
@@ -51,13 +51,22 @@ export function PreviewVerseBox({ book, chapter, verse, selected }) {
     const mdText = versesToParagraphsMD(verses).join("\n\n");
 
     const handleShow = () => {
-        const verseObj = {
+        var verseObj = {
             book: book,
             chapter: chapter,
             verse: verse,
             endChapter: null,
             endVerse: null,
         };
+
+        if (selected) {
+            setSelected(null);
+            if (selected.book === book) {
+                verseObj.endChapter = selected.chapter;
+                verseObj.endVerse = selected.verse;
+            }
+        }
+
         setDisplayVerse(verseObj);
         setHistory((history) => removeAllDuplicatesKeepLast([...history, verseObj]));
     };
@@ -68,10 +77,19 @@ export function PreviewVerseBox({ book, chapter, verse, selected }) {
 
     const handleSelect = () => {
         console.log("selecting multiple");
+        if (selected) {
+            setSelected(null);
+        } else {
+            setSelected({
+                book: book,
+                chapter: chapter,
+                verse: verse,
+            });
+        }
     };
 
     return (
-        <Box onClick={handleShow} sx={selected ? selectedVerseBoxStyle : verseBoxStyle}>
+        <Box onClick={handleShow} sx={highlighted ? highlightedVerseBoxStyle : verseBoxStyle}>
             <Typography sx={{ paddingRight: 1, flexShrink: 0 }}>{verse}</Typography>
             <div style={{ flexGrow: 1 }}>
                 <MarkdownExtended>{mdText}</MarkdownExtended>
@@ -89,7 +107,7 @@ export function PreviewVerseBox({ book, chapter, verse, selected }) {
     );
 }
 
-export function HistoryVerseBox({ book, chapter, verse, endChapter, endVerse, selected }) {
+export function HistoryVerseBox({ book, chapter, verse, endChapter, endVerse, highlighted }) {
     const { getMultipleVerses, setDisplayVerse, setPreviewVerse, setHistory } = useContext(AppContext);
     function addToNote(book, chapter, verse) {
         console.log("adding to note", book, chapter, verse);
@@ -142,7 +160,7 @@ export function HistoryVerseBox({ book, chapter, verse, endChapter, endVerse, se
     };
 
     return (
-        <Box onClick={handleShow} sx={selected ? selectedVerseBoxStyle : verseBoxStyle}>
+        <Box onClick={handleShow} sx={highlighted ? highlightedVerseBoxStyle : verseBoxStyle}>
             <Typography sx={{ flexGrow: 1 }}>{range[0]}</Typography>
 
             <Box sx={{ flexShrink: 0 }}>
@@ -160,7 +178,7 @@ export function HistoryVerseBox({ book, chapter, verse, endChapter, endVerse, se
     );
 }
 
-export function NoteVerseBox({ book, chapter, verse, endChapter, endVerse, selected }) {
+export function NoteVerseBox({ book, chapter, verse, endChapter, endVerse, highlighted }) {
     const { getMultipleVerses, setDisplayVerse } = useContext(AppContext);
 
     function previewVerse(book, chapter, verse, endChapter, endVerse) {
@@ -197,7 +215,7 @@ export function NoteVerseBox({ book, chapter, verse, endChapter, endVerse, selec
     };
 
     return (
-        <Box onClick={handleShow} sx={selected ? selectedVerseBoxStyle : verseBoxStyle}>
+        <Box onClick={handleShow} sx={highlighted ? highlightedVerseBoxStyle : verseBoxStyle}>
             <Typography sx={{ flexGrow: 1 }}>{range[0]}</Typography>
 
             <Box sx={{ flexShrink: 0 }}>

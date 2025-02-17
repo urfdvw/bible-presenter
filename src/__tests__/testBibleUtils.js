@@ -421,7 +421,7 @@ describe("Test getMultipleVerses", () => {
         ).toStrictEqual([]);
     });
 
-    test("BE, starting verse after ending verse", () => {
+    test("HE, starting verse after ending verse", () => {
         expect(
             getMultipleVerses(
                 [
@@ -440,7 +440,11 @@ describe("Test getMultipleVerses", () => {
                 3,
                 16
             )
-        ).toStrictEqual([]);
+        ).toStrictEqual([
+            [{ book: 43, chapter: 3, verse: 16 }],
+            [{ book: 43, chapter: 3, verse: 17 }],
+            [{ book: 43, chapter: 3, verse: 18 }],
+        ]);
     });
 });
 

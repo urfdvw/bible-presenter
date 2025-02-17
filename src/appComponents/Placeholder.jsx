@@ -18,11 +18,11 @@ export default function Placeholder({ node }) {
             <br />
 
             <NoteVerseBox book={43} chapter={3} verse={16} endVerse={18}></NoteVerseBox>
-            <NoteVerseBox book={43} chapter={3} verse={16} endVerse={18} selected={true}></NoteVerseBox>
+            <NoteVerseBox book={43} chapter={3} verse={16} endVerse={18} highlighted={true}></NoteVerseBox>
             <HistoryVerseBox book={43} chapter={3} verse={16} endVerse={18}></HistoryVerseBox>
-            <HistoryVerseBox book={43} chapter={3} verse={16} endVerse={18} selected={true}></HistoryVerseBox>
+            <HistoryVerseBox book={43} chapter={3} verse={16} endVerse={18} highlighted={true}></HistoryVerseBox>
             <PreviewVerseBox book={43} chapter={3} verse={16}></PreviewVerseBox>
-            <PreviewVerseBox book={43} chapter={3} verse={17} selected={true}></PreviewVerseBox>
+            <PreviewVerseBox book={43} chapter={3} verse={17} highlighted={true}></PreviewVerseBox>
         </div>
     );
 }
