@@ -4,7 +4,7 @@ import { useContext, useState } from "react";
 import AppContext from "../AppContext";
 import { sortAndUnique } from "../utilFunctions/jsHelper";
 
-const FourFixedColumns = ({ stringPairs, setBook }) => {
+const FourFixedColumns = ({ stringPairs, onClick }) => {
     return (
         <Grid
             container
@@ -15,7 +15,7 @@ const FourFixedColumns = ({ stringPairs, setBook }) => {
                 // Each item occupies 1 out of the 4 columns
                 <Grid item xs={1} key={index}>
                     <Box
-                        onClick={() => setBook(pair[2])}
+                        onClick={() => onClick(pair[2])}
                         sx={{
                             border: "1px solid #ccc",
                             borderRadius: "8px",
@@ -54,7 +54,9 @@ const FiveFixedColumns = ({ strings, onClick }) => {
                 // Each item occupies 1 out of the 5 columns
                 <Grid item xs={1} key={index}>
                     <Box
-                        onClick={onClick}
+                        onClick={() => {
+                            onClick(string);
+                        }}
                         sx={{
                             border: "1px solid #ccc",
                             borderRadius: "8px",
@@ -79,7 +81,7 @@ const FiveFixedColumns = ({ strings, onClick }) => {
 };
 
 export default function TableOfContents() {
-    const { appConfig, getSelectedVersions } = useContext(AppContext);
+    const { appConfig, getSelectedVersions, setPreviewVerse } = useContext(AppContext);
     const [book, setBook] = useState(1);
 
     const chinese = appConfig.config.bible_display.chinese === "简体" ? "si" : "tr";
@@ -91,6 +93,15 @@ export default function TableOfContents() {
     const chapters = sortAndUnique(
         versions[0].verses.filter((verseObj) => verseObj.book === book).map((verseObj) => verseObj.chapter)
     );
+    const bookName = versions[0].verses.filter((verseObj) => verseObj.book === book)[0].book_name;
+
+    function setChapter(chapter) {
+        setPreviewVerse({
+            book: book,
+            chapter: chapter,
+            verse: 1,
+        });
+    }
 
     return (
         <Box
@@ -108,9 +119,9 @@ export default function TableOfContents() {
                     p: 2,
                 }}
             >
-                <FourFixedColumns stringPairs={bookNameAbbreviations.slice(0, 38)} setBook={setBook} />
+                <FourFixedColumns stringPairs={bookNameAbbreviations.slice(0, 38)} onClick={setBook} />
                 <br></br>
-                <FourFixedColumns stringPairs={bookNameAbbreviations.slice(39)} setBook={setBook} />
+                <FourFixedColumns stringPairs={bookNameAbbreviations.slice(39)} onClick={setBook} />
             </Box>
             <Box
                 sx={{
@@ -120,7 +131,10 @@ export default function TableOfContents() {
                     p: 2,
                 }}
             >
-                <FiveFixedColumns strings={chapters} />
+                <Typography variant="h6" component="div">
+                    {bookName}
+                </Typography>
+                <FiveFixedColumns strings={chapters} onClick={setChapter} />
             </Box>
         </Box>
     );
