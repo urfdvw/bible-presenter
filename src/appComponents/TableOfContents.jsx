@@ -4,18 +4,18 @@ import { useContext, useState } from "react";
 import AppContext from "../AppContext";
 import { sortAndUnique } from "../utilFunctions/jsHelper";
 
-const FourFixedColumns = ({ stringPairs, onClick }) => {
+const FourFixedColumns = ({ books, onClick }) => {
     return (
         <Grid
             container
             columns={4} // We explicitly define 4 total columns
             sx={{ width: "100%" }}
         >
-            {stringPairs.map((pair, index) => (
+            {books.map((book, index) => (
                 // Each item occupies 1 out of the 4 columns
                 <Grid item xs={1} key={index}>
                     <Box
-                        onClick={() => onClick(pair[2])}
+                        onClick={() => onClick(book.index)}
                         sx={{
                             border: "1px solid #ccc",
                             borderRadius: "8px",
@@ -31,11 +31,11 @@ const FourFixedColumns = ({ stringPairs, onClick }) => {
                     >
                         {/* First of pair: larger text */}
                         <Typography variant="h6" component="div">
-                            {pair[0]}
+                            {book.cn}
                         </Typography>
                         {/* Second of pair: smaller text */}
                         <Typography variant="body2" component="div">
-                            {pair[1]}
+                            {book.en}
                         </Typography>
                     </Box>
                 </Grid>
@@ -43,19 +43,19 @@ const FourFixedColumns = ({ stringPairs, onClick }) => {
         </Grid>
     );
 };
-const FiveFixedColumns = ({ strings, onClick }) => {
+const FiveFixedColumns = ({ chapters, onClick }) => {
     return (
         <Grid
             container
             columns={5} // We explicitly define 5 total columns
             sx={{ width: "100%" }}
         >
-            {strings.map((string, index) => (
+            {chapters.map((chapter, index) => (
                 // Each item occupies 1 out of the 5 columns
                 <Grid item xs={1} key={index}>
                     <Box
                         onClick={() => {
-                            onClick(string);
+                            onClick(chapter);
                         }}
                         sx={{
                             border: "1px solid #ccc",
@@ -71,7 +71,7 @@ const FiveFixedColumns = ({ strings, onClick }) => {
                         }}
                     >
                         <Typography variant="body2" component="div">
-                            {string}
+                            {chapter}
                         </Typography>
                     </Box>
                 </Grid>
@@ -87,7 +87,11 @@ export default function TableOfContents() {
     const chinese = appConfig.config.bible_display.chinese === "简体" ? "si" : "tr";
     const bookNameAbbreviations = [];
     for (var i = 1; i <= 66; i++) {
-        bookNameAbbreviations.push([abbreviations[i][chinese], abbreviations[i]["en"], i]);
+        bookNameAbbreviations.push({
+            cn: abbreviations[i][chinese],
+            en: abbreviations[i]["en"],
+            index: i,
+        });
     }
     const versions = getSelectedVersions();
     const chapters = sortAndUnique(
@@ -119,22 +123,23 @@ export default function TableOfContents() {
                     p: 2,
                 }}
             >
-                <FourFixedColumns stringPairs={bookNameAbbreviations.slice(0, 38)} onClick={setBook} />
+                <FourFixedColumns books={bookNameAbbreviations.slice(0, 38)} onClick={setBook} />
                 <br></br>
-                <FourFixedColumns stringPairs={bookNameAbbreviations.slice(39)} onClick={setBook} />
+                <FourFixedColumns books={bookNameAbbreviations.slice(39)} onClick={setBook} />
             </Box>
             <Box
                 sx={{
                     maxHeight: "50%",
                     overflow: "auto", // Allows scrolling if content exceeds 50% height
-                    backgroundColor: "grey.300", // Demo styling
+                    backgroundColor: "grey.100", // Demo styling
+                    borderTop: "solid 1px",
                     p: 2,
                 }}
             >
                 <Typography variant="h6" component="div">
                     {bookName}
                 </Typography>
-                <FiveFixedColumns strings={chapters} onClick={setChapter} />
+                <FiveFixedColumns chapters={chapters} onClick={setChapter} />
             </Box>
         </Box>
     );
