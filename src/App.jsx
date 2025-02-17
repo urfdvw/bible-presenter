@@ -82,6 +82,16 @@ function App() {
         endChapter: null,
         endVerse: null,
     });
+    // history
+    const [history, setHistory] = useState([
+        {
+            book: 43,
+            chapter: 3,
+            verse: 16,
+            endChapter: null,
+            endVerse: null,
+        },
+    ]);
 
     if (isMobile) {
         return <MobileSupportInfo />;
@@ -124,6 +134,8 @@ function App() {
                 setDisplayVerse,
                 previewVerse,
                 setPreviewVerse,
+                history,
+                setHistory,
             }}
         >
             <DarkTheme dark={dark} highContrast={highContrast} />

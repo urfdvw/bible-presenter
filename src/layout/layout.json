@@ -44,7 +44,7 @@
                     "altName": "(H)投影历史",
                     "helpText": "投影历史",
                     "id": "history_tab",
-                    "component": "placeholder",
+                    "component": "history",
                     "enableClose": false
                 }
             ]

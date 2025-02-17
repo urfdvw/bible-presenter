@@ -9,6 +9,8 @@ import MarkdownExtended from "../utilComponents/MarkdownExtended";
 import AppContext from "../AppContext";
 import { useContext } from "react";
 
+import { removeAllDuplicatesKeepLast } from "../utilFunctions/jsHelper";
+
 function Icon({ tooltip, children, onClick }) {
     return (
         <Tooltip title={tooltip}>
@@ -39,7 +41,7 @@ const verseBoxStyle = {
 const selectedVerseBoxStyle = { ...verseBoxStyle, border: "2px solid #700000", background: "#FFF0F0" };
 
 export function PreviewVerseBox({ book, chapter, verse, selected }) {
-    const { getMultipleVerses, setDisplayVerse } = useContext(AppContext);
+    const { getMultipleVerses, setDisplayVerse, setHistory } = useContext(AppContext);
 
     function addToNote(book, chapter, verse, endChapter, endVerse) {
         console.log("adding to note", book, chapter, verse, endChapter, endVerse);
@@ -49,13 +51,15 @@ export function PreviewVerseBox({ book, chapter, verse, selected }) {
     const mdText = versesToParagraphsMD(verses).join("\n\n");
 
     const handleShow = () => {
-        setDisplayVerse({
+        const verseObj = {
             book: book,
             chapter: chapter,
             verse: verse,
             endChapter: null,
             endVerse: null,
-        });
+        };
+        setDisplayVerse(verseObj);
+        setHistory((history) => removeAllDuplicatesKeepLast([...history, verseObj]));
     };
 
     const handleAddToNote = () => {
@@ -86,20 +90,28 @@ export function PreviewVerseBox({ book, chapter, verse, selected }) {
 }
 
 export function HistoryVerseBox({ book, chapter, verse, endChapter, endVerse, selected }) {
-    const { getMultipleVerses, setDisplayVerse } = useContext(AppContext);
+    const { getMultipleVerses, setDisplayVerse, setPreviewVerse, setHistory } = useContext(AppContext);
     function addToNote(book, chapter, verse) {
         console.log("adding to note", book, chapter, verse);
-    } // will be imported form context
-
-    function previewVerse(book, chapter, verse, endChapter, endVerse) {
-        console.log("previewing", book, chapter, verse, endChapter, endVerse);
     } // will be imported form context
 
     const verses = getMultipleVerses(book, chapter, verse, endChapter, endVerse);
     const range = versesToRangeText(verses);
 
     const handleShow = () => {
-        setDisplayVerse({
+        const verseObj = {
+            book: book,
+            chapter: chapter,
+            verse: verse,
+            endChapter: null,
+            endVerse: null,
+        };
+        setDisplayVerse(verseObj);
+        setHistory((history) => removeAllDuplicatesKeepLast([...history, verseObj]));
+    };
+
+    const handlePreview = () => {
+        setPreviewVerse({
             book: book,
             chapter: chapter,
             verse: verse,
@@ -108,16 +120,25 @@ export function HistoryVerseBox({ book, chapter, verse, endChapter, endVerse, se
         });
     };
 
-    const handlePreview = () => {
-        previewVerse(book, chapter, verse, endChapter, endVerse);
-    };
-
     const handleAddToNote = () => {
         addToNote(book, chapter, verse);
     };
 
     const handleRemove = () => {
         console.log("verse moved up in notes"); // will be imported form context
+
+        setHistory((history) =>
+            history.filter(
+                (item) =>
+                    !(
+                        item.book === book &&
+                        item.chapter === chapter &&
+                        item.verse === verse &&
+                        item.endChapter === endChapter &&
+                        item.endVerse === endVerse
+                    )
+            )
+        );
     };
 
     return (

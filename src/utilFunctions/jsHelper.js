@@ -36,3 +36,27 @@ export function sortAndUnique(array) {
         return 0;
     });
 }
+
+export function removeAllDuplicatesKeepLast(data) {
+    // A helper to generate a unique key for each object
+    const getKey = (obj) => `${obj.book}:${obj.chapter}:${obj.verse}:${obj.endChapter}:${obj.endVerse}`;
+
+    const seen = new Set();
+    const result = [];
+
+    // Loop from end to start
+    for (let i = data.length - 1; i >= 0; i--) {
+        const item = data[i];
+        const key = getKey(item);
+
+        // If we haven't seen this exact object shape yet,
+        // add it to the result and mark as seen
+        if (!seen.has(key)) {
+            seen.add(key);
+            result.push(item);
+        }
+    }
+
+    // The result is in reverse order, so reverse it back
+    return result.reverse();
+}
