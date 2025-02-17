@@ -3,8 +3,9 @@ import { useContext, useEffect } from "react";
 import { PreviewVerseBox } from "./VerseBox";
 import { scroller, Element } from "react-scroll";
 import { Typography } from "@mui/material";
+import TabToolBar from "../utilComponents/TabToolBar";
 
-export default function PreviewList() {
+function PreviewList() {
     const { getChapterVerses, previewVerse } = useContext(AppContext);
     const verses = getChapterVerses(previewVerse.book, previewVerse.chapter);
 
@@ -12,7 +13,7 @@ export default function PreviewList() {
         if (!previewVerse.verse) {
             return;
         }
-        const targetName = previewVerse.verse === 1 ? "title" : `preview-verse-${previewVerse.verse}`;
+        const targetName = `preview-verse-${previewVerse.verse}`;
         scroller.scrollTo(targetName, {
             duration: 800,
             delay: 0,
@@ -22,11 +23,6 @@ export default function PreviewList() {
     }, [previewVerse]);
     return (
         <div id="previewContainer" style={{ height: "100%", overflowY: "auto" }}>
-            <Element name={"title"}>
-                <Typography variant="h6" component="div">
-                    {`${verses[0][0].book_name} ${verses[0][0].chapter}`}
-                </Typography>
-            </Element>
             {verses.map((verseVersions) => {
                 return (
                     <Element key={verseVersions[0].verse} name={`preview-verse-${verseVersions[0].verse}`}>
@@ -38,6 +34,19 @@ export default function PreviewList() {
                     </Element>
                 );
             })}
+        </div>
+    );
+}
+
+export default function Preview() {
+    const { getChapterVerses, previewVerse } = useContext(AppContext);
+    const verses = getChapterVerses(previewVerse.book, previewVerse.chapter);
+    return (
+        <div style={{ display: "flex", height: "100%", flexDirection: "column" }}>
+            <div style={{ flexGrow: 0 }}>
+                <TabToolBar title={`${verses[0][0].book_name} ${verses[0][0].chapter}`} tools={[]} />
+            </div>
+            <PreviewList />
         </div>
     );
 }

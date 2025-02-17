@@ -4,7 +4,7 @@ import UserConfigs from "../appComponents/UserConfigs";
 import Help from "../appComponents/Help";
 import QuickLocate from "../appComponents/QuickLocate";
 import Projector from "../appComponents/Projector";
-import PreviewList from "../appComponents/PreviewList";
+import Preview from "../appComponents/Preview";
 import TableOfContents from "../appComponents/TableOfContents";
 
 const fullSize = { height: "100%", width: "100%" };
@@ -44,7 +44,7 @@ const Factory = (node) => {
     } else if (component === "preview") {
         return (
             <div className="tab_content" style={fullSize}>
-                <PreviewList />
+                <Preview />
             </div>
         );
     } else if (component === "table_of_contents") {
