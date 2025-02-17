@@ -27,3 +27,12 @@ export function compareLists(arr1, arr2) {
     }
     return 0; // same length and same elements
 }
+
+export function sortAndUnique(array) {
+    // Use Set to remove duplicates, then spread into an array and sort
+    return [...new Set(array)].sort((a, b) => {
+        if (a < b) return -1;
+        if (a > b) return 1;
+        return 0;
+    });
+}

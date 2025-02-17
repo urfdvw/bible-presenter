@@ -59,7 +59,7 @@ function App() {
     const [projectorWindowPopped, setProjectorWindowPopped] = useState(false);
     const [projectorDisplay, setProjectorDisplay] = useState(true);
     // Bible Data
-    const { getMultipleVerses, getChapterVerses } = useBibleData(
+    const { getMultipleVerses, getChapterVerses, getSelectedVersions } = useBibleData(
         Bible.cuvs,
         Bible.cuvt,
         Bible.asv,
@@ -115,6 +115,7 @@ function App() {
                 setProjectorWindowPopped,
                 projectorDisplay,
                 setProjectorDisplay,
+                getSelectedVersions,
                 getMultipleVerses,
                 getChapterVerses,
                 displayVerse,
