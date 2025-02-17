@@ -20,6 +20,7 @@ import { useTabValueName } from "./utilComponents/TabedPages";
 import docs from "./docs";
 // hot keys
 import useLayoutHotKeys from "./hotKeys/useLayoutHotKeys";
+import useDisplayHotKeys from "./hotKeys/useDisplayHotKeys";
 // theme
 import DarkTheme from "react-lazy-dark-theme";
 // channel
@@ -50,6 +51,7 @@ function App() {
     }, [helpTabSelection]);
     // hot keys
     useLayoutHotKeys(flexModel);
+    useDisplayHotKeys(appConfig);
     // channel
     const { showDevFeatures, showBetaFeatures } = useChannel();
     useEffect(() => {
