@@ -77,7 +77,7 @@ export function getMultipleVerses(versions, book, chapter, verse, endChapter, en
         console.error("ending verse does not exist", [book, endChapter, endVerse]);
         return [];
     }
-    if ([chapter, verse] > [endChapter, endVerse]) {
+    if (compareLists([chapter, verse], [endChapter, endVerse]) > 0) {
         console.error("starting verse should locate before ending verse");
         return [];
     }
@@ -86,7 +86,10 @@ export function getMultipleVerses(versions, book, chapter, verse, endChapter, en
     for (const version of versions) {
         let index = _getVerseIndexInVersion(version, book, chapter, verse);
         let verseObj = version.verses[index];
-        while (compareLists([verseObj.chapter, verseObj.verse], [endChapter, endVerse]) <= 0) {
+        while (
+            verseObj.book === book &&
+            compareLists([verseObj.chapter, verseObj.verse], [endChapter, endVerse]) <= 0
+        ) {
             verseUniquePositions.add(
                 JSON.stringify({ book: verseObj.book, chapter: verseObj.chapter, verse: verseObj.verse })
             );

@@ -548,6 +548,16 @@ describe("Test getChapterEndVerse, getChapterVerses", () => {
             { book: 1, chapter: 2, verse: 2, text: "version1" },
             { book: 1, chapter: 2, verse: 3, text: "version1" },
             { book: 1, chapter: 2, verse: 4, text: "version1" },
+            { book: 2, chapter: 1, verse: 1, text: "version1" },
+            { book: 2, chapter: 1, verse: 2, text: "version1" },
+            { book: 2, chapter: 1, verse: 3, text: "version1" },
+            { book: 2, chapter: 1, verse: 4, text: "version1" },
+            { book: 2, chapter: 1, verse: 5, text: "version1" },
+            { book: 2, chapter: 1, verse: 6, text: "version1" },
+            { book: 2, chapter: 2, verse: 1, text: "version1" },
+            { book: 2, chapter: 2, verse: 2, text: "version1" },
+            { book: 2, chapter: 2, verse: 3, text: "version1" },
+            { book: 2, chapter: 2, verse: 4, text: "version1" },
         ],
     };
     const version2 = {
@@ -560,6 +570,16 @@ describe("Test getChapterEndVerse, getChapterVerses", () => {
             { book: 1, chapter: 2, verse: 1, text: "version2" },
             { book: 1, chapter: 2, verse: 2, text: "version2" },
             { book: 1, chapter: 2, verse: 4, text: "version2" },
+            { book: 2, chapter: 1, verse: 1, text: "version2" },
+            { book: 2, chapter: 1, verse: 2, text: "version2" },
+            { book: 2, chapter: 1, verse: 3, text: "version2" },
+            { book: 2, chapter: 1, verse: 4, text: "version2" },
+            { book: 2, chapter: 1, verse: 5, text: "version2" },
+            { book: 2, chapter: 1, verse: 6, text: "version2" },
+            { book: 2, chapter: 2, verse: 1, text: "version2" },
+            { book: 2, chapter: 2, verse: 2, text: "version2" },
+            { book: 2, chapter: 2, verse: 3, text: "version2" },
+            { book: 2, chapter: 2, verse: 4, text: "version2" },
         ],
     };
 
