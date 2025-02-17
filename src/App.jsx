@@ -89,7 +89,7 @@ function App() {
             chapter: 3,
             verse: 16,
             endChapter: null,
-            endVerse: null,
+            endVerse: 18,
         },
     ]);
 

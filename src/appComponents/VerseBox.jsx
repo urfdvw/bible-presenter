@@ -103,11 +103,11 @@ export function HistoryVerseBox({ book, chapter, verse, endChapter, endVerse, se
             book: book,
             chapter: chapter,
             verse: verse,
-            endChapter: null,
-            endVerse: null,
+            endChapter: endChapter,
+            endVerse: endVerse,
         };
         setDisplayVerse(verseObj);
-        setHistory((history) => removeAllDuplicatesKeepLast([...history, verseObj]));
+        // setHistory((history) => removeAllDuplicatesKeepLast([...history, verseObj]));
     };
 
     const handlePreview = () => {
