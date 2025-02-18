@@ -41,7 +41,7 @@ const verseBoxStyle = {
 const highlightedVerseBoxStyle = { ...verseBoxStyle, border: "2px solid #700000", background: "#FFF0F0" };
 
 export function PreviewVerseBox({ book, chapter, verse, highlighted, selected, setSelected }) {
-    const { getMultipleVerses, setDisplayVerse, setHistory } = useContext(AppContext);
+    const { getMultipleVerses, setDisplayVerse, setHistory, setNoteList } = useContext(AppContext);
 
     function addToNote(book, chapter, verse, endChapter, endVerse) {
         console.log("adding to note", book, chapter, verse, endChapter, endVerse);
@@ -189,27 +189,30 @@ export function HistoryVerseBox({ book, chapter, verse, endChapter, endVerse, hi
 }
 
 export function NoteVerseBox({ book, chapter, verse, endChapter, endVerse, boxIndex, highlighted }) {
-    const { getMultipleVerses, setDisplayVerse, noteList, setNoteList } = useContext(AppContext);
-
-    function previewVerse(book, chapter, verse, endChapter, endVerse) {
-        console.log("previewing", book, chapter, verse, endChapter, endVerse);
-    } // will be imported form context
-
+    const { getMultipleVerses, setDisplayVerse, noteList, setNoteList, setPreviewVerse } = useContext(AppContext);
     const verses = getMultipleVerses(book, chapter, verse, endChapter, endVerse);
     const range = versesToRangeText(verses);
 
     const handleShow = () => {
-        setDisplayVerse({
+        const verseObj = {
+            book: book,
+            chapter: chapter,
+            verse: verse,
+            endChapter: endChapter,
+            endVerse: endVerse,
+        };
+        setDisplayVerse(verseObj);
+        // setHistory((history) => removeAllDuplicatesKeepLast([...history, verseObj]));
+    };
+
+    const handlePreview = () => {
+        setPreviewVerse({
             book: book,
             chapter: chapter,
             verse: verse,
             endChapter: endChapter,
             endVerse: endVerse,
         });
-    };
-
-    const handlePreview = () => {
-        previewVerse(book, chapter, verse, endChapter, endVerse);
     };
 
     const handleMoveUp = () => {
