@@ -9,7 +9,7 @@ import MarkdownExtended from "../utilComponents/MarkdownExtended";
 import AppContext from "../AppContext";
 import { useContext } from "react";
 
-import { removeAllDuplicatesKeepLast } from "../utilFunctions/jsHelper";
+import { compareLists, removeAllDuplicatesKeepLast } from "../utilFunctions/jsHelper";
 
 function Icon({ tooltip, children, onClick }) {
     return (
@@ -62,8 +62,18 @@ export function PreviewVerseBox({ book, chapter, verse, highlighted, selected, s
         if (selected) {
             setSelected(null);
             if (selected.book === book) {
-                verseObj.endChapter = selected.chapter;
-                verseObj.endVerse = selected.verse;
+                if (compareLists([selected.chapter, selected.verse], [chapter, verse]) > 0) {
+                    verseObj.endChapter = selected.chapter;
+                    verseObj.endVerse = selected.verse;
+                } else {
+                    verseObj = {
+                        book: book,
+                        chapter: selected.chapter,
+                        verse: selected.verse,
+                        endChapter: chapter,
+                        endVerse: verse,
+                    };
+                }
             }
         }
 

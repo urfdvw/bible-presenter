@@ -55,7 +55,7 @@ function PreviewList({ selected, setSelected }) {
 
 export default function Preview() {
     const [selected, setSelected] = useState(null);
-    const { getChapterVerses, previewVerse, getMultipleVerses } = useContext(AppContext);
+    const { getChapterVerses, previewVerse, setPreviewVerse, getMultipleVerses } = useContext(AppContext);
     const verses = getChapterVerses(previewVerse.book, previewVerse.chapter);
     const notificationHeight = selected ? "5em" : "0em";
 
@@ -64,15 +64,53 @@ export default function Preview() {
     const notification = selectedVerseObj
         ? `已选中 ${selectedVerseObj[0][0].book_name} ${selectedVerseObj[0][0].chapter}:${selectedVerseObj[0][0].verse}`
         : "暂无选中章节";
-    console.log(notification, selectedVerseObj);
+
+    const tools = [
+        {
+            text: "上一章",
+            handler: () => {
+                if (previewVerse.chapter === 1) {
+                    console.log("没有上一章了");
+                    return;
+                }
+                console.log("上一章");
+                setPreviewVerse({
+                    book: previewVerse.book,
+                    chapter: previewVerse.chapter - 1,
+                    verse: 1,
+                });
+            },
+        },
+        {
+            text: "下一章",
+            handler: () => {
+                const testVerse = getMultipleVerses(previewVerse.book, previewVerse.chapter + 1, 1);
+                if (testVerse.length === 0) {
+                    console.log("没有下一章了");
+                    return;
+                }
+                console.log("下一章");
+                setPreviewVerse({
+                    book: previewVerse.book,
+                    chapter: previewVerse.chapter + 1,
+                    verse: 1,
+                });
+            },
+        },
+    ];
     return (
         <div style={{ display: "flex", height: "100%", flexDirection: "column" }}>
             <div style={{ flexGrow: 0 }}>
-                <TabToolBar title={`${verses[0][0].book_name} ${verses[0][0].chapter}`} tools={[]} />
+                <TabToolBar title={`${verses[0][0].book_name} ${verses[0][0].chapter}`} tools={tools} />
             </div>
             <PreviewList selected={selected} setSelected={setSelected} />
             <Typography
-                sx={{ flexGrow: 0, transition: "max-height 1s ease", maxHeight: notificationHeight }}
+                sx={{
+                    flexGrow: 0,
+                    transition: "max-height 1s ease",
+                    overflowY: "hidden",
+                    maxHeight: notificationHeight,
+                }}
                 component={"div"}
             >
                 {notification}
