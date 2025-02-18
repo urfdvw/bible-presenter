@@ -2,13 +2,12 @@ import AppContext from "../AppContext";
 import { useContext, useEffect, useState } from "react";
 import { PreviewVerseBox } from "./VerseBox";
 import { scroller, Element } from "react-scroll";
-import { Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import TabToolBar from "../utilComponents/TabToolBar";
 
-function PreviewList() {
+function PreviewList({ selected, setSelected }) {
     const { getChapterVerses, previewVerse } = useContext(AppContext);
     const verses = getChapterVerses(previewVerse.book, previewVerse.chapter);
-    const [selected, setSelected] = useState(null);
 
     useEffect(() => {
         if (!previewVerse.verse) {
@@ -55,14 +54,36 @@ function PreviewList() {
 }
 
 export default function Preview() {
-    const { getChapterVerses, previewVerse } = useContext(AppContext);
+    const [selected, setSelected] = useState(null);
+    const { getChapterVerses, previewVerse, getMultipleVerses } = useContext(AppContext);
     const verses = getChapterVerses(previewVerse.book, previewVerse.chapter);
+    const notificationHeight = selected ? "5em" : "0em";
+
+    const selectedVerseObj = selected ? getMultipleVerses(selected.book, selected.chapter, selected.verse) : null;
+
+    const notification = selectedVerseObj
+        ? `已选中 ${selectedVerseObj[0][0].book_name} ${selectedVerseObj[0][0].chapter}:${selectedVerseObj[0][0].verse}`
+        : "暂无选中章节";
+    console.log(notification, selectedVerseObj);
     return (
         <div style={{ display: "flex", height: "100%", flexDirection: "column" }}>
             <div style={{ flexGrow: 0 }}>
                 <TabToolBar title={`${verses[0][0].book_name} ${verses[0][0].chapter}`} tools={[]} />
             </div>
-            <PreviewList />
+            <PreviewList selected={selected} setSelected={setSelected} />
+            <Typography
+                sx={{ flexGrow: 0, transition: "max-height 1s ease", maxHeight: notificationHeight }}
+                component={"div"}
+            >
+                {notification}
+                <Button
+                    onClick={() => {
+                        setSelected(null);
+                    }}
+                >
+                    取消选中
+                </Button>
+            </Typography>
         </div>
     );
 }
