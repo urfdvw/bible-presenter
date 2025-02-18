@@ -188,8 +188,8 @@ export function HistoryVerseBox({ book, chapter, verse, endChapter, endVerse, hi
     );
 }
 
-export function NoteVerseBox({ book, chapter, verse, endChapter, endVerse, highlighted }) {
-    const { getMultipleVerses, setDisplayVerse } = useContext(AppContext);
+export function NoteVerseBox({ book, chapter, verse, endChapter, endVerse, boxIndex, highlighted }) {
+    const { getMultipleVerses, setDisplayVerse, noteList, setNoteList } = useContext(AppContext);
 
     function previewVerse(book, chapter, verse, endChapter, endVerse) {
         console.log("previewing", book, chapter, verse, endChapter, endVerse);
@@ -213,14 +213,54 @@ export function NoteVerseBox({ book, chapter, verse, endChapter, endVerse, highl
     };
 
     const handleMoveUp = () => {
+        if (boxIndex === 0) {
+            return;
+        }
+        setNoteList((notes) => {
+            const out = [];
+            for (var i = 0; i < noteList.length; i++) {
+                if (i === boxIndex) {
+                    out.push(notes[boxIndex - 1]);
+                } else if (i === boxIndex - 1) {
+                    out.push(notes[boxIndex]);
+                } else {
+                    out.push(notes[i]);
+                }
+            }
+            return out;
+        });
         console.log("verse moved up in notes"); // will be imported form context
     };
 
     const handleMoveDown = () => {
+        if (boxIndex === noteList.length - 1) {
+            return;
+        }
+        setNoteList((notes) => {
+            const out = [];
+            for (var i = 0; i < noteList.length; i++) {
+                if (i === boxIndex) {
+                    out.push(notes[boxIndex + 1]);
+                } else if (i === boxIndex + 1) {
+                    out.push(notes[boxIndex]);
+                } else {
+                    out.push(notes[i]);
+                }
+            }
+            return out;
+        });
         console.log("verse moved up in notes"); // will be imported form context
     };
 
     const handleRemove = () => {
+        setNoteList((notes) =>
+            notes
+                .map((note, index) => {
+                    return { note: note, index: index };
+                })
+                .filter((note) => note.index !== boxIndex)
+                .map((note) => note.note)
+        );
         console.log("verse moved up in notes"); // will be imported form context
     };
 

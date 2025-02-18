@@ -7,6 +7,7 @@ import Projector from "../appComponents/Projector";
 import Preview from "../appComponents/Preview";
 import TableOfContents from "../appComponents/TableOfContents";
 import History from "../appComponents/History";
+import Notes from "../appComponents/Notes";
 
 const fullSize = { height: "100%", width: "100%" };
 
@@ -58,6 +59,12 @@ const Factory = (node) => {
         return (
             <div className="tab_content" style={fullSize}>
                 <History />
+            </div>
+        );
+    } else if (component === "notes") {
+        return (
+            <div className="tab_content" style={fullSize}>
+                <Notes />
             </div>
         );
     }

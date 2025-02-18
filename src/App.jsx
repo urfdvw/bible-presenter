@@ -92,6 +92,30 @@ function App() {
             endVerse: 18,
         },
     ]);
+    // notes
+    const [noteList, setNoteList] = useState([
+        {
+            book: 43,
+            chapter: 3,
+            verse: 16,
+            endChapter: null,
+            endVerse: 18,
+        },
+        {
+            book: 40,
+            chapter: 1,
+            verse: 1,
+            endChapter: null,
+            endVerse: null,
+        },
+        {
+            book: 1,
+            chapter: 1,
+            verse: 1,
+            endChapter: null,
+            endVerse: null,
+        },
+    ]);
 
     if (isMobile) {
         return <MobileSupportInfo />;
@@ -136,6 +160,8 @@ function App() {
                 setPreviewVerse,
                 history,
                 setHistory,
+                noteList,
+                setNoteList,
             }}
         >
             <DarkTheme dark={dark} highContrast={highContrast} />

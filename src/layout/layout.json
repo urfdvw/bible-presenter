@@ -80,7 +80,7 @@
                     "altName": "(N)笔记",
                     "helpText": "笔记",
                     "id": "notes_tab",
-                    "component": "placeholder",
+                    "component": "notes",
                     "enableClose": false
                 }
             ]
