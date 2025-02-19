@@ -7,7 +7,7 @@ import { versesToParagraphsMD, versesToRangeText } from "../bible/utils";
 import MarkdownExtended from "../utilComponents/MarkdownExtended";
 
 import AppContext from "../AppContext";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import { compareLists, removeAllDuplicatesKeepLast } from "../utilFunctions/jsHelper";
 
@@ -43,14 +43,8 @@ const highlightedVerseBoxStyle = { ...verseBoxStyle, border: "2px solid #700000"
 export function PreviewVerseBox({ book, chapter, verse, highlighted, selected, setSelected }) {
     const { getMultipleVerses, setDisplayVerse, setHistory, setNoteList } = useContext(AppContext);
 
-    function addToNote(book, chapter, verse, endChapter, endVerse) {
-        console.log("adding to note", book, chapter, verse, endChapter, endVerse);
-    } // will be imported form context
-
-    const verses = getMultipleVerses(book, chapter, verse);
-    const mdText = versesToParagraphsMD(verses).join("\n\n");
-
-    const handleShow = () => {
+    const [multipleVerses, setMultipleVerses] = useState(null);
+    useEffect(() => {
         var verseObj = {
             book: book,
             chapter: chapter,
@@ -60,7 +54,6 @@ export function PreviewVerseBox({ book, chapter, verse, highlighted, selected, s
         };
 
         if (selected) {
-            setSelected(null);
             if (selected.book === book) {
                 if (compareLists([selected.chapter, selected.verse], [chapter, verse]) > 0) {
                     verseObj.endChapter = selected.chapter;
@@ -76,9 +69,28 @@ export function PreviewVerseBox({ book, chapter, verse, highlighted, selected, s
                 }
             }
         }
+        setMultipleVerses(verseObj);
+        console.log(selected, verseObj);
+    }, [book, chapter, verse, selected]);
 
-        setDisplayVerse(verseObj);
-        setHistory((history) => removeAllDuplicatesKeepLast([...history, verseObj]));
+    function addToNote(book, chapter, verse, endChapter, endVerse) {
+        setNoteList((notes) => [...notes, multipleVerses]);
+        if (selected) {
+            setSelected(null);
+        }
+        console.log("adding to note", book, chapter, verse, endChapter, endVerse);
+    } // will be imported form context
+
+    const verses = getMultipleVerses(book, chapter, verse);
+    const mdText = versesToParagraphsMD(verses).join("\n\n");
+
+    const handleShow = () => {
+        setDisplayVerse(multipleVerses);
+        setHistory((history) => removeAllDuplicatesKeepLast([...history, multipleVerses]));
+
+        if (selected) {
+            setSelected(null);
+        }
     };
 
     const handleAddToNote = () => {
