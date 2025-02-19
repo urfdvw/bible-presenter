@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import AppContext from "../AppContext";
 import { Box, TextField, Button, Typography } from "@mui/material";
+import { SearchVerseBox } from "./VerseBox";
 
 export default function TextSearch() {
     const { getSelectedVersions } = useContext(AppContext);
@@ -129,21 +130,11 @@ export default function TextSearch() {
 
                 {/* Display the current page of results */}
                 {currentPageResults.map((verse, index) => (
-                    <Box
+                    <SearchVerseBox
+                        verseObj={verse}
+                        keyWords={searchTerm}
                         key={`${verse.book}-${verse.chapter}-${verse.verse}-${index}`}
-                        border="1px solid #ccc"
-                        borderRadius="4px"
-                        p={2}
-                        mb={1}
-                    >
-                        <Typography variant="body2">
-                            <strong>Book:</strong> {verse.book}, <strong>Chapter:</strong> {verse.chapter},{" "}
-                            <strong>Verse:</strong> {verse.verse}
-                        </Typography>
-                        <Typography variant="body2">
-                            <strong>Text:</strong> {verse.text}
-                        </Typography>
-                    </Box>
+                    />
                 ))}
 
                 {filteredResults.length == 0 && searchTerm && <Typography mb={2}>无相关经文</Typography>}

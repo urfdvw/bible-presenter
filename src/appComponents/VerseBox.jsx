@@ -10,6 +10,7 @@ import AppContext from "../AppContext";
 import { useContext, useEffect, useState } from "react";
 
 import { compareLists, removeAllDuplicatesKeepLast } from "../utilFunctions/jsHelper";
+import HighlightedSpan from "../utilComponents/HighlightedSpan";
 
 function Icon({ tooltip, children, onClick }) {
     return (
@@ -294,6 +295,63 @@ export function NoteVerseBox({ book, chapter, verse, endChapter, endVerse, boxIn
                 </Icon>
                 <Icon tooltip={"删除"} onClick={handleRemove}>
                     <Close />
+                </Icon>
+            </Box>
+        </Box>
+    );
+}
+
+export function SearchVerseBox({ verseObj, keyWords }) {
+    const { setDisplayVerse, setPreviewVerse, setHistory, setNoteList } = useContext(AppContext);
+
+    const handleShow = () => {
+        const verseObjToDisplay = {
+            book: verseObj.book,
+            chapter: verseObj.chapter,
+            verse: verseObj.verse,
+            endChapter: null,
+            endVerse: null,
+        };
+        setDisplayVerse(verseObjToDisplay);
+        setHistory((history) => removeAllDuplicatesKeepLast([...history, verseObjToDisplay]));
+    };
+
+    const handlePreview = () => {
+        setPreviewVerse({
+            book: verseObj.book,
+            chapter: verseObj.chapter,
+            verse: verseObj.verse,
+            endChapter: null,
+            endVerse: null,
+        });
+    };
+
+    const handleAddToNote = () => {
+        setNoteList((notes) => [
+            ...notes,
+            {
+                book: verseObj.book,
+                chapter: verseObj.chapter,
+                verse: verseObj.verse,
+                endChapter: null,
+                endVerse: null,
+            },
+        ]);
+    };
+
+    return (
+        <Box onClick={handleShow} sx={verseBoxStyle}>
+            <Typography sx={{ flexGrow: 1 }}>
+                <b>{`${verseObj.book_name}${verseObj.chapter}:${verseObj.verse} `}</b>
+                <HighlightedSpan longString={verseObj.text} shortString={keyWords} />
+            </Typography>
+
+            <Box sx={{ flexShrink: 0 }}>
+                <Icon tooltip={"预览"} onClick={handlePreview}>
+                    <Preview />
+                </Icon>
+                <Icon tooltip={"加入笔记"} onClick={handleAddToNote}>
+                    <NoteAdd />
                 </Icon>
             </Box>
         </Box>
