@@ -8,6 +8,7 @@ import Preview from "../appComponents/Preview";
 import TableOfContents from "../appComponents/TableOfContents";
 import History from "../appComponents/History";
 import Notes from "../appComponents/Notes";
+import TextSearch from "../appComponents/TextSearch";
 
 const fullSize = { height: "100%", width: "100%" };
 
@@ -65,6 +66,12 @@ const Factory = (node) => {
         return (
             <div className="tab_content" style={fullSize}>
                 <Notes />
+            </div>
+        );
+    } else if (component === "search") {
+        return (
+            <div className="tab_content" style={fullSize}>
+                <TextSearch />
             </div>
         );
     }

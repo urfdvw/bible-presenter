@@ -35,7 +35,7 @@
                     "altName": "(S)经文搜索",
                     "helpText": "经文搜索",
                     "id": "search_tab",
-                    "component": "placeholder",
+                    "component": "search",
                     "enableClose": false
                 },
                 {

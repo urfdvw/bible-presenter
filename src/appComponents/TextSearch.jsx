@@ -1,0 +1,143 @@
+import { useContext, useState } from "react";
+import AppContext from "../AppContext";
+import { Box, TextField, Button, Typography } from "@mui/material";
+
+export default function TextSearch() {
+    const { getSelectedVersions } = useContext(AppContext);
+    const data = getSelectedVersions();
+
+    // State for the input text
+    const [searchTerm, setSearchTerm] = useState("");
+    // State for the filtered results
+    const [filteredResults, setFilteredResults] = useState([]);
+    // Current page state (1-based index)
+    const [currentPage, setCurrentPage] = useState(1);
+    // Warning message if the input is too short
+    const [warning, setWarning] = useState("");
+
+    // Number of items (verses) per page
+    const resultsPerPage = 10;
+
+    // Flatten all verses from the data
+    const allVerses = data.flatMap((item) => item.verses);
+
+    // Handle search logic
+    const handleSearch = () => {
+        // Check if input is pure English letters only
+        const isPureEnglish = /^[a-zA-Z]*$/.test(searchTerm);
+
+        if (isPureEnglish && searchTerm.length > 0 && searchTerm.length < 2) {
+            // If pure English but shorter than 2 characters
+            setWarning("Please enter at least 2 characters in English.");
+            setFilteredResults([]);
+            return;
+        } else {
+            setWarning("");
+        }
+
+        // Filter verses that include the searchTerm in their text (case-insensitive)
+        const results = allVerses.filter((verse) => verse.text.toLowerCase().includes(searchTerm.toLowerCase()));
+
+        setFilteredResults(results);
+        setCurrentPage(1); // Reset to first page when new search
+    };
+
+    // Trigger search on pressing 'Enter'
+    const handleKeyDown = (event) => {
+        if (event.key === "Enter") {
+            handleSearch();
+        }
+    };
+
+    // Pagination: compute the current page's slice
+    const indexOfLastResult = currentPage * resultsPerPage;
+    const indexOfFirstResult = indexOfLastResult - resultsPerPage;
+    const currentPageResults = filteredResults.slice(indexOfFirstResult, indexOfLastResult);
+
+    // Total number of pages
+    const totalPages = Math.ceil(filteredResults.length / resultsPerPage);
+
+    // Handlers for page navigation
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage((prev) => prev + 1);
+        }
+    };
+
+    const handlePrevPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage((prev) => prev - 1);
+        }
+    };
+
+    // A simple pagination control you can style/expand
+    const renderPaginationControls = () => (
+        <Box display="flex" alignItems="center" justifyContent="center" my={2}>
+            <Button variant="contained" onClick={handlePrevPage} disabled={currentPage === 1} sx={{ mr: 2 }}>
+                Prev
+            </Button>
+            <Typography variant="body1">
+                Page {currentPage} of {totalPages || 1}
+            </Typography>
+            <Button
+                variant="contained"
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages || totalPages === 0}
+                sx={{ ml: 2 }}
+            >
+                Next
+            </Button>
+        </Box>
+    );
+
+    return (
+        <Box sx={{ width: "100%", maxWidth: 600, margin: "0 auto", mt: 4 }}>
+            {/* Search input and button */}
+            <Box display="flex" gap={2} mb={2}>
+                <TextField
+                    fullWidth
+                    label="Search"
+                    variant="outlined"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                />
+                <Button variant="contained" onClick={handleSearch}>
+                    Search
+                </Button>
+            </Box>
+
+            {/* Warning message if needed */}
+            {warning && (
+                <Typography color="error" mb={2}>
+                    {warning}
+                </Typography>
+            )}
+
+            {/* Top pagination controls */}
+            {filteredResults.length > 0 && renderPaginationControls()}
+
+            {/* Display the current page of results */}
+            {currentPageResults.map((verse, index) => (
+                <Box
+                    key={`${verse.book}-${verse.chapter}-${verse.verse}-${index}`}
+                    border="1px solid #ccc"
+                    borderRadius="4px"
+                    p={2}
+                    mb={1}
+                >
+                    <Typography variant="body2">
+                        <strong>Book:</strong> {verse.book}, <strong>Chapter:</strong> {verse.chapter},{" "}
+                        <strong>Verse:</strong> {verse.verse}
+                    </Typography>
+                    <Typography variant="body2">
+                        <strong>Text:</strong> {verse.text}
+                    </Typography>
+                </Box>
+            ))}
+
+            {/* Bottom pagination controls */}
+            {filteredResults.length > 0 && renderPaginationControls()}
+        </Box>
+    );
+}
