@@ -79,10 +79,10 @@ export default function TextSearch() {
     const renderPaginationControls = () => (
         <Box display="flex" alignItems="center" justifyContent="center" my={2}>
             <Button variant="contained" onClick={handlePrevPage} disabled={currentPage === 1} sx={{ mr: 2 }}>
-                Prev
+                上一页
             </Button>
             <Typography variant="body1">
-                Page {currentPage} of {totalPages || 1}
+                第{currentPage}页，共{totalPages || 1}页
             </Typography>
             <Button
                 variant="contained"
@@ -90,15 +90,24 @@ export default function TextSearch() {
                 disabled={currentPage === totalPages || totalPages === 0}
                 sx={{ ml: 2 }}
             >
-                Next
+                下一页
             </Button>
         </Box>
     );
 
     return (
-        <Box sx={{ width: "100%", maxWidth: 600, margin: "0 auto", mt: 4 }}>
+        <Box
+            sx={{
+                width: "100%",
+                maxWidth: 600,
+                margin: "0 auto",
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+            }}
+        >
             {/* Search input and button */}
-            <Box display="flex" gap={0} mb={2}>
+            <Box display="flex" sx={{ flexGrow: 0 }}>
                 <TextField
                     fullWidth
                     variant="outlined"
@@ -110,35 +119,33 @@ export default function TextSearch() {
                     搜索
                 </Button>
             </Box>
-
-            {/* Warning message if needed */}
-            {warning && (
-                <Typography color="error" mb={2}>
-                    {warning}
-                </Typography>
-            )}
-
-            {/* Top pagination controls */}
-            {filteredResults.length > 0 && renderPaginationControls()}
-
-            {/* Display the current page of results */}
-            {currentPageResults.map((verse, index) => (
-                <Box
-                    key={`${verse.book}-${verse.chapter}-${verse.verse}-${index}`}
-                    border="1px solid #ccc"
-                    borderRadius="4px"
-                    p={2}
-                    mb={1}
-                >
-                    <Typography variant="body2">
-                        <strong>Book:</strong> {verse.book}, <strong>Chapter:</strong> {verse.chapter},{" "}
-                        <strong>Verse:</strong> {verse.verse}
+            <Box sx={{ flexGrow: 1, overflowY: "auto", display: "flex", flexDirection: "column" }}>
+                {/* Warning message if needed */}
+                {/* {warning && (
+                    <Typography color="error" mb={2}>
+                        {warning}
                     </Typography>
-                    <Typography variant="body2">
-                        <strong>Text:</strong> {verse.text}
-                    </Typography>
-                </Box>
-            ))}
+                )} */}
+
+                {/* Display the current page of results */}
+                {currentPageResults.map((verse, index) => (
+                    <Box
+                        key={`${verse.book}-${verse.chapter}-${verse.verse}-${index}`}
+                        border="1px solid #ccc"
+                        borderRadius="4px"
+                        p={2}
+                        mb={1}
+                    >
+                        <Typography variant="body2">
+                            <strong>Book:</strong> {verse.book}, <strong>Chapter:</strong> {verse.chapter},{" "}
+                            <strong>Verse:</strong> {verse.verse}
+                        </Typography>
+                        <Typography variant="body2">
+                            <strong>Text:</strong> {verse.text}
+                        </Typography>
+                    </Box>
+                ))}
+            </Box>
 
             {/* Bottom pagination controls */}
             {filteredResults.length > 0 && renderPaginationControls()}
