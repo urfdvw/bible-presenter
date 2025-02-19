@@ -38,7 +38,9 @@ export default function Notes() {
     const tools = [
         {
             text: "打开",
-            handler: openFile,
+            handler: () => {
+                openFile([".json"]);
+            },
         },
         {
             text: "保存",

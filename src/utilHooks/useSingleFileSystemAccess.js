@@ -1,14 +1,16 @@
 import { useState } from "react";
-import { isChrome, isChromium, isEdge } from "react-device-detect";
 import { downloadFile } from "../utilFunctions/jsHelper";
 
+/**
+ * useSingleFileSystemAccess:
+ *  1. Tries to use the File System Access API (if available).
+ *  2. Otherwise, falls back to a hidden <input type="file" /> for open
+ *     and "download" approach for save.
+ */
 export function useSingleFileSystemAccess() {
     const [content, setContent] = useState(null);
     const [fileName, setFileName] = useState(null);
     const [fileHandle, setFileHandle] = useState(null);
-
-    // We'll consider it "capable" if it's Chrome/Chromium/Edge + showOpenFilePicker is available
-    const canUseFileSystemAPI = (isChrome || isChromium || isEdge) && !!window.showOpenFilePicker;
 
     // "Close" simply clears out our references
     const closeFile = () => {
@@ -20,39 +22,39 @@ export function useSingleFileSystemAccess() {
     /**
      * openFile:
      * 1) Closes any currently open file (if present).
-     * 2) Checks if we can use the File System Access API.
+     * 2) Checks if window.showOpenFilePicker is available.
      *    - If yes, uses it to open a file (with read/write permission).
      *    - If no, falls back to an ephemeral <input type="file" /> approach.
      */
-    const openFile = async () => {
+    const openFile = async (extensions) => {
         // If a file is already open, close it first
         if (fileHandle || content || fileName) {
             closeFile();
         }
 
-        // If browser doesn't support the File System Access API, fallback:
-        if (!canUseFileSystemAPI) {
-            // Fallback: use a programmatically created <input> for file selection
+        // Check for File System Access API
+        if (!window.showOpenFilePicker) {
+            // Fallback: ephemeral <input type="file" />
             try {
                 await new Promise((resolve, reject) => {
                     const input = document.createElement("input");
                     input.type = "file";
-                    input.accept = ".json"; // or any other text-based extension
+                    input.accept = extensions.join(",");
 
                     input.onchange = (e) => {
                         const file = e.target.files?.[0];
                         if (!file) {
-                            console.warn("No file selected.");
+                            console.warn("No file selected (fallback).");
                             reject(new Error("No file selected"));
                             return;
                         }
-
                         setFileName(file.name);
 
                         const reader = new FileReader();
                         reader.onload = (evt) => {
-                            setContent(evt.target.result);
-                            resolve(evt.target.result);
+                            const result = evt.target.result;
+                            setContent(typeof result === "string" ? result : null);
+                            resolve(result);
                         };
                         reader.onerror = (err) => {
                             console.error("Error reading file:", err);
@@ -70,7 +72,7 @@ export function useSingleFileSystemAccess() {
             return;
         }
 
-        // Otherwise, we can try the File System Access API
+        // Otherwise, we can use the File System Access API
         try {
             const [handle] = await window.showOpenFilePicker({
                 multiple: false,
@@ -78,7 +80,7 @@ export function useSingleFileSystemAccess() {
                     {
                         description: "Text Files",
                         accept: {
-                            "text/plain": [".json"],
+                            "text/plain": extensions,
                         },
                     },
                 ],
@@ -106,11 +108,11 @@ export function useSingleFileSystemAccess() {
 
     /**
      * saveToFile:
-     * - If we have a real file handle, overwrite the file in place.
-     * - If we don't have one (fallback mode), just download a new file.
+     * - If we have a valid fileHandle (File System Access), overwrite that file.
+     * - Otherwise, we "download" a new file (fallback).
      */
     const saveToFile = async (newContent) => {
-        // If we have an actual handle, use the File System Access API to write:
+        // If we have an actual handle, overwrite the file using File System Access
         if (fileHandle) {
             try {
                 const writable = await fileHandle.createWritable();
@@ -123,10 +125,10 @@ export function useSingleFileSystemAccess() {
             return;
         }
 
-        // Fallback: download a new file instead of overwriting
+        // Otherwise, fallback: download the new file
         downloadFile(newContent, fileName);
 
-        // Update content in state (though we haven't truly overwritten the original file)
+        // Update our content in state
         setContent(newContent);
     };
 
