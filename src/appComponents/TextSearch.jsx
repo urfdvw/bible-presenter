@@ -26,9 +26,14 @@ export default function TextSearch() {
         // Check if input is pure English letters only
         const isPureEnglish = /^[a-zA-Z]*$/.test(searchTerm);
 
-        if (isPureEnglish && searchTerm.length > 0 && searchTerm.length < 2) {
+        if (searchTerm.length === 0) {
             // If pure English but shorter than 2 characters
-            setWarning("Please enter at least 2 characters in English.");
+            setWarning("请输入需要搜索的文字。");
+            setFilteredResults([]);
+            return;
+        } else if (isPureEnglish && searchTerm.length < 2) {
+            // If pure English but shorter than 2 characters
+            setWarning("如要搜索英文经文，请输入至少2个字母。");
             setFilteredResults([]);
             return;
         } else {
@@ -93,17 +98,16 @@ export default function TextSearch() {
     return (
         <Box sx={{ width: "100%", maxWidth: 600, margin: "0 auto", mt: 4 }}>
             {/* Search input and button */}
-            <Box display="flex" gap={2} mb={2}>
+            <Box display="flex" gap={0} mb={2}>
                 <TextField
                     fullWidth
-                    label="Search"
                     variant="outlined"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     onKeyDown={handleKeyDown}
                 />
                 <Button variant="contained" onClick={handleSearch}>
-                    Search
+                    搜索
                 </Button>
             </Box>
 
