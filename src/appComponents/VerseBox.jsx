@@ -69,7 +69,6 @@ export function PreviewVerseBox({ book, chapter, verse, highlighted, selected, s
             }
         }
         setMultipleVerses(verseObj);
-        console.log(selected, verseObj);
     }, [book, chapter, verse, selected]);
 
     const verses = getMultipleVerses(book, chapter, verse);

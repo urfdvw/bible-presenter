@@ -60,3 +60,22 @@ export function removeAllDuplicatesKeepLast(data) {
     // The result is in reverse order, so reverse it back
     return result.reverse();
 }
+
+export function downloadFile(content, name) {
+    // 1. Create a Blob object from the text content
+    const blob = new Blob([content], { type: "text/plain" });
+
+    // 2. Generate a temporary URL for the blob
+    const url = URL.createObjectURL(blob);
+
+    // 3. Create a hidden <a> element programmatically
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = name;
+
+    // 4. Programmatically click the link to trigger the download
+    link.click();
+
+    // 5. Release the object URL
+    URL.revokeObjectURL(url);
+}
