@@ -58,7 +58,9 @@ export default function Notes() {
             <div style={{ flexGrow: 0 }}>
                 <TabToolBar title={fileName} tools={tools} />
             </div>
-            <NoteListBody />
+            <div style={{ flexGrow: 1, overflowY: "auto" }}>
+                <NoteListBody />
+            </div>
         </div>
     );
 }
