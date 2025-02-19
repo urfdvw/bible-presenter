@@ -42,7 +42,6 @@ const highlightedVerseBoxStyle = { ...verseBoxStyle, border: "2px solid #700000"
 
 export function PreviewVerseBox({ book, chapter, verse, highlighted, selected, setSelected }) {
     const { getMultipleVerses, setDisplayVerse, setHistory, setNoteList } = useContext(AppContext);
-
     const [multipleVerses, setMultipleVerses] = useState(null);
     useEffect(() => {
         var verseObj = {
@@ -73,14 +72,6 @@ export function PreviewVerseBox({ book, chapter, verse, highlighted, selected, s
         console.log(selected, verseObj);
     }, [book, chapter, verse, selected]);
 
-    function addToNote(book, chapter, verse, endChapter, endVerse) {
-        setNoteList((notes) => [...notes, multipleVerses]);
-        if (selected) {
-            setSelected(null);
-        }
-        console.log("adding to note", book, chapter, verse, endChapter, endVerse);
-    } // will be imported form context
-
     const verses = getMultipleVerses(book, chapter, verse);
     const mdText = versesToParagraphsMD(verses).join("\n\n");
 
@@ -94,7 +85,11 @@ export function PreviewVerseBox({ book, chapter, verse, highlighted, selected, s
     };
 
     const handleAddToNote = () => {
-        addToNote(book, chapter, verse, null, null); // need to implement select multiple
+        setNoteList((notes) => [...notes, multipleVerses]);
+        if (selected) {
+            setSelected(null);
+        }
+        console.log("adding to note");
     };
 
     const handleSelect = () => {
@@ -130,11 +125,7 @@ export function PreviewVerseBox({ book, chapter, verse, highlighted, selected, s
 }
 
 export function HistoryVerseBox({ book, chapter, verse, endChapter, endVerse, highlighted }) {
-    const { getMultipleVerses, setDisplayVerse, setPreviewVerse, setHistory } = useContext(AppContext);
-    function addToNote(book, chapter, verse) {
-        console.log("adding to note", book, chapter, verse);
-    } // will be imported form context
-
+    const { getMultipleVerses, setDisplayVerse, setPreviewVerse, setHistory, setNoteList } = useContext(AppContext);
     const verses = getMultipleVerses(book, chapter, verse, endChapter, endVerse);
     const range = versesToRangeText(verses);
 
@@ -161,7 +152,16 @@ export function HistoryVerseBox({ book, chapter, verse, endChapter, endVerse, hi
     };
 
     const handleAddToNote = () => {
-        addToNote(book, chapter, verse);
+        setNoteList((notes) => [
+            ...notes,
+            {
+                book: book,
+                chapter: chapter,
+                verse: verse,
+                endChapter: endChapter,
+                endVerse: endVerse,
+            },
+        ]);
     };
 
     const handleRemove = () => {
