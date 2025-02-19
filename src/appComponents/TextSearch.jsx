@@ -121,11 +121,11 @@ export default function TextSearch() {
             </Box>
             <Box sx={{ flexGrow: 1, overflowY: "auto", display: "flex", flexDirection: "column" }}>
                 {/* Warning message if needed */}
-                {/* {warning && (
+                {warning && (
                     <Typography color="error" mb={2}>
                         {warning}
                     </Typography>
-                )} */}
+                )}
 
                 {/* Display the current page of results */}
                 {currentPageResults.map((verse, index) => (
@@ -145,10 +145,12 @@ export default function TextSearch() {
                         </Typography>
                     </Box>
                 ))}
+
+                {filteredResults.length == 0 && searchTerm && <Typography mb={2}>无相关经文</Typography>}
             </Box>
 
             {/* Bottom pagination controls */}
-            {filteredResults.length > 0 && renderPaginationControls()}
+            {renderPaginationControls()}
         </Box>
     );
 }
