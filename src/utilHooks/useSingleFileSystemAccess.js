@@ -1,37 +1,84 @@
 import { useState } from "react";
+import { isChrome, isChromium, isEdge } from "react-device-detect";
+import { downloadFile } from "../utilFunctions/jsHelper";
 
 export function useSingleFileSystemAccess() {
     const [content, setContent] = useState(null);
     const [fileName, setFileName] = useState(null);
     const [fileHandle, setFileHandle] = useState(null);
 
-    // Helper function to "close" the current file by clearing all related state
+    // We'll consider it "capable" if it's Chrome/Chromium/Edge + showOpenFilePicker is available
+    const canUseFileSystemAPI = (isChrome || isChromium || isEdge) && !!window.showOpenFilePicker;
+
+    // "Close" simply clears out our references
     const closeFile = () => {
         setFileHandle(null);
         setContent(null);
         setFileName(null);
     };
 
+    /**
+     * openFile:
+     * 1) Closes any currently open file (if present).
+     * 2) Checks if we can use the File System Access API.
+     *    - If yes, uses it to open a file (with read/write permission).
+     *    - If no, falls back to an ephemeral <input type="file" /> approach.
+     */
     const openFile = async () => {
-        // If there's already an opened file, "close" it first
-        if (fileHandle) {
+        // If a file is already open, close it first
+        if (fileHandle || content || fileName) {
             closeFile();
         }
 
-        if (!window.showOpenFilePicker) {
-            alert("File System Access API is not supported in this browser.");
+        // If browser doesn't support the File System Access API, fallback:
+        if (!canUseFileSystemAPI) {
+            // Fallback: use a programmatically created <input> for file selection
+            try {
+                await new Promise((resolve, reject) => {
+                    const input = document.createElement("input");
+                    input.type = "file";
+                    input.accept = ".json"; // or any other text-based extension
+
+                    input.onchange = (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) {
+                            console.warn("No file selected.");
+                            reject(new Error("No file selected"));
+                            return;
+                        }
+
+                        setFileName(file.name);
+
+                        const reader = new FileReader();
+                        reader.onload = (evt) => {
+                            setContent(evt.target.result);
+                            resolve(evt.target.result);
+                        };
+                        reader.onerror = (err) => {
+                            console.error("Error reading file:", err);
+                            reject(err);
+                        };
+                        reader.readAsText(file);
+                    };
+
+                    // Trigger the file selection dialog
+                    input.click();
+                });
+            } catch (error) {
+                console.error("Error selecting fallback file:", error);
+            }
             return;
         }
 
+        // Otherwise, we can try the File System Access API
         try {
-            // Prompt the user to select a file
             const [handle] = await window.showOpenFilePicker({
                 multiple: false,
                 types: [
                     {
                         description: "Text Files",
                         accept: {
-                            "text/plain": [".txt", ".md", ".csv", ".json"],
+                            "text/plain": [".json"],
                         },
                     },
                 ],
@@ -52,30 +99,35 @@ export function useSingleFileSystemAccess() {
             setContent(text);
             setFileName(file.name);
         } catch (error) {
-            // This typically happens if the user cancels the dialog
+            // User might cancel the picker, etc.
             console.error("Error opening file:", error);
         }
     };
 
+    /**
+     * saveToFile:
+     * - If we have a real file handle, overwrite the file in place.
+     * - If we don't have one (fallback mode), just download a new file.
+     */
     const saveToFile = async (newContent) => {
-        if (!fileHandle) {
-            console.warn("No file is currently open. Cannot save.");
+        // If we have an actual handle, use the File System Access API to write:
+        if (fileHandle) {
+            try {
+                const writable = await fileHandle.createWritable();
+                await writable.write(newContent);
+                await writable.close();
+                setContent(newContent);
+            } catch (error) {
+                console.error("Error saving file:", error);
+            }
             return;
         }
 
-        try {
-            // Create a writable stream
-            const writable = await fileHandle.createWritable();
-            // Overwrite the file with the new content
-            await writable.write(newContent);
-            // Close the stream
-            await writable.close();
+        // Fallback: download a new file instead of overwriting
+        downloadFile(newContent, fileName);
 
-            // Update local state
-            setContent(newContent);
-        } catch (error) {
-            console.error("Error saving file:", error);
-        }
+        // Update content in state (though we haven't truly overwritten the original file)
+        setContent(newContent);
     };
 
     return {
@@ -83,5 +135,6 @@ export function useSingleFileSystemAccess() {
         fileName,
         openFile,
         saveToFile,
+        closeFile,
     };
 }

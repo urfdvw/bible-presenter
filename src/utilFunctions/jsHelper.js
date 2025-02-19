@@ -71,7 +71,7 @@ export function downloadFile(content, name) {
     // 3. Create a hidden <a> element programmatically
     const link = document.createElement("a");
     link.href = url;
-    link.download = name;
+    link.download = name || "untitled.txt";
 
     // 4. Programmatically click the link to trigger the download
     link.click();
