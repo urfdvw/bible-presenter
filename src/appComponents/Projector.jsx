@@ -3,6 +3,7 @@ import Button from "@mui/material/Button";
 import { useContext } from "react";
 import AppContext from "../AppContext";
 import VerseParagraph from "./VerseParagraph";
+import { NoTheme } from "react-lazy-dark-theme";
 
 export default function Projector() {
     const { appConfig, projectorWindowPopped, setProjectorWindowPopped, projectorDisplay, displayVerse } =
@@ -40,7 +41,9 @@ export default function Projector() {
                     />
                 </div>
             ) : (
-                <></>
+                <NoTheme>
+                    <div style={{ backgroundColor: "black", height: "100000px" }}></div>
+                </NoTheme>
             )}
         </PopUp>
     );
