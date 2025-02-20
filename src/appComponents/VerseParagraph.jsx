@@ -10,6 +10,9 @@ export default function VerseParagraph({ book, chapter, verse, endChapter, endVe
     const rangeList = versesToRangeText(verses);
     const textList = versesToParagraphsMD(verses);
     const paragraphs = rangeList.map((range, versionIndex) => {
+        if (book === 19) {
+            return `### ${verses[0][versionIndex].book_name} ${chapter} \n\n ${textList[versionIndex]}`;
+        }
         return appConfig.config.bible_display.range_location === "开头"
             ? `(${range}) ${textList[versionIndex]}`
             : `${textList[versionIndex]}\t——${range}`;

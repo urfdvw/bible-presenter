@@ -167,7 +167,7 @@ export function versesToParagraphsMD(verses) {
                     return null;
                 }
                 var positionText;
-                if (isSingleVerse) {
+                if (isSingleVerse && startVerse.book !== 19) {
                     return versionVerse[i].text;
                 }
                 if (isMultipleChapters && (positionText = index === 0 || versionVerse[i].verse === 1)) {
@@ -178,7 +178,7 @@ export function versesToParagraphsMD(verses) {
                 return `^${positionText}^${versionVerse[i].text}`;
             })
             .filter((x) => x)
-            .join(" ");
+            .join(startVerse.book === 19 ? "\n\n" : "\n");
         returnParagraphs.push(paragraph);
     }
     return returnParagraphs;

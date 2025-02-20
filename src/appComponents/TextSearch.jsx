@@ -79,18 +79,13 @@ export default function TextSearch() {
     // A simple pagination control you can style/expand
     const renderPaginationControls = () => (
         <Box display="flex" alignItems="center" justifyContent="center" my={2}>
-            <Button variant="contained" onClick={handlePrevPage} disabled={currentPage === 1} sx={{ mr: 2 }}>
+            <Button onClick={handlePrevPage} disabled={currentPage === 1}>
                 上一页
             </Button>
             <Typography variant="body1">
                 第{currentPage}页，共{totalPages || 1}页
             </Typography>
-            <Button
-                variant="contained"
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages || totalPages === 0}
-                sx={{ ml: 2 }}
-            >
+            <Button onClick={handleNextPage} disabled={currentPage === totalPages || totalPages === 0}>
                 下一页
             </Button>
         </Box>
@@ -116,7 +111,7 @@ export default function TextSearch() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     onKeyDown={handleKeyDown}
                 />
-                <Button variant="contained" onClick={handleSearch}>
+                <Button variant="outlined" onClick={handleSearch}>
                     搜索
                 </Button>
             </Box>
