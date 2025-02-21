@@ -13,7 +13,7 @@ const arraysEqual = (a, b) => {
     }
     return true;
 };
-export default function Reader({ book, chapter, verse }) {
+export default function Reader({ book, chapter, verse, popupWindow }) {
     const { appConfig, getMultipleVerses, getChapterVerses } = useContext(AppContext);
     const [firstIndexes, setFirstIndexes] = useState([]);
 
@@ -25,10 +25,12 @@ export default function Reader({ book, chapter, verse }) {
     const data = verses.map((verseVersions) =>
         verseVersions.map((verseObj) => verseObj.verse + "" + verseObj.text).join()
     );
-    return <ReaderList data={data} currentPosition={verse} setFirstIndexes={setFirstIndexes} />;
+    return (
+        <ReaderList data={data} currentPosition={verse} setFirstIndexes={setFirstIndexes} popupWindow={popupWindow} />
+    );
 }
 
-function ReaderList({ data, currentPosition, setFirstIndexes, pageUp, pageDown }) {
+function ReaderList({ data, currentPosition, setFirstIndexes, pageUp, pageDown, popupWindow }) {
     const containerRef = useRef(null);
     // Store the previously computed indexes to avoid redundant state updates.
     const prevFirstIndexesRef = useRef([]);
@@ -82,14 +84,25 @@ function ReaderList({ data, currentPosition, setFirstIndexes, pageUp, pageDown }
             return;
         }
         const targetName = `reader-verse-${currentPosition}`;
-        scroller.scrollTo(targetName, {
-            duration: 800,
-            delay: 0,
-            smooth: "easeInOutQuart",
-            containerId: "readerContainer",
-            horizontal: true, // enables horizontal scrolling
-        });
-    }, [currentPosition, data]);
+        if (popupWindow) {
+            const container = popupWindow.document.getElementById("readerContainer");
+            scroller.scrollTo(targetName, {
+                duration: 800,
+                delay: 0,
+                smooth: "easeInOutQuart",
+                container: container,
+                horizontal: true, // enables horizontal scrolling
+            });
+        } else {
+            scroller.scrollTo(targetName, {
+                duration: 800,
+                delay: 0,
+                smooth: "easeInOutQuart",
+                containerId: "readerContainer",
+                horizontal: true, // enables horizontal scrolling
+            });
+        }
+    }, [currentPosition, data, popupWindow]);
 
     return (
         <Box

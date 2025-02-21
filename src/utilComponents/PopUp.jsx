@@ -1,6 +1,14 @@
 import NewWindow from "react-new-window";
 
-export default function PopUp({ children, altChildren = <></>, popped, setPopped, title = "", parentStyle }) {
+export default function PopUp({
+    children,
+    altChildren = <></>,
+    popped,
+    setPopped,
+    title = "",
+    parentStyle,
+    handlePopupOpen = () => {},
+}) {
     return popped ? (
         <>
             {altChildren}
@@ -8,7 +16,9 @@ export default function PopUp({ children, altChildren = <></>, popped, setPopped
                 title={title}
                 onUnload={() => {
                     setPopped(false);
+                    handlePopupOpen(null);
                 }}
+                onOpen={handlePopupOpen}
             >
                 {children}
             </NewWindow>

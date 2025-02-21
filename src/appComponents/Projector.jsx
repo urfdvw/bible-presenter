@@ -1,7 +1,7 @@
 import PopUp from "../utilComponents/PopUp";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import AppContext from "../AppContext";
 import VerseParagraph from "./VerseParagraph";
 import { NoTheme } from "react-lazy-dark-theme";
@@ -11,9 +11,16 @@ import Reader from "./Reader";
 export default function Projector() {
     const { appConfig, projectorWindowPopped, setProjectorWindowPopped, projectorDisplay, displayVerse } =
         useContext(AppContext);
+    const [popupWindow, setPopupWindow] = useState(null);
+
+    // This callback receives the popup window's window object
+    const handlePopupOpen = (win) => {
+        setPopupWindow(win);
+    };
 
     return (
         <PopUp
+            handlePopupOpen={handlePopupOpen}
             popped={projectorWindowPopped}
             setPopped={setProjectorWindowPopped}
             altChildren={
@@ -47,8 +54,7 @@ export default function Projector() {
                         book={displayVerse.book}
                         chapter={displayVerse.chapter}
                         verse={displayVerse.verse}
-                        endChapter={displayVerse.endChapter}
-                        endVerse={displayVerse.endVerse}
+                        popupWindow={popupWindow}
                     />
                 </Box>
             ) : (
