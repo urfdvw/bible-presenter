@@ -25,6 +25,12 @@
             "type": "string",
             "enum": ["开头", "结尾"],
             "default": "开头"
+        },
+        "display_type": {
+            "title": "投影显示方式",
+            "type": "string",
+            "enum": ["仅选中", "上下文"],
+            "default": "仅选中"
         }
     }
 }
