@@ -131,8 +131,6 @@ export default function TextSearch() {
                         key={`${verse.book}-${verse.chapter}-${verse.verse}-${index}`}
                     />
                 ))}
-
-                {filteredResults.length == 0 && searchTerm && <Typography mb={2}>无相关经文</Typography>}
             </Box>
 
             {/* Bottom pagination controls */}
