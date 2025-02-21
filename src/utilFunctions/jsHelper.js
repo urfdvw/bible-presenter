@@ -79,12 +79,3 @@ export function downloadFile(content, name) {
     // 5. Release the object URL
     URL.revokeObjectURL(url);
 }
-
-// Utility function to compare two arrays for equality.
-export const arraysEqual = (a, b) => {
-    if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-        if (a[i] !== b[i]) return false;
-    }
-    return true;
-};

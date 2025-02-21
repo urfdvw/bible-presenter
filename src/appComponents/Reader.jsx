@@ -3,7 +3,7 @@ import { Box } from "@mui/material";
 import AppContext from "../AppContext";
 import { scroller, Element } from "react-scroll";
 import { ReaderVerseBox } from "./VerseBox";
-import { arraysEqual } from "../utilFunctions/jsHelper";
+import { compareLists } from "../utilFunctions/jsHelper";
 
 export default function Reader({ book, chapter, verse, popupWindow }) {
     const { appConfig, getChapterVerses, pageTurnTrigger, setDisplayVerse } = useContext(AppContext);
@@ -74,7 +74,7 @@ function ReaderList({ verses, currentPosition, setFirstIndexes, popupWindow }) {
                 }
             }
             // Only update external state if the computed indexes have changed.
-            if (!arraysEqual(prevFirstIndexesRef.current, newIndexes)) {
+            if (compareLists(prevFirstIndexesRef.current, newIndexes) !== 0) {
                 prevFirstIndexesRef.current = newIndexes;
                 setFirstIndexes(newIndexes);
             }
