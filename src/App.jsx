@@ -49,9 +49,6 @@ function App() {
     useEffect(() => {
         console.log("helpTabSelection", helpTabSelection);
     }, [helpTabSelection]);
-    // hot keys
-    useLayoutHotKeys(flexModel);
-    useDisplayHotKeys(appConfig);
     // channel
     const { showDevFeatures, showBetaFeatures } = useChannel();
     useEffect(() => {
@@ -60,6 +57,10 @@ function App() {
     // projector control
     const [projectorWindowPopped, setProjectorWindowPopped] = useState(false);
     const [projectorDisplay, setProjectorDisplay] = useState(true);
+    const [pageTurnTrigger, setPageTurnTrigger] = useState(0);
+    // hot keys
+    useLayoutHotKeys(flexModel);
+    useDisplayHotKeys(appConfig, setPageTurnTrigger);
     // Bible Data
     const { getMultipleVerses, getChapterVerses, getSelectedVersions } = useBibleData(
         Bible.cuvs,
@@ -162,6 +163,7 @@ function App() {
                 setHistory,
                 noteList,
                 setNoteList,
+                pageTurnTrigger,
             }}
         >
             <DarkTheme dark={dark} highContrast={highContrast} />

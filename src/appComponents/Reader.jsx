@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useContext, useCallback, useEffect, useState, useRef } from "react";
 import { Box } from "@mui/material";
-import { useContext } from "react";
 import AppContext from "../AppContext";
 import { versesToRangeText, versesToParagraphsMD } from "../bible/utils";
 import { scroller, Element } from "react-scroll";
@@ -14,23 +13,52 @@ const arraysEqual = (a, b) => {
     return true;
 };
 export default function Reader({ book, chapter, verse, popupWindow }) {
-    const { appConfig, getMultipleVerses, getChapterVerses } = useContext(AppContext);
+    const { appConfig, getChapterVerses, pageTurnTrigger, setDisplayVerse } = useContext(AppContext);
     const [firstIndexes, setFirstIndexes] = useState([]);
 
     useEffect(() => {
         console.log(firstIndexes);
     }, [firstIndexes]);
 
+    useEffect(() => {
+        if (firstIndexes.length <= 1) {
+            console.log("no page to turn");
+            return;
+        }
+        if (pageTurnTrigger > 0) {
+            console.log("page down");
+            if (verse >= firstIndexes.at(-1)) {
+                console.log("already at last page");
+                return;
+            }
+            const nextPage = firstIndexes.filter((i) => i > verse)[0];
+            setDisplayVerse((verseObj) => {
+                return { ...verseObj, verse: nextPage, endVerse: nextPage };
+            });
+        } else if (pageTurnTrigger < 0) {
+            console.log("page Up");
+            if (verse < firstIndexes[1]) {
+                console.log("already at first page");
+                return;
+            }
+            const lastPage = firstIndexes.filter((i) => i <= verse).at(-2);
+            setDisplayVerse((verseObj) => {
+                return { ...verseObj, verse: lastPage, endVerse: lastPage };
+            });
+        }
+    }, [pageTurnTrigger]);
+
     const verses = getChapterVerses(book, chapter);
     const data = verses.map((verseVersions) =>
         verseVersions.map((verseObj) => verseObj.verse + "" + verseObj.text).join()
     );
+
     return (
         <ReaderList data={data} currentPosition={verse} setFirstIndexes={setFirstIndexes} popupWindow={popupWindow} />
     );
 }
 
-function ReaderList({ data, currentPosition, setFirstIndexes, pageUp, pageDown, popupWindow }) {
+function ReaderList({ data, currentPosition, setFirstIndexes, popupWindow }) {
     const containerRef = useRef(null);
     // Store the previously computed indexes to avoid redundant state updates.
     const prevFirstIndexesRef = useRef([]);
