@@ -1,8 +1,8 @@
-import React, { useContext, useCallback, useEffect, useState, useRef } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { Box } from "@mui/material";
 import AppContext from "../AppContext";
-import { versesToRangeText, versesToParagraphsMD } from "../bible/utils";
 import { scroller, Element } from "react-scroll";
+import { ReaderVerseBox } from "./VerseBox";
 
 // Utility function to compare two arrays for equality.
 const arraysEqual = (a, b) => {
@@ -49,16 +49,18 @@ export default function Reader({ book, chapter, verse, popupWindow }) {
     }, [pageTurnTrigger]);
 
     const verses = getChapterVerses(book, chapter);
-    const data = verses.map((verseVersions) =>
-        verseVersions.map((verseObj) => verseObj.verse + "" + verseObj.text).join()
-    );
 
     return (
-        <ReaderList data={data} currentPosition={verse} setFirstIndexes={setFirstIndexes} popupWindow={popupWindow} />
+        <ReaderList
+            verses={verses}
+            currentPosition={verse}
+            setFirstIndexes={setFirstIndexes}
+            popupWindow={popupWindow}
+        />
     );
 }
 
-function ReaderList({ data, currentPosition, setFirstIndexes, popupWindow }) {
+function ReaderList({ verses, currentPosition, setFirstIndexes, popupWindow }) {
     const containerRef = useRef(null);
     // Store the previously computed indexes to avoid redundant state updates.
     const prevFirstIndexesRef = useRef([]);
@@ -86,10 +88,10 @@ function ReaderList({ data, currentPosition, setFirstIndexes, popupWindow }) {
         }
     };
 
-    // Run computeFirstIndexes on mount and whenever 'data' changes.
+    // Run computeFirstIndexes on mount and whenever 'verses' changes.
     useEffect(() => {
         computeFirstIndexes();
-    }, [data]);
+    }, [verses]);
 
     // Setup a ResizeObserver on the container to listen for size changes.
     useEffect(() => {
@@ -108,7 +110,7 @@ function ReaderList({ data, currentPosition, setFirstIndexes, popupWindow }) {
 
     // scroll
     useEffect(() => {
-        if (!currentPosition || data.length == 0) {
+        if (!currentPosition || verses.length == 0) {
             return;
         }
         const targetName = `reader-verse-${currentPosition}`;
@@ -130,7 +132,7 @@ function ReaderList({ data, currentPosition, setFirstIndexes, popupWindow }) {
                 horizontal: true, // enables horizontal scrolling
             });
         }
-    }, [currentPosition, data, popupWindow]);
+    }, [currentPosition, verses, popupWindow]);
 
     return (
         <Box
@@ -144,11 +146,9 @@ function ReaderList({ data, currentPosition, setFirstIndexes, popupWindow }) {
             }}
             id="readerContainer"
         >
-            {data.map((string, index) => (
+            {verses.map((verseVersionObjs, index) => (
                 <Element key={index} name={`reader-verse-${index + 1}`}>
-                    <Box key={index} sx={{ border: "solid 1px", width: "calc(100% - 2px)" }}>
-                        {string}
-                    </Box>
+                    <ReaderVerseBox verseObjs={verseVersionObjs} selected={index + 1 === currentPosition} />
                 </Element>
             ))}
         </Box>

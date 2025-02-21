@@ -357,3 +357,18 @@ export function SearchVerseBox({ verseObj, keyWords }) {
         </Box>
     );
 }
+
+export function ReaderVerseBox({ verseObjs, selected }) {
+    return (
+        <Typography sx={{ display: "flex", flexDirection: "row" }}>
+            <Box sx={{ flexGrow: 0, marginRight: "0.5em", color: selected ? "red" : "black" }}>
+                {verseObjs[0].verse}
+            </Box>
+            <Box sx={{ flexGrow: 1 }}>
+                {verseObjs.map((obj) => (
+                    <Typography key={obj.text}>{obj.text}</Typography>
+                ))}
+            </Box>
+        </Typography>
+    );
+}
