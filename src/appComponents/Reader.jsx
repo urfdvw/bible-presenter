@@ -3,15 +3,8 @@ import { Box } from "@mui/material";
 import AppContext from "../AppContext";
 import { scroller, Element } from "react-scroll";
 import { ReaderVerseBox } from "./VerseBox";
+import { arraysEqual } from "../utilFunctions/jsHelper";
 
-// Utility function to compare two arrays for equality.
-const arraysEqual = (a, b) => {
-    if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-        if (a[i] !== b[i]) return false;
-    }
-    return true;
-};
 export default function Reader({ book, chapter, verse, popupWindow }) {
     const { appConfig, getChapterVerses, pageTurnTrigger, setDisplayVerse } = useContext(AppContext);
     const [firstIndexes, setFirstIndexes] = useState([]);
