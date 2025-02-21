@@ -3,6 +3,7 @@ import { Box } from "@mui/material";
 import { useContext } from "react";
 import AppContext from "../AppContext";
 import { versesToRangeText, versesToParagraphsMD } from "../bible/utils";
+import { scroller, Element } from "react-scroll";
 
 // Utility function to compare two arrays for equality.
 const arraysEqual = (a, b) => {
@@ -75,6 +76,21 @@ function ReaderList({ data, currentPosition, setFirstIndexes, pageUp, pageDown }
         };
     }, []);
 
+    // scroll
+    useEffect(() => {
+        if (!currentPosition || data.length == 0) {
+            return;
+        }
+        const targetName = `reader-verse-${currentPosition}`;
+        scroller.scrollTo(targetName, {
+            duration: 800,
+            delay: 0,
+            smooth: "easeInOutQuart",
+            containerId: "readerContainer",
+            horizontal: true, // enables horizontal scrolling
+        });
+    }, [currentPosition, data]);
+
     return (
         <Box
             ref={containerRef}
@@ -83,12 +99,16 @@ function ReaderList({ data, currentPosition, setFirstIndexes, pageUp, pageDown }
                 flexDirection: "column",
                 flexWrap: "wrap",
                 height: "100%",
+                overflowX: "auto",
             }}
+            id="readerContainer"
         >
             {data.map((string, index) => (
-                <Box key={index} sx={{ border: "solid 1px", width: "calc(100% - 2px)" }}>
-                    {string}
-                </Box>
+                <Element key={index} name={`reader-verse-${index + 1}`}>
+                    <Box key={index} sx={{ border: "solid 1px", width: "calc(100% - 2px)" }}>
+                        {string}
+                    </Box>
+                </Element>
             ))}
         </Box>
     );
