@@ -1,5 +1,8 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Box } from "@mui/material";
+import { useContext } from "react";
+import AppContext from "../AppContext";
+import { versesToRangeText, versesToParagraphsMD } from "../bible/utils";
 
 // Utility function to compare two arrays for equality.
 const arraysEqual = (a, b) => {
@@ -9,8 +12,22 @@ const arraysEqual = (a, b) => {
     }
     return true;
 };
+export default function Reader({ book, chapter, verse }) {
+    const { appConfig, getMultipleVerses, getChapterVerses } = useContext(AppContext);
+    const [firstIndexes, setFirstIndexes] = useState([]);
 
-export default function Reader({ data, currentPosition, setFirstIndexes, pageUp, pageDown }) {
+    useEffect(() => {
+        console.log(firstIndexes);
+    }, [firstIndexes]);
+
+    const verses = getChapterVerses(book, chapter);
+    const data = verses.map((verseVersions) =>
+        verseVersions.map((verseObj) => verseObj.verse + "" + verseObj.text).join()
+    );
+    return <ReaderList data={data} currentPosition={verse} setFirstIndexes={setFirstIndexes} />;
+}
+
+function ReaderList({ data, currentPosition, setFirstIndexes, pageUp, pageDown }) {
     const containerRef = useRef(null);
     // Store the previously computed indexes to avoid redundant state updates.
     const prevFirstIndexesRef = useRef([]);
@@ -34,7 +51,6 @@ export default function Reader({ data, currentPosition, setFirstIndexes, pageUp,
             if (!arraysEqual(prevFirstIndexesRef.current, newIndexes)) {
                 prevFirstIndexesRef.current = newIndexes;
                 setFirstIndexes(newIndexes);
-                console.log("setFirstIndexes", newIndexes);
             }
         }
     };
