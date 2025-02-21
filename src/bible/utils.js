@@ -178,7 +178,7 @@ export function versesToParagraphsMD(verses) {
                 return `^${positionText}^${versionVerse[i].text}`;
             })
             .filter((x) => x)
-            .join(startVerse.book === 19 ? "\n\n" : "\n");
+            .join(startVerse.book === 19 ? "\n\n" : " ");
         returnParagraphs.push(paragraph);
     }
     return returnParagraphs;
