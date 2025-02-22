@@ -1,20 +1,54 @@
 import { useContext, useEffect, useState, useRef } from "react";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import AppContext from "../AppContext";
 import { scroller, Element } from "react-scroll";
 import { ReaderVerseBox } from "./VerseBox";
 import { compareLists } from "../utilFunctions/jsHelper";
+import TabToolBar from "../utilComponents/TabToolBar";
+
+export function ReaderTitle() {
+    const { displayVerse, getMultipleVerses } = useContext(AppContext);
+    const verseObj = getMultipleVerses(displayVerse.book, displayVerse.chapter, displayVerse.verse);
+    const title = `${verseObj[0][0].book_name} ${displayVerse.chapter}`;
+    return <Typography>{title}</Typography>;
+}
+
+export function ReaderMenu() {
+    const { setPageTurnTrigger, setVerseTurnTrigger, displayVerse, getMultipleVerses } = useContext(AppContext);
+    const verseObj = getMultipleVerses(displayVerse.book, displayVerse.chapter, displayVerse.verse);
+    const title = `${verseObj[0][0].book_name} ${displayVerse.chapter}`;
+    const tools = [
+        {
+            text: "上一页",
+            handler: () => {
+                setPageTurnTrigger((x) => -(Math.abs(x) + 1));
+            },
+        },
+        {
+            text: "上一节",
+            handler: () => {
+                setVerseTurnTrigger((x) => -(Math.abs(x) + 1));
+            },
+        },
+        {
+            text: "下一节",
+            handler: () => {
+                setVerseTurnTrigger((x) => Math.abs(x) + 1);
+            },
+        },
+        {
+            text: "下一页",
+            handler: () => {
+                setPageTurnTrigger((x) => Math.abs(x) + 1);
+            },
+        },
+    ];
+    return <TabToolBar title={title} tools={tools} />;
+}
 
 export default function Reader({ book, chapter, verse, popupWindow }) {
-    const {
-        appConfig,
-        getChapterVerses,
-        pageTurnTrigger,
-        verseTurnTrigger,
-        setDisplayVerse,
-        getNextVerse,
-        getPreviousVerse,
-    } = useContext(AppContext);
+    const { getChapterVerses, pageTurnTrigger, verseTurnTrigger, setDisplayVerse, getNextVerse, getPreviousVerse } =
+        useContext(AppContext);
 
     const verses = getChapterVerses(book, chapter);
 

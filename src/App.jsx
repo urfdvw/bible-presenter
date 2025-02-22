@@ -167,7 +167,9 @@ function App() {
                 noteList,
                 setNoteList,
                 pageTurnTrigger,
+                setPageTurnTrigger,
                 verseTurnTrigger,
+                setVerseTurnTrigger,
             }}
         >
             <DarkTheme dark={dark} highContrast={highContrast} />

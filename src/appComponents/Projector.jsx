@@ -6,7 +6,7 @@ import AppContext from "../AppContext";
 import { NoTheme } from "react-lazy-dark-theme";
 
 import VerseParagraph from "./VerseParagraph";
-import Reader from "./Reader";
+import Reader, { ReaderMenu, ReaderTitle } from "./Reader";
 
 function ProjectorContext() {
     const { appConfig, projectorWindowPopped, setProjectorWindowPopped, projectorDisplay, displayVerse } =
@@ -24,18 +24,28 @@ function ProjectorContext() {
             popped={projectorWindowPopped}
             setPopped={setProjectorWindowPopped}
             parentStyle={{ height: "100%" }}
-            // altChildren={<></>}
+            altChildren={<ReaderMenu />}
             popChildren={
                 projectorDisplay ? (
                     <Box
-                        style={{ height: "100%", zoom: appConfig.config.bible_display.zoom / 100, overflowY: "scroll" }}
+                        style={{ zoom: appConfig.config.bible_display.zoom / 100 }}
+                        sx={{
+                            height: "100%",
+                            display: "flex",
+                            flexDirection: "column",
+                        }}
                     >
-                        <Reader
-                            book={displayVerse.book}
-                            chapter={displayVerse.chapter}
-                            verse={displayVerse.verse}
-                            popupWindow={popupWindow}
-                        />
+                        <Box sx={{ flexGrow: 0 }}>
+                            <ReaderTitle />
+                        </Box>
+                        <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
+                            <Reader
+                                book={displayVerse.book}
+                                chapter={displayVerse.chapter}
+                                verse={displayVerse.verse}
+                                popupWindow={popupWindow}
+                            />
+                        </Box>
                     </Box>
                 ) : (
                     <NoTheme>
@@ -44,13 +54,27 @@ function ProjectorContext() {
                 )
             }
         >
-            <Box style={{ height: "100%", zoom: appConfig.config.bible_display.zoom / 100, overflowY: "scroll" }}>
-                <Reader
-                    book={displayVerse.book}
-                    chapter={displayVerse.chapter}
-                    verse={displayVerse.verse}
-                    popupWindow={popupWindow}
-                />
+            <Box
+                sx={{
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                }}
+            >
+                <Box sx={{ flexGrow: 0 }}>
+                    <ReaderMenu />
+                </Box>
+                <Box
+                    style={{ zoom: appConfig.config.bible_display.zoom / 100 }}
+                    sx={{ flexGrow: 1, overflowY: "auto" }}
+                >
+                    <Reader
+                        book={displayVerse.book}
+                        chapter={displayVerse.chapter}
+                        verse={displayVerse.verse}
+                        popupWindow={popupWindow}
+                    />
+                </Box>
             </Box>
         </PopUp>
     );
@@ -65,7 +89,10 @@ function ProjectorSelected() {
             setPopped={setProjectorWindowPopped}
             parentStyle={{ height: "100%" }}
             altChildren={
-                <Box style={{ height: "100%", zoom: appConfig.config.bible_display.zoom / 100, overflowY: "scroll" }}>
+                <Box
+                    style={{ zoom: appConfig.config.bible_display.zoom / 100 }}
+                    sx={{ height: "100%", overflowY: "scroll" }}
+                >
                     <VerseParagraph
                         book={displayVerse.book}
                         chapter={displayVerse.chapter}
@@ -77,7 +104,10 @@ function ProjectorSelected() {
             }
         >
             {projectorDisplay ? (
-                <Box style={{ height: "100%", zoom: appConfig.config.bible_display.zoom / 100, overflowY: "scroll" }}>
+                <Box
+                    style={{ zoom: appConfig.config.bible_display.zoom / 100 }}
+                    sx={{ height: "100%", overflowY: "scroll" }}
+                >
                     <VerseParagraph
                         book={displayVerse.book}
                         chapter={displayVerse.chapter}
