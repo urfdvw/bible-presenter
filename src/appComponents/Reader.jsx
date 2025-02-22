@@ -46,11 +46,18 @@ export function ReaderMenu() {
     return <TabToolBar title={title} tools={tools} />;
 }
 
-export default function Reader({ book, chapter, verse, popupWindow }) {
-    const { getChapterVerses, pageTurnTrigger, verseTurnTrigger, setDisplayVerse, getNextVerse, getPreviousVerse } =
-        useContext(AppContext);
+export default function Reader({ popupWindow }) {
+    const {
+        getChapterVerses,
+        pageTurnTrigger,
+        verseTurnTrigger,
+        displayVerse,
+        setDisplayVerse,
+        getNextVerse,
+        getPreviousVerse,
+    } = useContext(AppContext);
 
-    const verses = getChapterVerses(book, chapter);
+    const verses = getChapterVerses(displayVerse.book, displayVerse.chapter);
 
     const [firstIndexes, setFirstIndexes] = useState([]);
 
@@ -65,7 +72,7 @@ export default function Reader({ book, chapter, verse, popupWindow }) {
         }
         if (pageTurnTrigger > 0) {
             console.log("page down");
-            if (verse >= firstIndexes.at(-1)) {
+            if (displayVerse.verse >= firstIndexes.at(-1)) {
                 console.log("to next chapter");
                 setDisplayVerse((verseObj) => {
                     const nextVerse = getNextVerse(verseObj.book, verseObj.chapter, verses.at(-1)[0].verse);
@@ -73,13 +80,13 @@ export default function Reader({ book, chapter, verse, popupWindow }) {
                 });
                 return;
             }
-            const nextPage = firstIndexes.filter((i) => i > verse)[0];
+            const nextPage = firstIndexes.filter((i) => i > displayVerse.verse)[0];
             setDisplayVerse((verseObj) => {
                 return { ...verseObj, verse: nextPage, endChapter: null, endVerse: null };
             });
         } else if (pageTurnTrigger < 0) {
             console.log("page Up");
-            if (verse < firstIndexes[1]) {
+            if (displayVerse.verse < firstIndexes[1]) {
                 console.log("to previous chapter");
                 setDisplayVerse((verseObj) => {
                     const previousVerse = getPreviousVerse(verseObj.book, verseObj.chapter, 1);
@@ -87,7 +94,7 @@ export default function Reader({ book, chapter, verse, popupWindow }) {
                 });
                 return;
             }
-            const lastPage = firstIndexes.filter((i) => i <= verse).at(-2);
+            const lastPage = firstIndexes.filter((i) => i <= displayVerse.verse).at(-2);
             setDisplayVerse((verseObj) => {
                 return { ...verseObj, verse: lastPage, endChapter: null, endVerse: null };
             });
@@ -113,7 +120,7 @@ export default function Reader({ book, chapter, verse, popupWindow }) {
     return (
         <ReaderList
             verses={verses}
-            currentPosition={verse}
+            currentPosition={displayVerse.verse}
             setFirstIndexes={setFirstIndexes}
             popupWindow={popupWindow}
         />
