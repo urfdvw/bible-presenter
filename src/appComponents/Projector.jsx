@@ -7,46 +7,60 @@ import { NoTheme } from "react-lazy-dark-theme";
 import VerseParagraph from "./VerseParagraph";
 import Reader, { ReaderMenu, ReaderTitle } from "./Reader";
 
-function ProjectorContext() {
+export default function Projector() {
     const { appConfig, projectorWindowPopped, setProjectorWindowPopped, projectorDisplay } = useContext(AppContext);
     const [popupWindow, setPopupWindow] = useState(null);
 
-    // This callback receives the popup window's window object
-    const handlePopupOpen = (win) => {
-        setPopupWindow(win);
-    };
+    var Pop;
+    var Alt;
+    var Children;
 
-    return (
-        <PopUp
-            handlePopupOpen={handlePopupOpen}
-            popped={projectorWindowPopped}
-            setPopped={setProjectorWindowPopped}
-            parentStyle={{ height: "100%" }}
-            altChildren={<ReaderMenu />}
-            popChildren={
-                projectorDisplay ? (
-                    <Box
-                        style={{ zoom: appConfig.config.bible_display.zoom / 100 }}
-                        sx={{
-                            height: "100%",
-                            display: "flex",
-                            flexDirection: "column",
-                        }}
-                    >
-                        <Box sx={{ flexGrow: 0 }}>
-                            <ReaderTitle />
-                        </Box>
-                        <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
-                            <Reader popupWindow={popupWindow} />
-                        </Box>
-                    </Box>
-                ) : (
-                    <NoTheme>
-                        <div style={{ backgroundColor: "black", height: "100000px" }}></div>
-                    </NoTheme>
-                )
-            }
-        >
+    if (appConfig.config.bible_display.display_type === "仅选中") {
+        Pop = null;
+        Alt = (
+            <Box
+                style={{ zoom: appConfig.config.bible_display.zoom / 100 }}
+                sx={{ height: "100%", overflowY: "scroll" }}
+            >
+                <VerseParagraph />
+            </Box>
+        );
+        Children = projectorDisplay ? (
+            <Box
+                style={{ zoom: appConfig.config.bible_display.zoom / 100 }}
+                sx={{ height: "100%", overflowY: "scroll" }}
+            >
+                <VerseParagraph />
+            </Box>
+        ) : (
+            <NoTheme>
+                <div style={{ backgroundColor: "black", height: "100000px" }}></div>
+            </NoTheme>
+        );
+    } else if (appConfig.config.bible_display.display_type === "上下文") {
+        Pop = projectorDisplay ? (
+            <Box
+                style={{ zoom: appConfig.config.bible_display.zoom / 100 }}
+                sx={{
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                }}
+            >
+                <Box sx={{ flexGrow: 0 }}>
+                    <ReaderTitle />
+                </Box>
+                <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
+                    <Reader popupWindow={popupWindow} />
+                </Box>
+            </Box>
+        ) : (
+            <NoTheme>
+                <div style={{ backgroundColor: "black", height: "100000px" }}></div>
+            </NoTheme>
+        );
+        Alt = <ReaderMenu />;
+        Children = (
             <Box
                 sx={{
                     height: "100%",
@@ -64,48 +78,24 @@ function ProjectorContext() {
                     <Reader popupWindow={popupWindow} />
                 </Box>
             </Box>
-        </PopUp>
-    );
-}
+        );
+    }
 
-function ProjectorSelected() {
-    const { appConfig, projectorWindowPopped, setProjectorWindowPopped, projectorDisplay, displayVerse } =
-        useContext(AppContext);
+    // This callback receives the popup window's window object
+    const handlePopupOpen = (win) => {
+        setPopupWindow(win);
+    };
+
     return (
         <PopUp
+            handlePopupOpen={handlePopupOpen}
             popped={projectorWindowPopped}
             setPopped={setProjectorWindowPopped}
             parentStyle={{ height: "100%" }}
-            altChildren={
-                <Box
-                    style={{ zoom: appConfig.config.bible_display.zoom / 100 }}
-                    sx={{ height: "100%", overflowY: "scroll" }}
-                >
-                    <VerseParagraph />
-                </Box>
-            }
+            altChildren={Alt}
+            popChildren={Pop}
         >
-            {projectorDisplay ? (
-                <Box
-                    style={{ zoom: appConfig.config.bible_display.zoom / 100 }}
-                    sx={{ height: "100%", overflowY: "scroll" }}
-                >
-                    <VerseParagraph />
-                </Box>
-            ) : (
-                <NoTheme>
-                    <div style={{ backgroundColor: "black", height: "100000px" }}></div>
-                </NoTheme>
-            )}
+            {Children}
         </PopUp>
     );
-}
-
-export default function Projector() {
-    const { appConfig } = useContext(AppContext);
-    if (appConfig.config.bible_display.display_type === "仅选中") {
-        return <ProjectorSelected />;
-    } else if (appConfig.config.bible_display.display_type === "上下文") {
-        return <ProjectorContext />;
-    }
 }
