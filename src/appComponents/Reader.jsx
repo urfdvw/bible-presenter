@@ -6,7 +6,18 @@ import { ReaderVerseBox } from "./VerseBox";
 import { compareLists } from "../utilFunctions/jsHelper";
 
 export default function Reader({ book, chapter, verse, popupWindow }) {
-    const { appConfig, getChapterVerses, pageTurnTrigger, setDisplayVerse } = useContext(AppContext);
+    const {
+        appConfig,
+        getChapterVerses,
+        pageTurnTrigger,
+        verseTurnTrigger,
+        setDisplayVerse,
+        getNextVerse,
+        getPreviousVerse,
+    } = useContext(AppContext);
+
+    const verses = getChapterVerses(book, chapter);
+
     const [firstIndexes, setFirstIndexes] = useState([]);
 
     useEffect(() => {
@@ -21,27 +32,49 @@ export default function Reader({ book, chapter, verse, popupWindow }) {
         if (pageTurnTrigger > 0) {
             console.log("page down");
             if (verse >= firstIndexes.at(-1)) {
-                console.log("already at last page");
+                console.log("to next chapter");
+                setDisplayVerse((verseObj) => {
+                    const nextVerse = getNextVerse(verseObj.book, verseObj.chapter, verses.at(-1)[0].verse);
+                    return nextVerse;
+                });
                 return;
             }
             const nextPage = firstIndexes.filter((i) => i > verse)[0];
             setDisplayVerse((verseObj) => {
-                return { ...verseObj, verse: nextPage, endVerse: nextPage };
+                return { ...verseObj, verse: nextPage, endChapter: null, endVerse: null };
             });
         } else if (pageTurnTrigger < 0) {
             console.log("page Up");
             if (verse < firstIndexes[1]) {
-                console.log("already at first page");
+                console.log("to previous chapter");
+                setDisplayVerse((verseObj) => {
+                    const previousVerse = getPreviousVerse(verseObj.book, verseObj.chapter, 1);
+                    return previousVerse;
+                });
                 return;
             }
             const lastPage = firstIndexes.filter((i) => i <= verse).at(-2);
             setDisplayVerse((verseObj) => {
-                return { ...verseObj, verse: lastPage, endVerse: lastPage };
+                return { ...verseObj, verse: lastPage, endChapter: null, endVerse: null };
             });
         }
     }, [pageTurnTrigger]);
 
-    const verses = getChapterVerses(book, chapter);
+    useEffect(() => {
+        if (verseTurnTrigger > 0) {
+            console.log("next verse");
+            setDisplayVerse((verseObj) => {
+                const nextVerse = getNextVerse(verseObj.book, verseObj.chapter, verseObj.verse);
+                return nextVerse;
+            });
+        } else if (verseTurnTrigger < 0) {
+            console.log("previous verse");
+            setDisplayVerse((verseObj) => {
+                const previousVerse = getPreviousVerse(verseObj.book, verseObj.chapter, verseObj.verse);
+                return previousVerse;
+            });
+        }
+    }, [verseTurnTrigger]);
 
     return (
         <ReaderList

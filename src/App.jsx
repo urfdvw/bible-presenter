@@ -58,11 +58,12 @@ function App() {
     const [projectorWindowPopped, setProjectorWindowPopped] = useState(false);
     const [projectorDisplay, setProjectorDisplay] = useState(true);
     const [pageTurnTrigger, setPageTurnTrigger] = useState(0);
+    const [verseTurnTrigger, setVerseTurnTrigger] = useState(0);
     // hot keys
     useLayoutHotKeys(flexModel);
-    useDisplayHotKeys(appConfig, setPageTurnTrigger);
+    useDisplayHotKeys(appConfig, setPageTurnTrigger, setVerseTurnTrigger);
     // Bible Data
-    const { getMultipleVerses, getChapterVerses, getSelectedVersions } = useBibleData(
+    const { getMultipleVerses, getChapterVerses, getSelectedVersions, getNextVerse, getPreviousVerse } = useBibleData(
         Bible.cuvs,
         Bible.cuvt,
         Bible.asv,
@@ -155,6 +156,8 @@ function App() {
                 getSelectedVersions,
                 getMultipleVerses,
                 getChapterVerses,
+                getNextVerse,
+                getPreviousVerse,
                 displayVerse,
                 setDisplayVerse,
                 previewVerse,
@@ -164,6 +167,7 @@ function App() {
                 noteList,
                 setNoteList,
                 pageTurnTrigger,
+                verseTurnTrigger,
             }}
         >
             <DarkTheme dark={dark} highContrast={highContrast} />

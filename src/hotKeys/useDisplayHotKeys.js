@@ -1,5 +1,5 @@
 import { useHotkeys } from "react-hotkeys-hook";
-export default function useDisplayHotKeys(config, setPageTurnTrigger) {
+export default function useDisplayHotKeys(config, setPageTurnTrigger, setVerseTurnTrigger) {
     useHotkeys("alt+equal", () => {
         console.log("hotkey: increase display size");
         config.setConfigField("bible_display", "zoom", parseInt(config.config.bible_display.zoom * 1.2));
@@ -19,5 +19,13 @@ export default function useDisplayHotKeys(config, setPageTurnTrigger) {
     useHotkeys("alt+right", () => {
         console.log("hotkey: page down");
         setPageTurnTrigger((x) => Math.abs(x) + 1);
+    });
+    useHotkeys("alt+up", () => {
+        console.log("hotkey: previous verse");
+        setVerseTurnTrigger((x) => -(Math.abs(x) + 1));
+    });
+    useHotkeys("alt+down", () => {
+        console.log("hotkey: next verse");
+        setVerseTurnTrigger((x) => Math.abs(x) + 1);
     });
 }

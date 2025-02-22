@@ -112,6 +112,9 @@ export function getMultipleVerses(versions, book, chapter, verse, endChapter, en
 }
 
 export function _getChapterEndVerse(versions, book, chapter) {
+    if (!_verseExists(versions, book, chapter, 1)) {
+        return -1;
+    }
     return Math.max(
         ...versions.map((version) =>
             Math.max(
@@ -182,4 +185,69 @@ export function versesToParagraphsMD(verses) {
         returnParagraphs.push(paragraph);
     }
     return returnParagraphs;
+}
+
+/**
+ * navigation
+ */
+
+export function getNextVerse(versions, book, chapter, verse) {
+    var attempt;
+    for (var i = 1; i <= 3; i++) {
+        attempt = {
+            book: book,
+            chapter: chapter,
+            verse: verse + i,
+        };
+        if (_verseExists(versions, attempt.book, attempt.chapter, attempt.verse)) {
+            return attempt;
+        }
+    }
+
+    attempt = {
+        book: book,
+        chapter: chapter + 1,
+        verse: 1,
+    };
+    if (_verseExists(versions, attempt.book, attempt.chapter, attempt.verse)) {
+        return attempt;
+    }
+
+    console.log("already at the end of book");
+
+    return {
+        book: book,
+        chapter: chapter,
+        verse: verse,
+    };
+}
+export function getPreviousVerse(versions, book, chapter, verse) {
+    var attempt;
+    for (var i = 1; i <= 3; i++) {
+        attempt = {
+            book: book,
+            chapter: chapter,
+            verse: verse - i,
+        };
+        if (_verseExists(versions, attempt.book, attempt.chapter, attempt.verse)) {
+            return attempt;
+        }
+    }
+
+    attempt = {
+        book: book,
+        chapter: chapter - 1,
+        verse: _getChapterEndVerse(versions, book, chapter - 1),
+    };
+    if (_verseExists(versions, attempt.book, attempt.chapter, attempt.verse)) {
+        return attempt;
+    }
+
+    console.log("already at the start of book");
+
+    return {
+        book: book,
+        chapter: chapter,
+        verse: verse,
+    };
 }
