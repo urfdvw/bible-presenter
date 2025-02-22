@@ -41,19 +41,19 @@ function App() {
     const { notify, clearNotification, notificationText, notificationHeight } = useNotification();
     // config
     const appConfig = useConfig(schemas);
-    useEffect(() => {
-        console.log("config", appConfig);
-    }, [appConfig]);
+    // useEffect(() => {
+    //     console.log("config", appConfig);
+    // }, [appConfig]);
     // help
     const helpTabSelection = useTabValueName(docs);
-    useEffect(() => {
-        console.log("helpTabSelection", helpTabSelection);
-    }, [helpTabSelection]);
+    // useEffect(() => {
+    //     console.log("helpTabSelection", helpTabSelection);
+    // }, [helpTabSelection]);
     // channel
     const { showDevFeatures, showBetaFeatures } = useChannel();
-    useEffect(() => {
-        console.log("[showDevFeatures, showBetaFeatures]", [showDevFeatures, showBetaFeatures]);
-    }, [showDevFeatures, showBetaFeatures]);
+    // useEffect(() => {
+    //     console.log("[showDevFeatures, showBetaFeatures]", [showDevFeatures, showBetaFeatures]);
+    // }, [showDevFeatures, showBetaFeatures]);
     // projector control
     const [projectorWindowPopped, setProjectorWindowPopped] = useState(false);
     const [projectorDisplay, setProjectorDisplay] = useState(true);

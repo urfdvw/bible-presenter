@@ -61,9 +61,9 @@ export default function Reader({ popupWindow }) {
 
     const [firstIndexes, setFirstIndexes] = useState([]);
 
-    useEffect(() => {
-        console.log(firstIndexes);
-    }, [firstIndexes]);
+    // useEffect(() => {
+    //     console.log(firstIndexes);
+    // }, [firstIndexes]);
 
     useEffect(() => {
         if (firstIndexes.length <= 1) {
