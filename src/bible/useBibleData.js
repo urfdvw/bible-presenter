@@ -40,9 +40,14 @@ export default function useBibleData(
         return getPreviousVerse(versions, book, chapter, verse);
     }
 
-    function _verseExists(book, chapter, verse) {
+    function _verseExists(book, chapter, verse, endChapter, endVerse) {
+        if (!endChapter) {
+            endChapter = chapter;
+        }
         const versions = _getSelectedVersions();
-        return verseExists(versions, book, chapter, verse);
+        const startExists = verseExists(versions, book, chapter, verse);
+        const endExists = verseExists(versions, book, endChapter, endVerse);
+        return endVerse ? startExists && endExists : startExists;
     }
 
     return {

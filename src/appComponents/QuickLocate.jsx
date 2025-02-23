@@ -73,12 +73,24 @@ export default function QuickLocate() {
             <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
                 <Box>
                     <IMETextArea text={text} setText={setText} DICTIONARY={IMEDictionary} />
-                    {verseExists(displayTarget.book, displayTarget.chapter, displayTarget.verse) ? (
+                    {verseExists(
+                        displayTarget.book,
+                        displayTarget.chapter,
+                        displayTarget.verse,
+                        displayTarget.endChapter,
+                        displayTarget.endVerse
+                    ) ? (
                         <VerseParagraph verseObj={displayTarget} />
                     ) : (
                         "欲访问的经节不存在"
                     )}
-                    {verseExists(previewTarget.book, previewTarget.chapter, previewTarget.verse) ? (
+                    {verseExists(
+                        previewTarget.book,
+                        previewTarget.chapter,
+                        previewTarget.verse,
+                        previewTarget.endChapter,
+                        previewTarget.endVerse
+                    ) ? (
                         <VerseParagraph verseObj={previewTarget} />
                     ) : (
                         "欲访问的经节不存在"
