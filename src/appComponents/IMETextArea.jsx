@@ -176,12 +176,47 @@ export default function IMETextArea({ text, setText, DICTIONARY }) {
         updateSelectionStart();
     };
 
+    // HANDLER: Enter
+    const handleEnter = (event) => {
+        event.preventDefault();
+        setText("");
+        console.log("Enter pressed");
+        // You can handle the normal Enter action here if desired
+    };
+
+    // HANDLER: Shift+Enter
+    const handleShiftEnter = (event) => {
+        event.preventDefault();
+        setText("");
+        console.log("Shift-Enter pressed");
+        // Handle multi-line break, for example, if you want special logic
+    };
+
+    // HANDLER: Ctrl/Cmd+Enter
+    const handleCtrlEnter = (event) => {
+        event.preventDefault();
+        setText("");
+        console.log("Ctrl/Cmd-Enter pressed");
+        // Possibly handle form submission or something else
+    };
+
     //
     // If we have recommendations, pressing 1..9 picks that item.
     //
     const handleKeyDown = (event) => {
-        if (recommendations.length === 0) return;
+        // Detect Enter variants first
+        if (event.key === "Enter") {
+            if (event.shiftKey) {
+                handleShiftEnter(event);
+            } else if (event.ctrlKey || event.metaKey) {
+                handleCtrlEnter(event);
+            } else {
+                handleEnter(event);
+            }
+        }
 
+        // Now handle numeric recommendation picks
+        if (recommendations.length === 0) return;
         const num = parseInt(event.key, 10);
         if (!isNaN(num) && num >= 1 && num <= recommendations.length) {
             // Replace last word with dictionary value
@@ -235,12 +270,8 @@ export default function IMETextArea({ text, setText, DICTIONARY }) {
                 onClick={updateSelectionStart}
                 onSelect={updateSelectionStart}
                 onKeyUp={updateSelectionStart}
-                multiline
-                minRows={5}
-                maxRows={10}
                 variant="outlined"
                 fullWidth
-                label="IME-like TextArea"
             />
 
             {/* Hidden mirror for caret measurement */}
