@@ -79,3 +79,7 @@ export function downloadFile(content, name) {
     // 5. Release the object URL
     URL.revokeObjectURL(url);
 }
+
+export function filterUndefined(original) {
+    return Object.fromEntries(Object.entries(original).filter(([key, value]) => value !== undefined));
+}

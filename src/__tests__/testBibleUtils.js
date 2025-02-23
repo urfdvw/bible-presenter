@@ -1,6 +1,6 @@
 import {
     getSelectedVersions,
-    _verseExists,
+    verseExists,
     _getVerseInVersion,
     _getVerseIndexInVersion,
     getMultipleVerses,
@@ -71,7 +71,7 @@ describe("Test getSelectedVersions", () => {
 describe("Test verseExists", () => {
     test("HE single version", () => {
         expect(
-            _verseExists(
+            verseExists(
                 [
                     {
                         verses: [
@@ -89,7 +89,7 @@ describe("Test verseExists", () => {
 
     test("BE single version", () => {
         expect(
-            _verseExists(
+            verseExists(
                 [
                     {
                         verses: [
@@ -107,7 +107,7 @@ describe("Test verseExists", () => {
 
     test("HE multiple version match all", () => {
         expect(
-            _verseExists(
+            verseExists(
                 [
                     {
                         verses: [
@@ -131,7 +131,7 @@ describe("Test verseExists", () => {
 
     test("HE multiple version match one", () => {
         expect(
-            _verseExists(
+            verseExists(
                 [
                     {
                         verses: [
@@ -155,7 +155,7 @@ describe("Test verseExists", () => {
 
     test("BE multiple version", () => {
         expect(
-            _verseExists(
+            verseExists(
                 [
                     {
                         verses: [

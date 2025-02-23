@@ -7,9 +7,10 @@ import VerseParagraph from "./VerseParagraph";
 import IMETextArea from "./IMETextArea";
 import { siDict, trDict, enDict } from "../bible";
 import { getBook, getChapterVerse } from "../bible/parser";
+import { filterUndefined } from "../utilFunctions/jsHelper";
 
 export default function QuickLocate() {
-    const { appConfig, helpTabSelection, flexModel, displayVerse, verseExists } = useContext(AppContext);
+    const { appConfig, helpTabSelection, flexModel, displayVerse, previewVerse, verseExists } = useContext(AppContext);
     const [text, setText] = useState("");
     const [stagedVerse, setStagedVerse] = useState({ verse: 99 });
     const [displayTarget, setDisplayTarget] = useState(displayVerse);
@@ -17,18 +18,35 @@ export default function QuickLocate() {
 
     useEffect(() => {
         const { book, remnant } = getBook(text);
-        console.log(book, remnant);
+        // console.log(book, remnant);
         const { chapter, verse, endChapter, endVerse } = getChapterVerse(remnant);
-        console.log(chapter, verse, endChapter, endVerse);
+        // console.log(chapter, verse, endChapter, endVerse);
+        setStagedVerse({
+            book: book,
+            chapter: chapter,
+            verse: verse,
+            endChapter: endChapter,
+            endVerse: endVerse,
+        });
     }, [text]);
 
     useEffect(() => {
         if (!displayVerse) {
             return;
         }
-        console.log(displayVerse, stagedVerse, { ...displayVerse, ...stagedVerse });
-        setDisplayTarget({ ...displayVerse, ...stagedVerse });
+        const filtered = filterUndefined(stagedVerse);
+        console.log(displayVerse, stagedVerse, { ...displayVerse, ...filtered });
+        setDisplayTarget({ ...displayVerse, ...filtered });
     }, [stagedVerse, displayVerse]);
+
+    useEffect(() => {
+        if (!previewVerse) {
+            return;
+        }
+        const filtered = filterUndefined(stagedVerse);
+        console.log(previewVerse, stagedVerse, { ...previewVerse, ...filtered });
+        setPreviewTarget({ ...previewVerse, ...filtered });
+    }, [stagedVerse, previewVerse]);
 
     const tools = [
         {
@@ -57,6 +75,11 @@ export default function QuickLocate() {
                     <IMETextArea text={text} setText={setText} DICTIONARY={IMEDictionary} />
                     {verseExists(displayTarget.book, displayTarget.chapter, displayTarget.verse) ? (
                         <VerseParagraph verseObj={displayTarget} />
+                    ) : (
+                        "欲访问的经节不存在"
+                    )}
+                    {verseExists(previewTarget.book, previewTarget.chapter, previewTarget.verse) ? (
+                        <VerseParagraph verseObj={previewTarget} />
                     ) : (
                         "欲访问的经节不存在"
                     )}
