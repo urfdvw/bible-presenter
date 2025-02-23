@@ -8,7 +8,7 @@ import IMETextArea from "./IMETextArea";
 import { siDict, trDict, enDict } from "../bible";
 
 export default function QuickLocate() {
-    const { helpTabSelection, flexModel, displayVerse, verseExists } = useContext(AppContext);
+    const { appConfig, helpTabSelection, flexModel, displayVerse, verseExists } = useContext(AppContext);
     const [stagedVerse, setStagedVerse] = useState({ verse: 99 });
     const [displayTarget, setDisplayTarget] = useState(displayVerse);
     const [previewTarget, setPreviewTarget] = useState({});
@@ -33,6 +33,13 @@ export default function QuickLocate() {
 
     const [text, setText] = useState("");
 
+    const IMEDictionary =
+        appConfig.config.bible_display.language === "English"
+            ? enDict
+            : appConfig.config.bible_display.chinese === "简体"
+            ? siDict
+            : trDict;
+
     return (
         <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
             <Box sx={{ flexGrow: 0 }}>
@@ -40,7 +47,7 @@ export default function QuickLocate() {
             </Box>
             <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
                 <Box>
-                    <IMETextArea text={text} setText={setText} DICTIONARY={siDict} />
+                    <IMETextArea text={text} setText={setText} DICTIONARY={IMEDictionary} />
                     {verseExists(displayTarget.book, displayTarget.chapter, displayTarget.verse) ? (
                         <VerseParagraph verseObj={displayTarget} />
                     ) : (
