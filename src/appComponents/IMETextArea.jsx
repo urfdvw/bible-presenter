@@ -24,7 +24,6 @@ const Mirror = styled("div")({
     border: "1px solid transparent",
     boxSizing: "border-box",
     width: "100%",
-    // if your TextField can scroll, ensure the mirror can "scroll" the same
     overflowWrap: "break-word",
 });
 
@@ -33,9 +32,7 @@ const RecommendationBox = styled(Paper)(({ top, left }) => ({
     top,
     left,
     width: 300,
-    // maxHeight: 200,
     overflowY: "auto",
-    // Make sure the recommendation box is on top
     zIndex: 99999,
 }));
 
@@ -55,29 +52,45 @@ function computeScore(input, candidate) {
     return matchCount * 10 - candidate.length;
 }
 
-//
-// Return partial matches for the last word, sorted by score.
-//
+/**
+ * Return partial matches for the last word, sorted by score,
+ * then remove duplicates by dictionary value (keeping top-scoring one).
+ */
 function getRecommendations(inputValue, dictionary) {
     const words = inputValue.split(/\s+/);
     const lastWord = words[words.length - 1].toLowerCase();
 
     if (!lastWord) return [];
 
+    // Collect all keys whose prefix matches lastWord
     const candidates = [];
-    Object.keys(dictionary).forEach((key) => {
+    for (const key of Object.keys(dictionary)) {
         if (key.toLowerCase().startsWith(lastWord)) {
             candidates.push(key);
         }
-    });
+    }
 
+    // Sort by score (descending)
     candidates.sort((a, b) => {
         const scoreA = computeScore(lastWord, a.toLowerCase());
         const scoreB = computeScore(lastWord, b.toLowerCase());
-        return scoreB - scoreA; // descending
+        return scoreB - scoreA;
     });
 
-    return candidates.slice(0, 10);
+    // Remove duplicates by dictionary value
+    // Keep only the first occurrence (which is the highest score).
+    const seenValues = new Set();
+    const uniqueCandidates = [];
+    for (const candidate of candidates) {
+        const value = dictionary[candidate];
+        if (!seenValues.has(value)) {
+            seenValues.add(value);
+            uniqueCandidates.push(candidate);
+        }
+    }
+
+    // Return the top 10 unique candidates
+    return uniqueCandidates.slice(0, 10);
 }
 
 export default function IMETextArea({ text, setText, DICTIONARY }) {
@@ -94,12 +107,10 @@ export default function IMETextArea({ text, setText, DICTIONARY }) {
     useEffect(() => {
         const newRecs = getRecommendations(text, DICTIONARY);
         setRecommendations(newRecs);
-    }, [text]);
+    }, [text, DICTIONARY]);
 
     //
     // Keep track of the caret's position (selectionStart).
-    // We'll update this on any user event that can move the caret:
-    //   onSelect, onKeyUp, onClick, onChange, etc.
     //
     const updateSelectionStart = useCallback(() => {
         if (textFieldRef.current) {
@@ -116,7 +127,6 @@ export default function IMETextArea({ text, setText, DICTIONARY }) {
 
         const mirror = mirrorRef.current;
         // Sync the mirror's scroll positions if the TextField can scroll
-        // (especially in multiline mode).
         mirror.scrollTop = textFieldRef.current.scrollTop;
         mirror.scrollLeft = textFieldRef.current.scrollLeft;
 
@@ -124,12 +134,12 @@ export default function IMETextArea({ text, setText, DICTIONARY }) {
         const beforeCaret = text.slice(0, selectionStart);
         const afterCaret = text.slice(selectionStart);
 
-        mirror.innerHTML = ""; // clear it
+        mirror.innerHTML = "";
 
         const beforeTextNode = document.createTextNode(beforeCaret);
         mirror.appendChild(beforeTextNode);
 
-        // Insert a <span> with zero-width space
+        // Insert a <span> with a zero-width space
         const caretSpan = document.createElement("span");
         caretSpan.textContent = "\u200B"; // zero-width space
         mirror.appendChild(caretSpan);
@@ -163,7 +173,6 @@ export default function IMETextArea({ text, setText, DICTIONARY }) {
     //
     const handleChange = (event) => {
         setText(event.target.value);
-        // also update selectionStart since typing moves the caret
         updateSelectionStart();
     };
 
@@ -171,7 +180,6 @@ export default function IMETextArea({ text, setText, DICTIONARY }) {
     // If we have recommendations, pressing 1..9 picks that item.
     //
     const handleKeyDown = (event) => {
-        // Do nothing if no recommendations
         if (recommendations.length === 0) return;
 
         const num = parseInt(event.key, 10);
@@ -185,11 +193,9 @@ export default function IMETextArea({ text, setText, DICTIONARY }) {
             const newText = words.join(" ");
             setText(newText);
 
-            // Prevent the typed digit from appearing
             event.preventDefault();
 
             // Move the caret to the end of the replaced text
-            // Wait for React to update the text, then set the selection
             requestAnimationFrame(() => {
                 if (textFieldRef.current) {
                     textFieldRef.current.setSelectionRange(newText.length, newText.length);
@@ -212,7 +218,6 @@ export default function IMETextArea({ text, setText, DICTIONARY }) {
         const newText = words.join(" ");
         setText(newText);
 
-        // Re-focus the text field and place caret at end of inserted text
         requestAnimationFrame(() => {
             textFieldRef.current?.focus();
             textFieldRef.current?.setSelectionRange(newText.length, newText.length);
