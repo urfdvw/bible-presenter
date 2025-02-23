@@ -4,6 +4,7 @@ import { useContext, useEffect, useState } from "react";
 import AppContext from "../AppContext";
 import { Box } from "@mui/material";
 import VerseParagraph from "./VerseParagraph";
+import IMETextArea from "./IMETextArea";
 
 export default function QuickLocate() {
     const { helpTabSelection, flexModel, displayVerse, verseExists } = useContext(AppContext);
@@ -28,6 +29,33 @@ export default function QuickLocate() {
             },
         },
     ];
+
+    //
+    // Example dictionary: keys -> values
+    //
+    const DICTIONARY = {
+        hello: "A greeting",
+        help: "Assist or provide service",
+        helium: "A chemical element",
+        hello2: "A greeting",
+        help2: "Assist or provide service",
+        helium2: "A chemical element",
+        hello3: "A greeting",
+        help3: "Assist or provide service",
+        helium3: "A chemical element",
+        hello4: "A greeting",
+        help4: "Assist or provide service",
+        helium4: "A chemical element",
+        apple: "A fruit",
+        application: "A formal request or a software program",
+        app: "Short for application",
+        apply: "Put to use",
+        world: "Earth or the realm of existence",
+        word: "A single distinct meaningful element of speech",
+    };
+
+    const [text, setText] = useState("");
+
     return (
         <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
             <Box sx={{ flexGrow: 0 }}>
@@ -35,6 +63,7 @@ export default function QuickLocate() {
             </Box>
             <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
                 <Box>
+                    <IMETextArea text={text} setText={setText} DICTIONARY={DICTIONARY} />
                     {verseExists(displayTarget.book, displayTarget.chapter, displayTarget.verse) ? (
                         <VerseParagraph verseObj={displayTarget} />
                     ) : (
