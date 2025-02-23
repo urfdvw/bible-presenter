@@ -1,4 +1,11 @@
-import { getSelectedVersions, getMultipleVerses, getChapterVerses, getNextVerse, getPreviousVerse } from "./utils";
+import {
+    getSelectedVersions,
+    getMultipleVerses,
+    getChapterVerses,
+    getNextVerse,
+    getPreviousVerse,
+    verseExists,
+} from "./utils";
 export default function useBibleData(
     ChineseSimplifiedVersion,
     ChineseTraditionalVersion,
@@ -33,11 +40,17 @@ export default function useBibleData(
         return getPreviousVerse(versions, book, chapter, verse);
     }
 
+    function _verseExists(book, chapter, verse) {
+        const versions = _getSelectedVersions();
+        return verseExists(versions, book, chapter, verse);
+    }
+
     return {
         getMultipleVerses: _getMultipleVerses,
         getChapterVerses: _getChapterVerses,
         getSelectedVersions: _getSelectedVersions,
         getNextVerse: _getNextVerse,
         getPreviousVerse: _getPreviousVerse,
+        verseExists: _verseExists,
     };
 }

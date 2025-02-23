@@ -8,7 +8,8 @@ import VerseParagraph from "./VerseParagraph";
 import Reader, { ReaderMenu, ReaderTitle } from "./Reader";
 
 export default function Projector() {
-    const { appConfig, projectorWindowPopped, setProjectorWindowPopped, projectorDisplay } = useContext(AppContext);
+    const { appConfig, projectorWindowPopped, setProjectorWindowPopped, projectorDisplay, displayVerse } =
+        useContext(AppContext);
     const [popupWindow, setPopupWindow] = useState(null);
 
     var Pop;
@@ -22,7 +23,7 @@ export default function Projector() {
                 style={{ zoom: appConfig.config.bible_display.zoom / 100 }}
                 sx={{ height: "100%", overflowY: "scroll" }}
             >
-                <VerseParagraph />
+                <VerseParagraph verseObj={displayVerse} />
             </Box>
         );
         Children = projectorDisplay ? (
@@ -30,7 +31,7 @@ export default function Projector() {
                 style={{ zoom: appConfig.config.bible_display.zoom / 100 }}
                 sx={{ height: "100%", overflowY: "scroll" }}
             >
-                <VerseParagraph />
+                <VerseParagraph verseObj={displayVerse} />
             </Box>
         ) : (
             <NoTheme>

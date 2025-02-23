@@ -24,7 +24,7 @@ export function getSelectedVersions(
  * Get verses from index
  */
 
-export function _verseExists(versions, book, chapter, verse) {
+export function verseExists(versions, book, chapter, verse) {
     let badGivenVersePosition = true;
     for (let version of versions) {
         if (
@@ -69,11 +69,11 @@ export function getMultipleVerses(versions, book, chapter, verse, endChapter, en
         endVerse = verse;
     }
     // verify
-    if (!_verseExists(versions, book, chapter, verse)) {
+    if (!verseExists(versions, book, chapter, verse)) {
         console.error("starting verse does not exist", [book, chapter, verse]);
         return [];
     }
-    if (!_verseExists(versions, book, endChapter, endVerse)) {
+    if (!verseExists(versions, book, endChapter, endVerse)) {
         console.error("ending verse does not exist", [book, endChapter, endVerse]);
         return [];
     }
@@ -112,7 +112,7 @@ export function getMultipleVerses(versions, book, chapter, verse, endChapter, en
 }
 
 export function _getChapterEndVerse(versions, book, chapter) {
-    if (!_verseExists(versions, book, chapter, 1)) {
+    if (!verseExists(versions, book, chapter, 1)) {
         return -1;
     }
     return Math.max(
@@ -136,6 +136,9 @@ export function getChapterVerses(versions, book, chapter) {
  */
 
 export function versesToRangeText(verses) {
+    if (verses.length === 0) {
+        return [];
+    }
     const returnRanges = [];
     for (var i = 0; i < verses[0].length; i++) {
         const bookName = verses[0][i].book_name;
@@ -158,6 +161,9 @@ export function versesToRangeText(verses) {
 }
 
 export function versesToParagraphsMD(verses) {
+    if (verses.length === 0) {
+        return "";
+    }
     const returnParagraphs = [];
     const startVerse = verses[0][0];
     const endVerse = verses.at(-1)[0];
@@ -199,7 +205,7 @@ export function getNextVerse(versions, book, chapter, verse) {
             chapter: chapter,
             verse: verse + i,
         };
-        if (_verseExists(versions, attempt.book, attempt.chapter, attempt.verse)) {
+        if (verseExists(versions, attempt.book, attempt.chapter, attempt.verse)) {
             return attempt;
         }
     }
@@ -209,7 +215,7 @@ export function getNextVerse(versions, book, chapter, verse) {
         chapter: chapter + 1,
         verse: 1,
     };
-    if (_verseExists(versions, attempt.book, attempt.chapter, attempt.verse)) {
+    if (verseExists(versions, attempt.book, attempt.chapter, attempt.verse)) {
         return attempt;
     }
 
@@ -229,7 +235,7 @@ export function getPreviousVerse(versions, book, chapter, verse) {
             chapter: chapter,
             verse: verse - i,
         };
-        if (_verseExists(versions, attempt.book, attempt.chapter, attempt.verse)) {
+        if (verseExists(versions, attempt.book, attempt.chapter, attempt.verse)) {
             return attempt;
         }
     }
@@ -239,7 +245,7 @@ export function getPreviousVerse(versions, book, chapter, verse) {
         chapter: chapter - 1,
         verse: _getChapterEndVerse(versions, book, chapter - 1),
     };
-    if (_verseExists(versions, attempt.book, attempt.chapter, attempt.verse)) {
+    if (verseExists(versions, attempt.book, attempt.chapter, attempt.verse)) {
         return attempt;
     }
 

@@ -63,12 +63,8 @@ function App() {
     useLayoutHotKeys(flexModel);
     useDisplayHotKeys(appConfig, setPageTurnTrigger, setVerseTurnTrigger);
     // Bible Data
-    const { getMultipleVerses, getChapterVerses, getSelectedVersions, getNextVerse, getPreviousVerse } = useBibleData(
-        Bible.cuvs,
-        Bible.cuvt,
-        Bible.asv,
-        appConfig.config.bible_display
-    );
+    const { getMultipleVerses, getChapterVerses, getSelectedVersions, getNextVerse, getPreviousVerse, verseExists } =
+        useBibleData(Bible.cuvs, Bible.cuvt, Bible.asv, appConfig.config.bible_display);
     // Bible control
     const [displayVerse, setDisplayVerse] = useState({
         book: 43,
@@ -158,6 +154,7 @@ function App() {
                 getChapterVerses,
                 getNextVerse,
                 getPreviousVerse,
+                verseExists,
                 displayVerse,
                 setDisplayVerse,
                 previewVerse,

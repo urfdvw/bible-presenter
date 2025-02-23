@@ -3,21 +3,21 @@ import AppContext from "../AppContext";
 import MarkdownExtended from "../utilComponents/MarkdownExtended";
 import { versesToRangeText, versesToParagraphsMD } from "../bible/utils";
 
-export default function VerseParagraph() {
-    const { appConfig, getMultipleVerses, displayVerse } = useContext(AppContext);
+export default function VerseParagraph({ verseObj }) {
+    const { appConfig, getMultipleVerses } = useContext(AppContext);
 
     const verses = getMultipleVerses(
-        displayVerse.book,
-        displayVerse.chapter,
-        displayVerse.verse,
-        displayVerse.endChapter,
-        displayVerse.endVerse
+        verseObj.book,
+        verseObj.chapter,
+        verseObj.verse,
+        verseObj.endChapter,
+        verseObj.endVerse
     );
     const rangeList = versesToRangeText(verses);
     const textList = versesToParagraphsMD(verses);
     const paragraphs = rangeList.map((range, versionIndex) => {
-        if (displayVerse.book === 19) {
-            return `### ${verses[0][versionIndex].book_name} ${displayVerse.chapter} \n\n ${textList[versionIndex]}`;
+        if (verseObj.book === 19) {
+            return `### ${verses[0][versionIndex].book_name} ${verseObj.chapter} \n\n ${textList[versionIndex]}`;
         }
         return appConfig.config.bible_display.range_location === "开头"
             ? `(${range}) ${textList[versionIndex]}`
