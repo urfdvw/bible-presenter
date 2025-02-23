@@ -1,12 +1,19 @@
-import bookInd from "./book_ind.json";
+import siNames from "./si_names.json";
+import trNames from "./tr_names.json";
+import enNames from "./en_names.json";
+
+const nameLists = [siNames, trNames, enNames];
 
 export function getBook(string) {
-    for (const key in bookInd) {
-        if (string.includes(key)) {
-            return {
-                book: bookInd[key],
-                remnant: string.split(key).join("").trim(),
-            };
+    for (const names of nameLists) {
+        for (const key in names) {
+            if (string.includes(names[key])) {
+                const book = parseInt(key);
+                return {
+                    book: book,
+                    remnant: string.split(names[key]).join("").trim(),
+                };
+            }
         }
     }
     return {

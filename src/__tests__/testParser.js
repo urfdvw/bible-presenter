@@ -7,8 +7,8 @@ describe("Test getBook", () => {
     test("BE", () => {
         expect(getBook(" 3:16")).toStrictEqual({ book: undefined, remnant: "3:16" });
     });
-    test("需要考虑一下要怎么处理这个问题还是不处理", () => {
-        expect(getBook("约翰福 3:16")).toStrictEqual({ book: 43, remnant: "翰福 3:16" });
+    test("BE, book name should be complete", () => {
+        expect(getBook("约翰福 3:16")).toStrictEqual({ book: undefined, remnant: "约翰福 3:16" });
     });
 });
 

@@ -6,12 +6,21 @@ import { Box } from "@mui/material";
 import VerseParagraph from "./VerseParagraph";
 import IMETextArea from "./IMETextArea";
 import { siDict, trDict, enDict } from "../bible";
+import { getBook, getChapterVerse } from "../bible/parser";
 
 export default function QuickLocate() {
     const { appConfig, helpTabSelection, flexModel, displayVerse, verseExists } = useContext(AppContext);
+    const [text, setText] = useState("");
     const [stagedVerse, setStagedVerse] = useState({ verse: 99 });
     const [displayTarget, setDisplayTarget] = useState(displayVerse);
     const [previewTarget, setPreviewTarget] = useState({});
+
+    useEffect(() => {
+        const { book, remnant } = getBook(text);
+        console.log(book, remnant);
+        const { chapter, verse, endChapter, endVerse } = getChapterVerse(remnant);
+        console.log(chapter, verse, endChapter, endVerse);
+    }, [text]);
 
     useEffect(() => {
         if (!displayVerse) {
@@ -30,8 +39,6 @@ export default function QuickLocate() {
             },
         },
     ];
-
-    const [text, setText] = useState("");
 
     const IMEDictionary =
         appConfig.config.bible_display.language === "English"
