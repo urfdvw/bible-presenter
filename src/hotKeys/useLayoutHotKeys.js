@@ -2,7 +2,7 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { Actions } from "flexlayout-react";
 import { toggleSelectTabById } from "../layout/layoutUtils";
 
-export default function useLayoutHotKeys(flexModel) {
+export default function useLayoutHotKeys(flexModel, setShowHints) {
     const hint_tab_ids = ["quick_locate_tab", "bible_toc_tab", "search_tab", "history_tab", "notes_tab"];
     useHotkeys(
         "alt+q",
@@ -53,6 +53,7 @@ export default function useLayoutHotKeys(flexModel) {
         "alt",
         () => {
             console.log("SHOW_HINT");
+            setShowHints(true);
             for (const tab_id of hint_tab_ids) {
                 const tab = flexModel.getNodeById(tab_id);
                 flexModel.doAction(
@@ -68,6 +69,7 @@ export default function useLayoutHotKeys(flexModel) {
         "alt",
         () => {
             console.log("HIDE_HINT");
+            setShowHints(false);
             for (const tab_id of hint_tab_ids) {
                 const tab = flexModel.getNodeById(tab_id);
                 flexModel.doAction(

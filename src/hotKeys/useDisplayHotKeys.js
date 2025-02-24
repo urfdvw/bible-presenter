@@ -1,5 +1,11 @@
 import { useHotkeys } from "react-hotkeys-hook";
-export default function useDisplayHotKeys(config, setPageTurnTrigger, setVerseTurnTrigger, setProjectorDisplay) {
+export default function useDisplayHotKeys(
+    config,
+    setPageTurnTrigger,
+    setVerseTurnTrigger,
+    setProjectorWindowPopped,
+    setProjectorDisplay
+) {
     useHotkeys(
         "alt+equal",
         (event) => {
@@ -69,6 +75,15 @@ export default function useDisplayHotKeys(config, setPageTurnTrigger, setVerseTu
             event.preventDefault();
             console.log("hotkey: show/hide projector content");
             setProjectorDisplay((displayStatus) => !displayStatus);
+        },
+        { enableOnFormTags: true }
+    );
+    useHotkeys(
+        "alt+p",
+        (event) => {
+            event.preventDefault();
+            console.log("hotkey: show/hide popup window");
+            setProjectorWindowPopped((popped) => !popped);
         },
         { enableOnFormTags: true }
     );

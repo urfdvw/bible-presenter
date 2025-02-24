@@ -59,9 +59,10 @@ function App() {
     const [projectorDisplay, setProjectorDisplay] = useState(true);
     const [pageTurnTrigger, setPageTurnTrigger] = useState(0);
     const [verseTurnTrigger, setVerseTurnTrigger] = useState(0);
+    const [showHints, setShowHints] = useState(false);
     // hot keys
-    useLayoutHotKeys(flexModel);
-    useDisplayHotKeys(appConfig, setPageTurnTrigger, setVerseTurnTrigger,setProjectorDisplay);
+    useLayoutHotKeys(flexModel, setShowHints);
+    useDisplayHotKeys(appConfig, setPageTurnTrigger, setVerseTurnTrigger, setProjectorWindowPopped, setProjectorDisplay);
     // Bible Data
     const { getMultipleVerses, getChapterVerses, getSelectedVersions, getNextVerse, getPreviousVerse, verseExists } =
         useBibleData(Bible.cuvs, Bible.cuvt, Bible.asv, appConfig.config.bible_display);
@@ -119,6 +120,7 @@ function App() {
                 setProjectorWindowPopped,
                 projectorDisplay,
                 setProjectorDisplay,
+                showHints,
                 getSelectedVersions,
                 getMultipleVerses,
                 getChapterVerses,
