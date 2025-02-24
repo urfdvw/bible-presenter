@@ -49,7 +49,9 @@ export default function QuickLocate() {
             endChapter: original.endChapter,
             endVerse: original.endVerse,
         };
-        if (staged.book && staged.chapter && staged.verse) {
+        if (!staged.book && !staged.chapter && !staged.verse && !staged.endChapter && !staged.endVerse) {
+            return target;
+        } else if (staged.book && staged.chapter && staged.verse) {
             target = {
                 book: staged.book,
                 chapter: staged.chapter,
