@@ -11,6 +11,7 @@ import { useContext, useEffect, useState } from "react";
 
 import { compareLists, removeAllDuplicatesKeepLast } from "../utilFunctions/jsHelper";
 import HighlightedSpan from "../utilComponents/HighlightedSpan";
+import VerseParagraph from "./VerseParagraph";
 
 function Icon({ tooltip, children, onClick }) {
     return (
@@ -370,5 +371,71 @@ export function ReaderVerseBox({ verseObjs, selected }) {
                 ))}
             </Box>
         </Typography>
+    );
+}
+
+export function LocateDisplayVerseBox({ verseObj }) {
+    const { setDisplayVerse, setPreviewVerse, setHistory, setNoteList, verseExists } = useContext(AppContext);
+
+    const handleShow = () => {
+        const verseObjToDisplay = verseObj;
+        setDisplayVerse(verseObjToDisplay);
+        setHistory((history) => removeAllDuplicatesKeepLast([...history, verseObjToDisplay]));
+    };
+
+    const handleAddToNote = () => {
+        setNoteList((notes) => [...notes, verseObj]);
+    };
+
+    return (
+        <Box onClick={handleShow} sx={verseBoxStyle}>
+            {verseExists(verseObj.book, verseObj.chapter, verseObj.verse, verseObj.endChapter, verseObj.endVerse) ? (
+                <>
+                    <Box sx={{ flexGrow: 1 }}>
+                        <VerseParagraph verseObj={verseObj} />
+                    </Box>
+                    <Box sx={{ flexShrink: 0 }}>
+                        <Icon tooltip={"加入笔记\nCtrl/Cmd + Enter"} onClick={handleAddToNote}>
+                            <NoteAdd />
+                        </Icon>
+                    </Box>
+                </>
+            ) : (
+                "输入的经节不存在"
+            )}
+        </Box>
+    );
+}
+
+export function LocatePreviewVerseBox({ verseObj }) {
+    const { setDisplayVerse, setPreviewVerse, setHistory, setNoteList, verseExists } = useContext(AppContext);
+
+    const handleShow = () => {
+        const verseObjToDisplay = verseObj;
+        setDisplayVerse(verseObjToDisplay);
+        setHistory((history) => removeAllDuplicatesKeepLast([...history, verseObjToDisplay]));
+    };
+
+    const handlePreview = () => {
+        setPreviewVerse(verseObj);
+    };
+
+    return (
+        <Box onClick={handleShow} sx={verseBoxStyle}>
+            {verseExists(verseObj.book, verseObj.chapter, verseObj.verse, verseObj.endChapter, verseObj.endVerse) ? (
+                <>
+                    <Box sx={{ flexGrow: 1 }}>
+                        <VerseParagraph verseObj={verseObj} />
+                    </Box>
+                    <Box sx={{ flexShrink: 0 }}>
+                        <Icon tooltip={"预览 Shift + Enter"} onClick={handlePreview}>
+                            <Preview />
+                        </Icon>
+                    </Box>
+                </>
+            ) : (
+                "输入的经节不存在"
+            )}
+        </Box>
     );
 }

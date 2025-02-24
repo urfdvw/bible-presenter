@@ -2,15 +2,26 @@ import TabToolBar from "../utilComponents/TabToolBar";
 import { selectTabById } from "../layout/layoutUtils";
 import { useContext, useEffect, useState } from "react";
 import AppContext from "../AppContext";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import VerseParagraph from "./VerseParagraph";
 import IMETextArea from "./IMETextArea";
 import { siDict, trDict, enDict } from "../bible";
 import { getBook, getChapterVerse } from "../bible/parser";
-import { filterUndefined } from "../utilFunctions/jsHelper";
+import { removeAllDuplicatesKeepLast } from "../utilFunctions/jsHelper";
+import { LocateDisplayVerseBox, LocatePreviewVerseBox } from "./VerseBox";
 
 export default function QuickLocate() {
-    const { appConfig, helpTabSelection, flexModel, displayVerse, previewVerse, verseExists } = useContext(AppContext);
+    const {
+        appConfig,
+        helpTabSelection,
+        flexModel,
+        displayVerse,
+        previewVerse,
+        setDisplayVerse,
+        setPreviewVerse,
+        setNoteList,
+        setHistory,
+    } = useContext(AppContext);
     const [text, setText] = useState("");
     const [stagedVerse, setStagedVerse] = useState({ verse: 99 });
     const [displayTarget, setDisplayTarget] = useState(displayVerse);
@@ -112,29 +123,42 @@ export default function QuickLocate() {
             </Box>
             <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
                 <Box>
-                    <IMETextArea text={text} setText={setText} DICTIONARY={IMEDictionary} />
-                    {verseExists(
-                        displayTarget.book,
-                        displayTarget.chapter,
-                        displayTarget.verse,
-                        displayTarget.endChapter,
-                        displayTarget.endVerse
-                    ) ? (
-                        <VerseParagraph verseObj={displayTarget} />
-                    ) : (
-                        "欲访问的经节不存在"
-                    )}
-                    {verseExists(
-                        previewTarget.book,
-                        previewTarget.chapter,
-                        previewTarget.verse,
-                        previewTarget.endChapter,
-                        previewTarget.endVerse
-                    ) ? (
-                        <VerseParagraph verseObj={previewTarget} />
-                    ) : (
-                        "欲访问的经节不存在"
-                    )}
+                    <IMETextArea
+                        text={text}
+                        setText={setText}
+                        DICTIONARY={IMEDictionary}
+                        onDisplay={() => {
+                            setDisplayVerse(displayTarget);
+                            setHistory((history) => removeAllDuplicatesKeepLast([...history, displayTarget]));
+                        }}
+                        onPreview={() => {
+                            setPreviewVerse(previewTarget);
+                        }}
+                        onAddToNote={() => {
+                            setNoteList((notes) => {
+                                console.log(notes, [...notes, displayTarget]);
+                                return [...notes, displayTarget];
+                            });
+                        }}
+                    />
+                    <Box sx={{ display: "flex", flexDirection: "row" }}>
+                        <Box sx={{ flexGrow: 0, alignContent: "center", justifyContent: "center" }}>
+                            <Typography>投影</Typography>
+                        </Box>
+                        <Box sx={{ flexGrow: 1 }}>
+                            <LocateDisplayVerseBox verseObj={displayTarget} />
+                        </Box>
+                    </Box>
+                    <br />
+
+                    <Box sx={{ display: "flex", flexDirection: "row" }}>
+                        <Box sx={{ flexGrow: 0, alignContent: "center", justifyContent: "center" }}>
+                            <Typography>预览</Typography>
+                        </Box>
+                        <Box sx={{ flexGrow: 1 }}>
+                            <LocatePreviewVerseBox verseObj={previewTarget} />
+                        </Box>
+                    </Box>
                 </Box>
             </Box>
         </Box>

@@ -93,7 +93,7 @@ function getRecommendations(inputValue, dictionary) {
     return uniqueCandidates.slice(0, 10);
 }
 
-export default function IMETextArea({ text, setText, DICTIONARY }) {
+export default function IMETextArea({ text, setText, DICTIONARY, onDisplay, onPreview, onAddToNote }) {
     const [recommendations, setRecommendations] = useState([]);
     const [anchorCoords, setAnchorCoords] = useState({ top: 0, left: 0 });
     const [selectionStart, setSelectionStart] = useState(0);
@@ -181,14 +181,15 @@ export default function IMETextArea({ text, setText, DICTIONARY }) {
         event.preventDefault();
         setText("");
         console.log("Enter pressed");
+        onDisplay();
         // You can handle the normal Enter action here if desired
     };
 
     // HANDLER: Shift+Enter
     const handleShiftEnter = (event) => {
         event.preventDefault();
-        setText("");
         console.log("Shift-Enter pressed");
+        onPreview();
         // Handle multi-line break, for example, if you want special logic
     };
 
@@ -197,6 +198,7 @@ export default function IMETextArea({ text, setText, DICTIONARY }) {
         event.preventDefault();
         setText("");
         console.log("Ctrl/Cmd-Enter pressed");
+        onAddToNote();
         // Possibly handle form submission or something else
     };
 
