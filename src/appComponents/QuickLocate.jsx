@@ -30,22 +30,62 @@ export default function QuickLocate() {
         });
     }, [text]);
 
+    function fusion(original, staged) {
+        var target = {
+            book: original.book,
+            chapter: original.chapter,
+            verse: original.verse,
+            endChapter: original.endChapter,
+            endVerse: original.endVerse,
+        };
+        if (staged.book && staged.chapter && staged.verse) {
+            target = {
+                book: staged.book,
+                chapter: staged.chapter,
+                verse: staged.verse,
+                endChapter: staged.endChapter,
+                endVerse: staged.endVerse,
+            };
+        } else if (!staged.book && staged.chapter && staged.verse) {
+            target = {
+                book: original.book,
+                chapter: staged.chapter,
+                verse: staged.verse,
+                endChapter: staged.endChapter,
+                endVerse: staged.endVerse,
+            };
+        } else if (!staged.book && !staged.chapter && staged.verse) {
+            target = {
+                book: original.book,
+                chapter: original.chapter,
+                verse: staged.verse,
+                endChapter: staged.endChapter,
+                endVerse: staged.endVerse,
+            };
+        } else if (!staged.book && !staged.chapter && !staged.verse) {
+            target = {
+                book: original.book,
+                chapter: original.chapter,
+                verse: original.verse,
+                endChapter: staged.endChapter,
+                endVerse: staged.endVerse,
+            };
+        }
+        return target;
+    }
+
     useEffect(() => {
         if (!displayVerse) {
             return;
         }
-        const filtered = filterUndefined(stagedVerse);
-        console.log(displayVerse, stagedVerse, { ...displayVerse, ...filtered });
-        setDisplayTarget({ ...displayVerse, ...filtered });
+        setDisplayTarget(fusion(displayVerse, stagedVerse));
     }, [stagedVerse, displayVerse]);
 
     useEffect(() => {
         if (!previewVerse) {
             return;
         }
-        const filtered = filterUndefined(stagedVerse);
-        console.log(previewVerse, stagedVerse, { ...previewVerse, ...filtered });
-        setPreviewTarget({ ...previewVerse, ...filtered });
+        setPreviewTarget(fusion(previewVerse, stagedVerse));
     }, [stagedVerse, previewVerse]);
 
     const tools = [
