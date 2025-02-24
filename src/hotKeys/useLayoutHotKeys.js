@@ -4,26 +4,51 @@ import { toggleSelectTabById } from "../layout/layoutUtils";
 
 export default function useLayoutHotKeys(flexModel) {
     const hint_tab_ids = ["quick_locate_tab", "bible_toc_tab", "search_tab", "history_tab", "notes_tab"];
-    useHotkeys("alt+q", () => {
-        console.log("hotkey: show quick_locate_tab");
-        toggleSelectTabById(flexModel, "quick_locate_tab");
-    });
-    useHotkeys("alt+m", () => {
-        console.log("hotkey: show bible_toc_tab");
-        toggleSelectTabById(flexModel, "bible_toc_tab");
-    });
-    useHotkeys("alt+s", () => {
-        console.log("hotkey: show search_tab");
-        toggleSelectTabById(flexModel, "search_tab");
-    });
-    useHotkeys("alt+h", () => {
-        console.log("hotkey: show history_tab");
-        toggleSelectTabById(flexModel, "history_tab");
-    });
-    useHotkeys("alt+n", () => {
-        console.log("hotkey: show notes_tab");
-        toggleSelectTabById(flexModel, "notes_tab");
-    });
+    useHotkeys(
+        "alt+q",
+        (event) => {
+            event.preventDefault();
+            console.log("hotkey: show quick_locate_tab");
+            toggleSelectTabById(flexModel, "quick_locate_tab");
+        },
+        { enableOnFormTags: true }
+    );
+    useHotkeys(
+        "alt+m",
+        (event) => {
+            event.preventDefault();
+            console.log("hotkey: show bible_toc_tab");
+            toggleSelectTabById(flexModel, "bible_toc_tab");
+        },
+        { enableOnFormTags: true }
+    );
+    useHotkeys(
+        "alt+s",
+        (event) => {
+            event.preventDefault();
+            console.log("hotkey: show search_tab");
+            toggleSelectTabById(flexModel, "search_tab");
+        },
+        { enableOnFormTags: true }
+    );
+    useHotkeys(
+        "alt+h",
+        (event) => {
+            event.preventDefault();
+            console.log("hotkey: show history_tab");
+            toggleSelectTabById(flexModel, "history_tab");
+        },
+        { enableOnFormTags: true }
+    );
+    useHotkeys(
+        "alt+n",
+        (event) => {
+            event.preventDefault();
+            console.log("hotkey: show notes_tab");
+            toggleSelectTabById(flexModel, "notes_tab");
+        },
+        { enableOnFormTags: true }
+    );
     useHotkeys(
         "alt",
         () => {
@@ -37,7 +62,7 @@ export default function useLayoutHotKeys(flexModel) {
                 );
             }
         },
-        { keyup: false, keydown: true }
+        { keyup: false, keydown: true, enableOnFormTags: true }
     );
     useHotkeys(
         "alt",
@@ -52,6 +77,6 @@ export default function useLayoutHotKeys(flexModel) {
                 );
             }
         },
-        { keyup: true, keydown: false }
+        { keyup: true, keydown: false, enableOnFormTags: true }
     );
 }
