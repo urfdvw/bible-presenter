@@ -101,7 +101,7 @@ export default function QuickLocate() {
 
     const tools = [
         {
-            text: "Help",
+            text: "帮助",
             handler: () => {
                 selectTabById(flexModel, "help_tab");
                 helpTabSelection.setTabName("quick_locate");
