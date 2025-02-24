@@ -12,7 +12,7 @@ export default function AppMenu() {
 
     const menuStructure = [
         {
-            label: "Bible Presenter",
+            label: "投影圣经",
             color: DARK_RED,
             options: [
                 {

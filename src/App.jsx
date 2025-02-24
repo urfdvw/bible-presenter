@@ -25,9 +25,6 @@ import useDisplayHotKeys from "./hotKeys/useDisplayHotKeys";
 import DarkTheme from "react-lazy-dark-theme";
 // channel
 import useChannel from "./utilHooks/useChannel";
-// device support
-import { isMobile } from "react-device-detect";
-import MobileSupportInfo from "./supportInfo/MobileSupportInfo";
 // Bible data
 import Bible from "./bible";
 import useBibleData from "./bible/useBibleData";
@@ -85,10 +82,6 @@ function App() {
     const [history, setHistory] = useState([]);
     // notes
     const [noteList, setNoteList] = useState([]);
-
-    if (isMobile) {
-        return <MobileSupportInfo />;
-    }
 
     if (!appConfig.ready) {
         return;
