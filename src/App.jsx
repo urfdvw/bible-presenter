@@ -61,7 +61,7 @@ function App() {
     const [verseTurnTrigger, setVerseTurnTrigger] = useState(0);
     // hot keys
     useLayoutHotKeys(flexModel);
-    useDisplayHotKeys(appConfig, setPageTurnTrigger, setVerseTurnTrigger);
+    useDisplayHotKeys(appConfig, setPageTurnTrigger, setVerseTurnTrigger,setProjectorDisplay);
     // Bible Data
     const { getMultipleVerses, getChapterVerses, getSelectedVersions, getNextVerse, getPreviousVerse, verseExists } =
         useBibleData(Bible.cuvs, Bible.cuvt, Bible.asv, appConfig.config.bible_display);

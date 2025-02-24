@@ -1,5 +1,5 @@
 import { useHotkeys } from "react-hotkeys-hook";
-export default function useDisplayHotKeys(config, setPageTurnTrigger, setVerseTurnTrigger) {
+export default function useDisplayHotKeys(config, setPageTurnTrigger, setVerseTurnTrigger, setProjectorDisplay) {
     useHotkeys(
         "alt+equal",
         (event) => {
@@ -60,6 +60,15 @@ export default function useDisplayHotKeys(config, setPageTurnTrigger, setVerseTu
             event.preventDefault();
             console.log("hotkey: next verse");
             setVerseTurnTrigger((x) => Math.abs(x) + 1);
+        },
+        { enableOnFormTags: true }
+    );
+    useHotkeys(
+        "alt+b",
+        (event) => {
+            event.preventDefault();
+            console.log("hotkey: show/hide projector content");
+            setProjectorDisplay((displayStatus) => !displayStatus);
         },
         { enableOnFormTags: true }
     );
