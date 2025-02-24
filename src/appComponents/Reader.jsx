@@ -160,18 +160,25 @@ function ReaderList({ verses, currentPosition, setFirstIndexes, popupWindow }) {
         computeFirstIndexes();
     }, [verses]);
 
-    // Setup a ResizeObserver on the container to listen for size changes.
     useEffect(() => {
         const containerElement = containerRef.current;
         if (!containerElement) return;
 
+        // Setup a ResizeObserver on the container to listen for size changes.
         const resizeObserver = new ResizeObserver(() => {
             computeFirstIndexes();
         });
         resizeObserver.observe(containerElement);
 
+        // prevent manual scrolling which is confusing
+        const disable = (event) => {
+            event.preventDefault();
+        };
+        containerElement.addEventListener("wheel", disable);
+
         return () => {
             resizeObserver.disconnect();
+            containerElement.removeEventListener("wheel", disable);
         };
     }, []);
 
