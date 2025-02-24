@@ -81,39 +81,9 @@ function App() {
         endVerse: null,
     });
     // history
-    const [history, setHistory] = useState([
-        {
-            book: 43,
-            chapter: 3,
-            verse: 16,
-            endChapter: null,
-            endVerse: 18,
-        },
-    ]);
+    const [history, setHistory] = useState([]);
     // notes
-    const [noteList, setNoteList] = useState([
-        {
-            book: 43,
-            chapter: 3,
-            verse: 16,
-            endChapter: null,
-            endVerse: 18,
-        },
-        {
-            book: 40,
-            chapter: 1,
-            verse: 1,
-            endChapter: null,
-            endVerse: null,
-        },
-        {
-            book: 1,
-            chapter: 1,
-            verse: 1,
-            endChapter: null,
-            endVerse: null,
-        },
-    ]);
+    const [noteList, setNoteList] = useState([]);
 
     if (isMobile) {
         return <MobileSupportInfo />;
