@@ -221,7 +221,7 @@ function ReaderList({ verses, currentPosition, setFirstIndexes, popupWindow }) {
             id="readerContainer"
         >
             {verses.map((verseVersionObjs, index) => (
-                <Element key={index} name={`reader-verse-${index + 1}`}>
+                <Element key={index} name={`reader-verse-${index + 1}`} style={{ width: "100%" }}>
                     <ReaderVerseBox verseObjs={verseVersionObjs} selected={index + 1 === currentPosition} />
                 </Element>
             ))}

@@ -361,7 +361,7 @@ export function SearchVerseBox({ verseObj, keyWords }) {
 
 export function ReaderVerseBox({ verseObjs, selected }) {
     return (
-        <Typography component="div" sx={{ display: "flex", flexDirection: "row" }}>
+        <Typography component="div" sx={{ display: "flex", flexDirection: "row", width: "100%" }}>
             <Box sx={{ flexGrow: 0, marginRight: "0.5em", color: selected ? "red" : "black" }}>
                 {verseObjs[0].verse}
             </Box>
