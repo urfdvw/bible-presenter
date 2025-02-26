@@ -5,7 +5,7 @@ import quick_locate from "./quick_locate.md";
 const docs = [
     {
         name: "home",
-        title: "简介",
+        title: "帮助首页",
         body: home,
     },
     {
@@ -15,7 +15,7 @@ const docs = [
     },
     {
         name: "about",
-        title: "作者信息",
+        title: "关于",
         body: about,
     },
 ];

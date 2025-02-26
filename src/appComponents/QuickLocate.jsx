@@ -3,12 +3,11 @@ import { selectTabById } from "../layout/layoutUtils";
 import { useContext, useEffect, useState } from "react";
 import AppContext from "../AppContext";
 import { Box, Typography } from "@mui/material";
-import VerseParagraph from "./VerseParagraph";
 import IMETextArea from "./IMETextArea";
 import { siDict, trDict, enDict } from "../bible";
 import { getBook, getChapterVerse } from "../bible/parser";
 import { removeAllDuplicatesKeepLast } from "../utilFunctions/jsHelper";
-import { LocateDisplayVerseBox, LocatePreviewVerseBox } from "./VerseBox";
+import { LocateVerseBox } from "./VerseBox";
 
 export default function QuickLocate() {
     const {
@@ -16,7 +15,6 @@ export default function QuickLocate() {
         helpTabSelection,
         flexModel,
         displayVerse,
-        previewVerse,
         setDisplayVerse,
         setPreviewVerse,
         setNoteList,
@@ -25,7 +23,6 @@ export default function QuickLocate() {
     const [text, setText] = useState("");
     const [stagedVerse, setStagedVerse] = useState({ verse: 99 });
     const [displayTarget, setDisplayTarget] = useState(displayVerse);
-    const [previewTarget, setPreviewTarget] = useState({});
 
     useEffect(() => {
         const { book, remnant } = getBook(text);
@@ -94,13 +91,6 @@ export default function QuickLocate() {
         setDisplayTarget(fusion(displayVerse, stagedVerse));
     }, [stagedVerse, displayVerse]);
 
-    useEffect(() => {
-        if (!previewVerse) {
-            return;
-        }
-        setPreviewTarget(fusion(previewVerse, stagedVerse));
-    }, [stagedVerse, previewVerse]);
-
     const tools = [
         {
             text: "帮助",
@@ -134,7 +124,7 @@ export default function QuickLocate() {
                             setHistory((history) => removeAllDuplicatesKeepLast([...history, displayTarget]));
                         }}
                         onPreview={() => {
-                            setPreviewVerse(previewTarget);
+                            setPreviewVerse(displayTarget);
                         }}
                         onAddToNote={() => {
                             setNoteList((notes) => {
@@ -143,24 +133,10 @@ export default function QuickLocate() {
                             });
                         }}
                     />
-                    <Box sx={{ display: "flex", flexDirection: "row" }}>
-                        <Box sx={{ flexGrow: 0, alignContent: "center", justifyContent: "center" }}>
-                            <Typography>投影</Typography>
-                        </Box>
-                        <Box sx={{ flexGrow: 1 }}>
-                            <LocateDisplayVerseBox verseObj={displayTarget} />
-                        </Box>
+                    <Box sx={{ flexGrow: 1 }}>
+                        <LocateVerseBox verseObj={displayTarget} />
                     </Box>
                     <br />
-
-                    <Box sx={{ display: "flex", flexDirection: "row" }}>
-                        <Box sx={{ flexGrow: 0, alignContent: "center", justifyContent: "center" }}>
-                            <Typography>预览</Typography>
-                        </Box>
-                        <Box sx={{ flexGrow: 1 }}>
-                            <LocatePreviewVerseBox verseObj={previewTarget} />
-                        </Box>
-                    </Box>
                 </Box>
             </Box>
         </Box>

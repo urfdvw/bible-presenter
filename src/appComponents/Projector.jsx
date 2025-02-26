@@ -6,6 +6,7 @@ import { NoTheme } from "react-lazy-dark-theme";
 
 import VerseParagraph from "./VerseParagraph";
 import Reader, { ReaderMenu, ReaderTitle } from "./Reader";
+import { Typography } from "@mui/material";
 
 export default function Projector() {
     const { appConfig, projectorWindowPopped, setProjectorWindowPopped, projectorDisplay, displayVerse } =
@@ -19,10 +20,8 @@ export default function Projector() {
     if (appConfig.config.bible_display.display_type === "仅选中") {
         Pop = null;
         Alt = (
-            <Box
-                style={{ zoom: appConfig.config.bible_display.zoom / 100 }}
-                sx={{ height: "100%", overflowY: "scroll" }}
-            >
+            <Box sx={{ height: "100%", overflowY: "scroll" }}>
+                <Typography>正在投影：</Typography>
                 <VerseParagraph verseObj={displayVerse} />
             </Box>
         );
@@ -60,7 +59,25 @@ export default function Projector() {
                 <div style={{ backgroundColor: "black", height: "100000px" }}></div>
             </NoTheme>
         );
-        Alt = <ReaderMenu />;
+        Alt = (
+            <Box
+                sx={{
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                }}
+            >
+                <Box sx={{ flexGrow: 0 }}>
+                    <ReaderMenu />
+                </Box>
+                <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
+                    <Typography>正在投影：</Typography>
+                    <VerseParagraph
+                        verseObj={{ book: displayVerse.book, chapter: displayVerse.chapter, verse: displayVerse.verse }}
+                    />
+                </Box>
+            </Box>
+        );
         Children = (
             <Box
                 sx={{
