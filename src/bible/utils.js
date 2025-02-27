@@ -89,6 +89,10 @@ export function getMultipleVerses(versions, book, chapter, verse, endChapter, en
     const verseUniquePositions = new Set();
     for (const version of versions) {
         let index = _getVerseIndexInVersion(version, book, chapter, verse);
+        if (!index) {
+            // verse not found
+            continue;
+        }
         let verseObj = version.verses[index];
         while (
             verseObj.book === book &&
