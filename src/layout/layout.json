@@ -46,6 +46,15 @@
                     "id": "history_tab",
                     "component": "history",
                     "enableClose": false
+                },
+                {
+                    "type": "tab",
+                    "name": "笔记",
+                    "altName": "(N)笔记",
+                    "helpText": "笔记",
+                    "id": "notes_tab",
+                    "component": "notes",
+                    "enableClose": false
                 }
             ]
         },
@@ -59,13 +68,6 @@
                     "name": "设置",
                     "component": "config",
                     "enableClose": false
-                },
-                {
-                    "type": "tab",
-                    "name": "帮助",
-                    "id": "help_tab",
-                    "component": "help",
-                    "enableClose": false
                 }
             ]
         },
@@ -76,11 +78,9 @@
             "children": [
                 {
                     "type": "tab",
-                    "name": "笔记",
-                    "altName": "(N)笔记",
-                    "helpText": "笔记",
-                    "id": "notes_tab",
-                    "component": "notes",
+                    "name": "帮助",
+                    "id": "help_tab",
+                    "component": "help",
                     "enableClose": false
                 }
             ]
