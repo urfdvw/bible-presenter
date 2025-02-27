@@ -6,7 +6,7 @@ const nameLists = [siNames, trNames, enNames];
 
 export function getBook(string) {
     for (const names of nameLists) {
-        for (const key in names) {
+        for (var key = 66; key > 0; key--) {
             if (string.includes(names[key])) {
                 const book = parseInt(key);
                 return {
