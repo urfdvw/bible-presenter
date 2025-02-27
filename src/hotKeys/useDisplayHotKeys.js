@@ -34,6 +34,18 @@ export default function useDisplayHotKeys(
         { enableOnFormTags: true }
     );
     useHotkeys(
+        "alt+d",
+        (event) => {
+            if (config.config.bible_display.display_type === "仅选中") {
+                config.setConfigField("bible_display", "display_type", "上下文");
+            }
+            if (config.config.bible_display.display_type === "上下文") {
+                config.setConfigField("bible_display", "display_type", "仅选中");
+            }
+        },
+        { enableOnFormTags: true }
+    );
+    useHotkeys(
         "alt+left",
         (event) => {
             event.preventDefault();

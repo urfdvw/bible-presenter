@@ -7,6 +7,7 @@ import * as FlexLayout from "flexlayout-react";
 import layout from "./layout/layout.json";
 import Factory from "./layout/Factory";
 import "flexlayout-react/style/light.css";
+import { isMobile } from "react-device-detect";
 // menu bar
 import AppMenu from "./appComponents/AppMenu";
 // notification
@@ -59,7 +60,13 @@ function App() {
     const [showHints, setShowHints] = useState(false);
     // hot keys
     useLayoutHotKeys(flexModel, setShowHints);
-    useDisplayHotKeys(appConfig, setPageTurnTrigger, setVerseTurnTrigger, setProjectorWindowPopped, setProjectorDisplay);
+    useDisplayHotKeys(
+        appConfig,
+        setPageTurnTrigger,
+        setVerseTurnTrigger,
+        setProjectorWindowPopped,
+        setProjectorDisplay
+    );
     // Bible Data
     const { getMultipleVerses, getChapterVerses, getSelectedVersions, getNextVerse, getPreviousVerse, verseExists } =
         useBibleData(Bible.cuvs, Bible.cuvt, Bible.asv, appConfig.config.bible_display);
@@ -139,7 +146,7 @@ function App() {
                 <div
                     className="app-header"
                     style={{
-                        maxHeight: appConfig.config.general.show_menu_bar ? "30px" : "0px",
+                        maxHeight: isMobile ? "0px" : "30px",
                         transition: "max-height 1s ease",
                     }}
                 >

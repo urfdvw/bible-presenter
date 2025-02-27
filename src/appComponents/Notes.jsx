@@ -4,6 +4,7 @@ import { useContext, useEffect, useState } from "react";
 import TabToolBar from "../utilComponents/TabToolBar";
 import { useSingleFileSystemAccess } from "../utilHooks/useSingleFileSystemAccess";
 import { downloadFile } from "../utilFunctions/jsHelper";
+import { selectTabById } from "../layout/layoutUtils";
 
 function NoteListBody() {
     const { noteList } = useContext(AppContext);
@@ -23,7 +24,7 @@ function NoteListBody() {
 }
 
 export default function Notes() {
-    const { noteList, setNoteList } = useContext(AppContext);
+    const { noteList, setNoteList, flexModel, helpTabSelection } = useContext(AppContext);
     const { content, fileName, openFile, saveToFile } = useSingleFileSystemAccess();
     useEffect(() => {
         console.log(content);
@@ -52,6 +53,13 @@ export default function Notes() {
             text: "下载",
             handler: () => {
                 downloadFile(JSON.stringify(noteList), "BibleVerseNotes.json");
+            },
+        },
+        {
+            text: "帮助",
+            handler: () => {
+                selectTabById(flexModel, "help_tab");
+                helpTabSelection.setTabName("notes");
             },
         },
     ];

@@ -4,6 +4,7 @@ import { PreviewVerseBox } from "./VerseBox";
 import { scroller, Element } from "react-scroll";
 import { Button, Typography } from "@mui/material";
 import TabToolBar from "../utilComponents/TabToolBar";
+import { selectTabById } from "../layout/layoutUtils";
 
 function PreviewList({ selected, setSelected }) {
     const { getChapterVerses, previewVerse } = useContext(AppContext);
@@ -55,7 +56,8 @@ function PreviewList({ selected, setSelected }) {
 
 export default function Preview() {
     const [selected, setSelected] = useState(null);
-    const { getChapterVerses, previewVerse, setPreviewVerse, getMultipleVerses } = useContext(AppContext);
+    const { getChapterVerses, previewVerse, setPreviewVerse, getMultipleVerses, helpTabSelection, flexModel } =
+        useContext(AppContext);
     const verses = getChapterVerses(previewVerse.book, previewVerse.chapter);
     const notificationHeight = selected ? "5em" : "0em";
 
@@ -95,6 +97,13 @@ export default function Preview() {
                     chapter: previewVerse.chapter + 1,
                     verse: 1,
                 });
+            },
+        },
+        {
+            text: "帮助",
+            handler: () => {
+                selectTabById(flexModel, "help_tab");
+                helpTabSelection.setTabName("preview");
             },
         },
     ];

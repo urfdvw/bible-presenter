@@ -13,9 +13,9 @@
             "children": [
                 {
                     "type": "tab",
-                    "name": "快速投影",
-                    "altName": "(Q)快速投影",
-                    "helpText": "快速投影",
+                    "name": "快速定位",
+                    "altName": "(Q)快速定位",
+                    "helpText": "快速定位",
                     "id": "quick_locate_tab",
                     "component": "quick_locate",
                     "enableClose": false

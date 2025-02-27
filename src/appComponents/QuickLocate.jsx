@@ -111,7 +111,7 @@ export default function QuickLocate() {
     return (
         <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
             <Box sx={{ flexGrow: 0 }}>
-                <TabToolBar title="快速投影" tools={tools} />
+                <TabToolBar title="快速定位" tools={tools} />
             </Box>
             <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
                 <Box>

@@ -8,11 +8,6 @@
             "type": "string",
             "enum": ["跟随系统", "白天", "夜间", "夜间投影"],
             "default": "跟随系统"
-        },
-        "show_menu_bar": {
-            "title": "显示菜单栏",
-            "type": "boolean",
-            "default": true
         }
     }
 }
