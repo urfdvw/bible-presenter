@@ -145,20 +145,25 @@ export function versesToRangeText(verses) {
     }
     const returnRanges = [];
     for (var i = 0; i < verses[0].length; i++) {
-        const bookName = verses[0][i].book_name;
-        const startVerse = verses[0][i];
-        const endVerse = verses.at(-1)[i];
+        try {
+            const bookName = verses[0][i].book_name;
+            const startVerse = verses[0][i];
+            const endVerse = verses.at(-1)[i];
 
-        if (startVerse.chapter === endVerse.chapter) {
-            if (startVerse.verse === endVerse.verse) {
-                returnRanges.push(`${bookName} ${startVerse.chapter}:${startVerse.verse}`);
+            if (startVerse.chapter === endVerse.chapter) {
+                if (startVerse.verse === endVerse.verse) {
+                    returnRanges.push(`${bookName} ${startVerse.chapter}:${startVerse.verse}`);
+                } else {
+                    returnRanges.push(`${bookName} ${startVerse.chapter}:${startVerse.verse}-${endVerse.verse}`);
+                }
             } else {
-                returnRanges.push(`${bookName} ${startVerse.chapter}:${startVerse.verse}-${endVerse.verse}`);
+                returnRanges.push(
+                    `${bookName} ${startVerse.chapter}:${startVerse.verse}-${endVerse.chapter}:${endVerse.verse}`
+                );
             }
-        } else {
-            returnRanges.push(
-                `${bookName} ${startVerse.chapter}:${startVerse.verse}-${endVerse.chapter}:${endVerse.verse}`
-            );
+        } catch (error) {
+            console.error(error);
+            returnRanges.push("");
         }
     }
     return returnRanges;

@@ -19,6 +19,9 @@ export default function VerseParagraph({ verseObj }) {
         if (verseObj.book === 19) {
             return `### ${verses[0][versionIndex].book_name} ${verseObj.chapter} \n\n ${textList[versionIndex]}`;
         }
+        if (textList[versionIndex].length === 0) {
+            return "";
+        }
         return appConfig.config.bible_display.range_location === "开头"
             ? `(${range}) ${textList[versionIndex]}`
             : `${textList[versionIndex]}\t——${range}`;
