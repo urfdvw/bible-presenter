@@ -27,7 +27,7 @@ import DarkTheme from "react-lazy-dark-theme";
 // channel
 import useChannel from "./utilHooks/useChannel";
 // Bible data
-import Bible from "./bible";
+import bible from "./bible";
 import useBibleData from "./bible/useBibleData";
 
 function App() {
@@ -69,7 +69,7 @@ function App() {
     );
     // Bible Data
     const { getMultipleVerses, getChapterVerses, getSelectedVersions, getNextVerse, getPreviousVerse, verseExists } =
-        useBibleData(Bible.cuvs, Bible.cuvt, Bible.asv, appConfig.config.bible_display);
+        useBibleData(bible, appConfig.config.bible_display);
     // Bible control
     const [displayVerse, setDisplayVerse] = useState({
         book: 43,

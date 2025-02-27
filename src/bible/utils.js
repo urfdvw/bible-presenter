@@ -1,26 +1,6 @@
 import { compareLists } from "../utilFunctions/jsHelper";
 
 /**
- * Version util
- */
-
-export function getSelectedVersions(
-    ChineseSimplifiedVersion,
-    ChineseTraditionalVersion,
-    EnglishVersion,
-    BibleVersionConfig
-) {
-    const ChineseVersion = BibleVersionConfig.chinese === "简体" ? ChineseSimplifiedVersion : ChineseTraditionalVersion;
-    if (BibleVersionConfig.language === "中文") {
-        return [ChineseVersion];
-    } else if (BibleVersionConfig.language === "English") {
-        return [EnglishVersion];
-    } else if (BibleVersionConfig.language === "对照") {
-        return [ChineseVersion, EnglishVersion];
-    }
-}
-
-/**
  * Get verses from index
  */
 

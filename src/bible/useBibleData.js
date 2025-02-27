@@ -1,24 +1,20 @@
-import {
-    getSelectedVersions,
-    getMultipleVerses,
-    getChapterVerses,
-    getNextVerse,
-    getPreviousVerse,
-    verseExists,
-} from "./utils";
-export default function useBibleData(
-    ChineseSimplifiedVersion,
-    ChineseTraditionalVersion,
-    EnglishVersion,
-    BibleVersionConfig
-) {
+import { getMultipleVerses, getChapterVerses, getNextVerse, getPreviousVerse, verseExists } from "./utils";
+export default function useBibleData(bible, BibleVersionConfig) {
     function _getSelectedVersions() {
-        return getSelectedVersions(
-            ChineseSimplifiedVersion,
-            ChineseTraditionalVersion,
-            EnglishVersion,
-            BibleVersionConfig
-        );
+        const ChineseVersion = BibleVersionConfig.chinese === "简体" ? bible.cuvs : bible.cuvt;
+        const EnglishVersion =
+            BibleVersionConfig.english === "KJV"
+                ? bible.kjv
+                : BibleVersionConfig.english === "ASV"
+                ? bible.asv
+                : bible.web;
+        if (BibleVersionConfig.language === "中文") {
+            return [ChineseVersion];
+        } else if (BibleVersionConfig.language === "English") {
+            return [EnglishVersion];
+        } else if (BibleVersionConfig.language === "对照") {
+            return [ChineseVersion, EnglishVersion];
+        }
     }
 
     function _getMultipleVerses(book, chapter, verse, endChapter, endVerse) {

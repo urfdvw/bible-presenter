@@ -15,6 +15,12 @@
             "enum": ["简体", "繁體"],
             "default": "简体"
         },
+        "english": {
+            "title": "英文圣经版本",
+            "type": "string",
+            "enum": ["KJV", "ASV", "WEB"],
+            "default": "ASV"
+        },
         "zoom": {
             "title": "字体大小(%)",
             "type": "integer",

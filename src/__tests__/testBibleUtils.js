@@ -1,5 +1,4 @@
 import {
-    getSelectedVersions,
     verseExists,
     _getVerseInVersion,
     _getVerseIndexInVersion,
@@ -11,62 +10,6 @@ import {
 } from "../bible/utils";
 
 import Bible from "../bible";
-
-describe("Test getSelectedVersions", () => {
-    test("中文, 繁體", () => {
-        expect(
-            getSelectedVersions("cuvs", "cuvt", "ASV", {
-                language: "中文",
-                chinese: "繁體",
-            })
-        ).toStrictEqual(["cuvt"]);
-    });
-
-    test("中文, 简体", () => {
-        expect(
-            getSelectedVersions("cuvs", "cuvt", "ASV", {
-                language: "中文",
-                chinese: "简体",
-            })
-        ).toStrictEqual(["cuvs"]);
-    });
-
-    test("English, 繁體", () => {
-        expect(
-            getSelectedVersions("cuvs", "cuvt", "ASV", {
-                language: "English",
-                chinese: "繁體",
-            })
-        ).toStrictEqual(["ASV"]);
-    });
-
-    test("English, 简体", () => {
-        expect(
-            getSelectedVersions("cuvs", "cuvt", "ASV", {
-                language: "English",
-                chinese: "简体",
-            })
-        ).toStrictEqual(["ASV"]);
-    });
-
-    test("对照, 繁體", () => {
-        expect(
-            getSelectedVersions("cuvs", "cuvt", "ASV", {
-                language: "对照",
-                chinese: "繁體",
-            })
-        ).toStrictEqual(["cuvt", "ASV"]);
-    });
-
-    test("对照, 简体", () => {
-        expect(
-            getSelectedVersions("cuvs", "cuvt", "ASV", {
-                language: "对照",
-                chinese: "简体",
-            })
-        ).toStrictEqual(["cuvs", "ASV"]);
-    });
-});
 
 describe("Test verseExists", () => {
     test("HE single version", () => {
