@@ -52,7 +52,7 @@ export default function Notes() {
         {
             text: "下载",
             handler: () => {
-                downloadFile(JSON.stringify(noteList), "BibleVerseNotes.json");
+                downloadFile(JSON.stringify(noteList), "投影圣经笔记.json");
             },
         },
         {
