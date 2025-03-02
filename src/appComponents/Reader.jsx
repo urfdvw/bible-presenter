@@ -216,7 +216,7 @@ function ReaderList({ verses, currentPosition, setFirstIndexes, popupWindow }) {
                 flexDirection: "column",
                 flexWrap: "wrap",
                 height: "100%",
-                overflowX: "auto",
+                overflowX: "hidden",
             }}
             id="readerContainer"
         >

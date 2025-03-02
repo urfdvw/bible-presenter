@@ -51,7 +51,8 @@ export default function useLayoutHotKeys(flexModel, setShowHints) {
     );
     useHotkeys(
         "alt",
-        () => {
+        (event) => {
+            event.preventDefault();
             console.log("SHOW_HINT");
             setShowHints(true);
             for (const tab_id of hint_tab_ids) {
@@ -67,7 +68,8 @@ export default function useLayoutHotKeys(flexModel, setShowHints) {
     );
     useHotkeys(
         "alt",
-        () => {
+        (event) => {
+            event.preventDefault();
             console.log("HIDE_HINT");
             setShowHints(false);
             for (const tab_id of hint_tab_ids) {
