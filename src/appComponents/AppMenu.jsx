@@ -39,9 +39,9 @@ export default function AppMenu() {
                     },
                 },
                 {
-                    text: "Github Repo",
+                    text: "下载到本地",
                     handler: () => {
-                        window.open("https://github.com/urfdvw/bible-presenter", "_blank").focus();
+                        window.open("https://github.com/urfdvw/bible-presenter/raw/refs/heads/main/docs/index.html", "_blank").focus();
                     },
                 },
             ],
