@@ -17,7 +17,7 @@ export default function Projector() {
     var Alt;
     var Children;
 
-    if (appConfig.config.bible_display.display_type === "仅选中") {
+    if (appConfig.config.bible_display.display_type === "经节") {
         Pop = null;
         Alt = (
             <Box sx={{ height: "100%", overflowY: "scroll" }}>
@@ -37,7 +37,7 @@ export default function Projector() {
                 <div style={{ backgroundColor: "black", height: "100000px" }}></div>
             </NoTheme>
         );
-    } else if (appConfig.config.bible_display.display_type === "上下文") {
+    } else if (appConfig.config.bible_display.display_type === "整章") {
         Pop = projectorDisplay ? (
             <Box
                 style={{ zoom: appConfig.config.bible_display.zoom / 100 }}

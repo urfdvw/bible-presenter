@@ -78,11 +78,11 @@ export default function AppMenu() {
             text: (showHints ? "(D)" : "") + "切换显示方式",
             color: DARK_GREY,
             handler: () => {
-                if (appConfig.config.bible_display.display_type === "仅选中") {
-                    appConfig.setConfigField("bible_display", "display_type", "上下文");
+                if (appConfig.config.bible_display.display_type === "经节") {
+                    appConfig.setConfigField("bible_display", "display_type", "整章");
                 }
-                if (appConfig.config.bible_display.display_type === "上下文") {
-                    appConfig.setConfigField("bible_display", "display_type", "仅选中");
+                if (appConfig.config.bible_display.display_type === "整章") {
+                    appConfig.setConfigField("bible_display", "display_type", "经节");
                 }
             },
         },

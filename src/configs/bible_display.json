@@ -35,8 +35,8 @@
         "display_type": {
             "title": "投影显示方式",
             "type": "string",
-            "enum": ["仅选中", "上下文"],
-            "default": "仅选中"
+            "enum": ["经节", "整章"],
+            "default": "经节"
         },
         "menu_to_projector": {
             "title": "从圣经目录直接投影",

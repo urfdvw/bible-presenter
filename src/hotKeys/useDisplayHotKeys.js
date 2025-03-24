@@ -36,11 +36,11 @@ export default function useDisplayHotKeys(
     useHotkeys(
         "alt+d",
         (event) => {
-            if (config.config.bible_display.display_type === "仅选中") {
-                config.setConfigField("bible_display", "display_type", "上下文");
+            if (config.config.bible_display.display_type === "经节") {
+                config.setConfigField("bible_display", "display_type", "整章");
             }
-            if (config.config.bible_display.display_type === "上下文") {
-                config.setConfigField("bible_display", "display_type", "仅选中");
+            if (config.config.bible_display.display_type === "整章") {
+                config.setConfigField("bible_display", "display_type", "经节");
             }
         },
         { enableOnFormTags: true }
