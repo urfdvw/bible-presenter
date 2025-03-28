@@ -17,7 +17,27 @@ export default function Projector() {
     var Alt;
     var Children;
 
-    if (appConfig.config.bible_display.display_type === "整章") {
+    if (appConfig.config.bible_display.display_type === "经节") {
+        Pop = null;
+        Alt = (
+            <Box sx={{ height: "100%", overflowY: "scroll" }}>
+                <Typography>正在投影：</Typography>
+                <VerseParagraph verseObj={displayVerse} />
+            </Box>
+        );
+        Children = projectorDisplay ? (
+            <Box
+                style={{ zoom: appConfig.config.bible_display.zoom / 100 }}
+                sx={{ height: "100%", overflowY: "scroll" }}
+            >
+                <VerseParagraph verseObj={displayVerse} />
+            </Box>
+        ) : (
+            <NoTheme>
+                <div style={{ backgroundColor: "black", height: "100000px" }}></div>
+            </NoTheme>
+        );
+    } else if (appConfig.config.bible_display.display_type === "整章") {
         Pop = projectorDisplay ? (
             <Box
                 style={{ zoom: appConfig.config.bible_display.zoom / 100 }}
@@ -76,27 +96,6 @@ export default function Projector() {
                     <Reader popupWindow={popupWindow} />
                 </Box>
             </Box>
-        );
-    } else {
-        appConfig.setConfigField("bible_display", "display_type", "经节");
-        Pop = null;
-        Alt = (
-            <Box sx={{ height: "100%", overflowY: "scroll" }}>
-                <Typography>正在投影：</Typography>
-                <VerseParagraph verseObj={displayVerse} />
-            </Box>
-        );
-        Children = projectorDisplay ? (
-            <Box
-                style={{ zoom: appConfig.config.bible_display.zoom / 100 }}
-                sx={{ height: "100%", overflowY: "scroll" }}
-            >
-                <VerseParagraph verseObj={displayVerse} />
-            </Box>
-        ) : (
-            <NoTheme>
-                <div style={{ backgroundColor: "black", height: "100000px" }}></div>
-            </NoTheme>
         );
     }
 
