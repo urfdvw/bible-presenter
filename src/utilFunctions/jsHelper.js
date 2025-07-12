@@ -83,3 +83,29 @@ export function downloadFile(content, name) {
 export function filterUndefined(original) {
     return Object.fromEntries(Object.entries(original).filter(([key, value]) => value !== undefined));
 }
+
+export async function downloadUrlContent(url, filename = "downloaded_file") {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`Failed to fetch: ${response.statusText}`);
+
+        const blob = await response.blob();
+
+        // Create a temporary URL for the blob
+        const blobUrl = URL.createObjectURL(blob);
+
+        // Create a hidden <a> element to trigger download
+        const a = document.createElement("a");
+        a.href = blobUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+
+        // Cleanup
+        document.body.removeChild(a);
+        URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+        console.error("Error downloading content:", error);
+        window.open(url, "_blank").focus();
+    }
+}

@@ -3,7 +3,7 @@ import { grey, red } from "@mui/material/colors";
 import { useContext } from "react";
 import AppContext from "../AppContext";
 import { selectTabById } from "../layout/layoutUtils";
-
+import {downloadUrlContent} from "../utilFunctions/jsHelper";
 const DARK_RED = red[900];
 const DARK_GREY = grey[900];
 
@@ -41,7 +41,7 @@ export default function AppMenu() {
                 {
                     text: "下载到本地",
                     handler: () => {
-                        window.open("https://github.com/urfdvw/bible-presenter/raw/refs/heads/main/docs/index.html", "_blank").focus();
+                        downloadUrlContent("https://github.com/urfdvw/bible-presenter/raw/refs/heads/main/docs/index.html");
                     },
                 },
             ],
