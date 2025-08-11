@@ -9,7 +9,7 @@ import Factory from "./layout/Factory";
 import "flexlayout-react/style/light.css";
 import { isMobile } from "react-device-detect";
 // menu bar
-import AppMenu from "./appComponents/AppMenu";
+import AppMenu from "./components/AppMenu";
 // notification
 import useNotification from "./utilHooks/useNotification";
 import Typography from "@mui/material/Typography";

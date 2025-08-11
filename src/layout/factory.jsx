@@ -1,14 +1,14 @@
 import * as FlexLayout from "flexlayout-react";
-import Placeholder from "../appComponents/placeholder";
-import UserConfigs from "../appComponents/UserConfigs";
-import Help from "../appComponents/Help";
-import QuickLocate from "../appComponents/QuickLocate";
-import Projector from "../appComponents/Projector";
-import Preview from "../appComponents/Preview";
-import TableOfContents from "../appComponents/TableOfContents";
-import History from "../appComponents/History";
-import Notes from "../appComponents/Notes";
-import TextSearch from "../appComponents/TextSearch";
+import Placeholder from "../components/placeholder";
+import UserConfigs from "../components/UserConfigs";
+import Help from "../components/Help";
+import QuickLocate from "../components/QuickLocate";
+import Projector from "../components/Projector";
+import Preview from "../components/Preview";
+import TableOfContents from "../components/TableOfContents";
+import History from "../components/History";
+import Notes from "../components/Notes";
+import TextSearch from "../components/TextSearch";
 
 const fullSize = { height: "100%", width: "100%" };
 
