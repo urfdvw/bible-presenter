@@ -3,7 +3,14 @@
     gap: 0px;
     margin: 0;
     padding: 0px;
+
+    /* Modern browsers: dynamic viewport height */
+    height: 100dvh;
+
+    /* Fallbacks */
     height: 100vh;
+    min-height: -webkit-fill-available;
+
     width: 100vw;
     display: flex;
     flex-direction: column;

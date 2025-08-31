@@ -1,0 +1,27 @@
+{
+    "name": "投影圣经",
+    "description": "方便好用的聚会读经小工具。提供多种 经文检索方式 和 灵活的投影显示模式。支持 在线使用 或 下载运行。无需安装，免费开源。",
+    "icons": [
+        {
+            "src": "/bible-icon.svg",
+            "type": "image/svg+xml",
+            "sizes": "800x800"
+        },
+        {
+            "src": "/bible-icon-192.png",
+            "type": "image/png",
+            "sizes": "192x192"
+        },
+        {
+            "src": "/bible-icon-512.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ],
+    "start_url": ".",
+    "background_color": "#eb5534",
+    "display": "standalone",
+    "scope": "/",
+    "theme_color": "#eb5534",
+    "screenshots": []
+}
