@@ -9,13 +9,7 @@ import { selectTabById } from "../layout/layoutUtils";
 function NoteListBody() {
     const { noteList } = useContext(AppContext);
     return noteList.map((verseObj, objIndex) => {
-        return (
-            <NoteVerseBox
-                verseObj={verseObj}
-                boxIndex={objIndex}
-                key={objIndex}
-            />
-        );
+        return <NoteVerseBox verseObj={verseObj} boxIndex={objIndex} key={objIndex} />;
     });
 }
 
@@ -42,13 +36,13 @@ export default function Notes() {
         {
             text: "保存",
             handler: () => {
-                saveToFile(JSON.stringify(noteList));
+                saveToFile(JSON.stringify(noteList, null, 2));
             },
         },
         {
             text: "下载",
             handler: () => {
-                downloadFile(JSON.stringify(noteList), "投影圣经笔记.json");
+                downloadFile(JSON.stringify(noteList, null, 2), "投影圣经笔记.json");
             },
         },
         {
