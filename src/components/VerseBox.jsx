@@ -1,6 +1,12 @@
 import { Box, Typography, IconButton, Tooltip } from "@mui/material";
 // Import any icons you want to use from Material-UI icons
-import { Preview, ArrowUpward, ArrowDownward, Close, NoteAdd, Checklist } from "@mui/icons-material";
+import PreviewIcon from '@mui/icons-material/PreviewOutlined';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpwardOutlined';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownwardOutlined';
+import CloseIcon from '@mui/icons-material/CloseOutlined';
+import NoteAddIcon from '@mui/icons-material/NoteAddOutlined';
+import ChecklistIcon from '@mui/icons-material/ChecklistOutlined';
+import EditIcon from '@mui/icons-material/EditOutlined';
 
 import { versesToParagraphsMD, versesToRangeText } from "../bible/utils";
 
@@ -66,6 +72,7 @@ export function PreviewVerseBox({ book, chapter, verse, highlighted, selected, s
                         verse: selected.verse,
                         endChapter: chapter,
                         endVerse: verse,
+                        note: "",
                     };
                 }
             }
@@ -115,10 +122,10 @@ export function PreviewVerseBox({ book, chapter, verse, highlighted, selected, s
 
             <Box sx={{ flexShrink: 0 }}>
                 <Icon tooltip={"加入笔记"} onClick={handleAddToNote}>
-                    <NoteAdd />
+                    <NoteAddIcon />
                 </Icon>
                 <Icon tooltip={"选中多节"} onClick={handleSelect}>
-                    <Checklist />
+                    <ChecklistIcon />
                 </Icon>
             </Box>
         </Box>
@@ -161,6 +168,7 @@ export function HistoryVerseBox({ book, chapter, verse, endChapter, endVerse, hi
                 verse: verse,
                 endChapter: endChapter,
                 endVerse: endVerse,
+                note: "",
             },
         ]);
     };
@@ -188,44 +196,52 @@ export function HistoryVerseBox({ book, chapter, verse, endChapter, endVerse, hi
 
             <Box sx={{ flexShrink: 0 }}>
                 <Icon tooltip={"预览"} onClick={handlePreview}>
-                    <Preview />
+                    <PreviewIcon />
                 </Icon>
                 <Icon tooltip={"加入笔记"} onClick={handleAddToNote}>
-                    <NoteAdd />
+                    <NoteAddIcon />
                 </Icon>
                 <Icon tooltip={"删除"} onClick={handleRemove}>
-                    <Close />
+                    <CloseIcon />
                 </Icon>
             </Box>
         </Box>
     );
 }
 
-export function NoteVerseBox({ book, chapter, verse, endChapter, endVerse, boxIndex, highlighted }) {
+export function NoteVerseBox({ verseObj, boxIndex, highlighted }) {
     const { getMultipleVerses, setDisplayVerse, noteList, setNoteList, setPreviewVerse } = useContext(AppContext);
-    const verses = getMultipleVerses(book, chapter, verse, endChapter, endVerse);
+    const verses = getMultipleVerses(
+        verseObj.book,
+        verseObj.chapter,
+        verseObj.verse,
+        verseObj.endChapter,
+        verseObj.endVerse
+    );
     const range = versesToRangeText(verses);
 
     const handleShow = () => {
-        const verseObj = {
-            book: book,
-            chapter: chapter,
-            verse: verse,
-            endChapter: endChapter,
-            endVerse: endVerse,
-        };
         setDisplayVerse(verseObj);
         // setHistory((history) => removeAllDuplicatesKeepLast([...history, verseObj]));
     };
+    const handleEdit = () => {
+        const note = prompt("编辑笔记内容", verseObj.note || "");
+        verseObj.note = note;
+        setNoteList((notes) => {
+            const out = [];
+            for (var i = 0; i < noteList.length; i++) {
+                if (i === boxIndex) {
+                    out.push(verseObj);
+                } else {
+                    out.push(notes[i]);
+                }
+            }
+            return out;
+        });
+    };
 
     const handlePreview = () => {
-        setPreviewVerse({
-            book: book,
-            chapter: chapter,
-            verse: verse,
-            endChapter: endChapter,
-            endVerse: endVerse,
-        });
+        setPreviewVerse(verseObj);
     };
 
     const handleMoveUp = () => {
@@ -280,23 +296,32 @@ export function NoteVerseBox({ book, chapter, verse, endChapter, endVerse, boxIn
         console.log("verse moved up in notes"); // will be imported form context
     };
 
+    const note = verseObj.note || "";
+
     return (
         <Box onClick={handleShow} sx={highlighted ? highlightedVerseBoxStyle : verseBoxStyle}>
-            <Typography sx={{ flexGrow: 1 }}>{range[0]}</Typography>
+            <MarkdownExtended sx={{ flexGrow: 1 }}>{note + "\n\n" + range[0]}</MarkdownExtended>
 
-            <Box sx={{ flexShrink: 0 }}>
-                <Icon tooltip={"预览"} onClick={handlePreview}>
-                    <Preview />
-                </Icon>
-                <Icon tooltip={"上移"} onClick={handleMoveUp}>
-                    <ArrowUpward />
-                </Icon>
-                <Icon tooltip={"下移"} onClick={handleMoveDown}>
-                    <ArrowDownward />
-                </Icon>
-                <Icon tooltip={"删除"} onClick={handleRemove}>
-                    <Close />
-                </Icon>
+            <Box sx={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                    <Icon tooltip={"编辑"} onClick={handleEdit}>
+                        <EditIcon />
+                    </Icon>
+                    <Icon tooltip={"预览"} onClick={handlePreview}>
+                        <PreviewIcon />
+                    </Icon>
+                </Box>
+                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                    <Icon tooltip={"上移"} onClick={handleMoveUp}>
+                        <ArrowUpwardIcon />
+                    </Icon>
+                    <Icon tooltip={"下移"} onClick={handleMoveDown}>
+                        <ArrowDownwardIcon />
+                    </Icon>
+                    <Icon tooltip={"删除"} onClick={handleRemove}>
+                        <CloseIcon />
+                    </Icon>
+                </Box>
             </Box>
         </Box>
     );
@@ -336,6 +361,7 @@ export function SearchVerseBox({ verseObj, keyWords }) {
                 verse: verseObj.verse,
                 endChapter: null,
                 endVerse: null,
+                note: "",
             },
         ]);
     };
@@ -349,10 +375,10 @@ export function SearchVerseBox({ verseObj, keyWords }) {
 
             <Box sx={{ flexShrink: 0 }}>
                 <Icon tooltip={"预览"} onClick={handlePreview}>
-                    <Preview />
+                    <PreviewIcon />
                 </Icon>
                 <Icon tooltip={"加入笔记"} onClick={handleAddToNote}>
-                    <NoteAdd />
+                    <NoteAddIcon />
                 </Icon>
             </Box>
         </Box>
@@ -396,14 +422,14 @@ export function LocateVerseBox({ verseObj }) {
             {verseExists(verseObj.book, verseObj.chapter, verseObj.verse, verseObj.endChapter, verseObj.endVerse) ? (
                 <>
                     <Box sx={{ flexGrow: 1 }}>
-                        <VerseParagraph verseObj={verseObj} />
+                        <VerseParagraph verseObj={{ ...verseObj, note: null }} />
                     </Box>
                     <Box sx={{ flexShrink: 0 }}>
                         <Icon tooltip={"预览 Shift + Enter"} onClick={handlePreview}>
-                            <Preview />
+                            <PreviewIcon />
                         </Icon>
                         <Icon tooltip={"加入笔记\nCtrl/Cmd + Enter"} onClick={handleAddToNote}>
-                            <NoteAdd />
+                            <NoteAddIcon />
                         </Icon>
                     </Box>
                 </>

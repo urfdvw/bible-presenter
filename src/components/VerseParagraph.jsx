@@ -6,6 +6,8 @@ import { versesToRangeText, versesToParagraphsMD } from "../bible/utils";
 export default function VerseParagraph({ verseObj }) {
     const { appConfig, getMultipleVerses } = useContext(AppContext);
 
+    console.log("VerseParagraph render", verseObj);
+
     const verses = getMultipleVerses(
         verseObj.book,
         verseObj.chapter,
@@ -26,5 +28,17 @@ export default function VerseParagraph({ verseObj }) {
             ? `(${range}) ${textList[versionIndex]}`
             : `${textList[versionIndex]}\t——${range}`;
     });
-    return <MarkdownExtended>{paragraphs.join("\n\n")}</MarkdownExtended>;
+
+    const note_position = appConfig.config.bible_display.note_position;
+
+    let displayMarkdown = paragraphs.join("\n\n");
+    if (verseObj.note && verseObj.note.length > 0) {
+        if (note_position === "开头") {
+            displayMarkdown = verseObj.note + "\n\n" + displayMarkdown;
+        } else if (note_position === "结尾") {
+            displayMarkdown = displayMarkdown + "\n\n" + verseObj.note;
+        } // other wise do nothing
+    }
+
+    return <MarkdownExtended>{displayMarkdown}</MarkdownExtended>;
 }
