@@ -66,6 +66,7 @@ export function PreviewVerseBox({ book, chapter, verse, highlighted, selected, s
                         verse: selected.verse,
                         endChapter: chapter,
                         endVerse: verse,
+                        note: "",
                     };
                 }
             }
@@ -161,6 +162,7 @@ export function HistoryVerseBox({ book, chapter, verse, endChapter, endVerse, hi
                 verse: verse,
                 endChapter: endChapter,
                 endVerse: endVerse,
+                note: "",
             },
         ]);
     };
@@ -201,31 +203,24 @@ export function HistoryVerseBox({ book, chapter, verse, endChapter, endVerse, hi
     );
 }
 
-export function NoteVerseBox({ book, chapter, verse, endChapter, endVerse, boxIndex, highlighted }) {
+export function NoteVerseBox({ verseObj, boxIndex, highlighted }) {
     const { getMultipleVerses, setDisplayVerse, noteList, setNoteList, setPreviewVerse } = useContext(AppContext);
-    const verses = getMultipleVerses(book, chapter, verse, endChapter, endVerse);
+    const verses = getMultipleVerses(
+        verseObj.book,
+        verseObj.chapter,
+        verseObj.verse,
+        verseObj.endChapter,
+        verseObj.endVerse
+    );
     const range = versesToRangeText(verses);
 
     const handleShow = () => {
-        const verseObj = {
-            book: book,
-            chapter: chapter,
-            verse: verse,
-            endChapter: endChapter,
-            endVerse: endVerse,
-        };
         setDisplayVerse(verseObj);
         // setHistory((history) => removeAllDuplicatesKeepLast([...history, verseObj]));
     };
 
     const handlePreview = () => {
-        setPreviewVerse({
-            book: book,
-            chapter: chapter,
-            verse: verse,
-            endChapter: endChapter,
-            endVerse: endVerse,
-        });
+        setPreviewVerse(verseObj);
     };
 
     const handleMoveUp = () => {
@@ -280,9 +275,11 @@ export function NoteVerseBox({ book, chapter, verse, endChapter, endVerse, boxIn
         console.log("verse moved up in notes"); // will be imported form context
     };
 
+    const note = verseObj.note || "";
+
     return (
         <Box onClick={handleShow} sx={highlighted ? highlightedVerseBoxStyle : verseBoxStyle}>
-            <Typography sx={{ flexGrow: 1 }}>{range[0]}</Typography>
+            <MarkdownExtended sx={{ flexGrow: 1 }}>{note + "\n\n" + range[0]}</MarkdownExtended>
 
             <Box sx={{ flexShrink: 0 }}>
                 <Icon tooltip={"预览"} onClick={handlePreview}>
@@ -336,6 +333,7 @@ export function SearchVerseBox({ verseObj, keyWords }) {
                 verse: verseObj.verse,
                 endChapter: null,
                 endVerse: null,
+                note: "",
             },
         ]);
     };

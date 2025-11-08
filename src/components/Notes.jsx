@@ -11,11 +11,7 @@ function NoteListBody() {
     return noteList.map((verseObj, objIndex) => {
         return (
             <NoteVerseBox
-                book={verseObj.book}
-                chapter={verseObj.chapter}
-                verse={verseObj.verse}
-                endChapter={verseObj.endChapter}
-                endVerse={verseObj.endVerse}
+                verseObj={verseObj}
                 boxIndex={objIndex}
                 key={objIndex}
             />
