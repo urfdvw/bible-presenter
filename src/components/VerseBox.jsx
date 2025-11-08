@@ -1,6 +1,12 @@
 import { Box, Typography, IconButton, Tooltip } from "@mui/material";
 // Import any icons you want to use from Material-UI icons
-import { Preview, ArrowUpward, ArrowDownward, Close, NoteAdd, Checklist } from "@mui/icons-material";
+import { Preview } from "@mui/icons-material";
+import { ArrowUpward } from "@mui/icons-material";
+import { ArrowDownward } from "@mui/icons-material";
+import { Close } from "@mui/icons-material";
+import { NoteAdd } from "@mui/icons-material";
+import { Checklist } from "@mui/icons-material";
+import Edit from "@mui/icons-material/Edit";
 
 import { versesToParagraphsMD, versesToRangeText } from "../bible/utils";
 
@@ -218,6 +224,21 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted }) {
         setDisplayVerse(verseObj);
         // setHistory((history) => removeAllDuplicatesKeepLast([...history, verseObj]));
     };
+    const handleEdit = () => {
+        const note = prompt("编辑笔记内容", verseObj.note || "");
+        verseObj.note = note;
+        setNoteList((notes) => {
+            const out = [];
+            for (var i = 0; i < noteList.length; i++) {
+                if (i === boxIndex) {
+                    out.push(verseObj);
+                } else {
+                    out.push(notes[i]);
+                }
+            }
+            return out;
+        });
+    };
 
     const handlePreview = () => {
         setPreviewVerse(verseObj);
@@ -282,6 +303,9 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted }) {
             <MarkdownExtended sx={{ flexGrow: 1 }}>{note + "\n\n" + range[0]}</MarkdownExtended>
 
             <Box sx={{ flexShrink: 0 }}>
+                <Icon tooltip={"编辑"} onClick={handleEdit}>
+                    <Edit />
+                </Icon>
                 <Icon tooltip={"预览"} onClick={handlePreview}>
                     <Preview />
                 </Icon>
