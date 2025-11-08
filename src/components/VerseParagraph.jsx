@@ -29,11 +29,11 @@ export default function VerseParagraph({ verseObj }) {
             : `${textList[versionIndex]}\t——${range}`;
     });
 
-    const note_position = "开始";
+    const note_position = appConfig.config.bible_display.note_position;
 
     let displayMarkdown = paragraphs.join("\n\n");
     if (verseObj.note && verseObj.note.length > 0) {
-        if (note_position === "开始") {
+        if (note_position === "开头") {
             displayMarkdown = verseObj.note + "\n\n" + displayMarkdown;
         } else if (note_position === "结尾") {
             displayMarkdown = displayMarkdown + "\n\n" + verseObj.note;
