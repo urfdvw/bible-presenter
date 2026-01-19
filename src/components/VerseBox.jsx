@@ -1,12 +1,12 @@
 import { Box, Typography, IconButton, Tooltip } from "@mui/material";
 // Import any icons you want to use from Material-UI icons
-import PreviewIcon from '@mui/icons-material/PreviewOutlined';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpwardOutlined';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownwardOutlined';
-import CloseIcon from '@mui/icons-material/CloseOutlined';
-import NoteAddIcon from '@mui/icons-material/NoteAddOutlined';
-import ChecklistIcon from '@mui/icons-material/ChecklistOutlined';
-import EditIcon from '@mui/icons-material/EditOutlined';
+import PreviewIcon from "@mui/icons-material/PreviewOutlined";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpwardOutlined";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownwardOutlined";
+import CloseIcon from "@mui/icons-material/CloseOutlined";
+import NoteAddIcon from "@mui/icons-material/NoteAddOutlined";
+import ChecklistIcon from "@mui/icons-material/ChecklistOutlined";
+import EditIcon from "@mui/icons-material/EditOutlined";
 
 import { versesToParagraphsMD, versesToRangeText } from "../bible/utils";
 
@@ -386,6 +386,9 @@ export function SearchVerseBox({ verseObj, keyWords }) {
 }
 
 export function ReaderVerseBox({ verseObjs, selected }) {
+    const { appConfig } = useContext(AppContext);
+    const theme = appConfig.config.bible_display.chapter_theme;
+    var sx = theme === "红蓝" ? { color: verseObjs[0].verse % 2 === 1 ? "#E00000" : "#0000E0" } : {};
     return (
         <Typography component="div" sx={{ display: "flex", flexDirection: "row", width: "100%" }}>
             <Box sx={{ flexGrow: 0, marginRight: "0.5em", color: selected ? "red" : "black" }}>
@@ -393,7 +396,9 @@ export function ReaderVerseBox({ verseObjs, selected }) {
             </Box>
             <Box sx={{ flexGrow: 1 }}>
                 {verseObjs.map((obj) => (
-                    <Typography key={obj.text}>{obj.text}</Typography>
+                    <Typography key={obj.text} sx={sx}>
+                        {obj.text}
+                    </Typography>
                 ))}
             </Box>
         </Typography>
