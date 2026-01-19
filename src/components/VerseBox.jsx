@@ -386,12 +386,32 @@ export function SearchVerseBox({ verseObj, keyWords }) {
 }
 
 export function ReaderVerseBox({ verseObjs, selected }) {
+    const red = "#E00000";
+    const blue = "#0000E0";
+    const red_background = "#fcd3d3";
+    const blue_background = "#d0d2ff";
     const { appConfig } = useContext(AppContext);
-    const theme = appConfig.config.bible_display.chapter_theme;
-    var sx = theme === "红蓝" ? { color: verseObjs[0].verse % 2 === 1 ? "#E00000" : "#0000E0" } : {};
+    const red_blue = appConfig.config.bible_display.chapter_theme === "红蓝";
+    const isRed = verseObjs[0].verse % 2 === 1;
+    var sx = red_blue ? { color: isRed ? red : blue } : {};
     return (
         <Typography component="div" sx={{ display: "flex", flexDirection: "row", width: "100%" }}>
-            <Box sx={{ flexGrow: 0, marginRight: "0.5em", color: selected ? "red" : "black" }}>
+            <Box
+                sx={{
+                    flexGrow: 0,
+                    marginRight: "0.5em",
+                    color: selected ? (red_blue ? (isRed ? red : blue) : red) : "black",
+                    border: 0,
+                    borderRadius: 100,
+                    backgroundColor: selected
+                        ? red_blue
+                            ? isRed
+                                ? red_background
+                                : blue_background
+                            : red_background
+                        : null,
+                }}
+            >
                 {verseObjs[0].verse}
             </Box>
             <Box sx={{ flexGrow: 1 }}>
