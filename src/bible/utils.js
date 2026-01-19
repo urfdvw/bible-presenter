@@ -9,7 +9,7 @@ export function verseExists(versions, book, chapter, verse) {
     for (let version of versions) {
         if (
             version.verses.filter(
-                (verseObj) => verseObj.book === book && verseObj.chapter === chapter && verseObj.verse === verse
+                (verseObj) => verseObj.book === book && verseObj.chapter === chapter && verseObj.verse === verse,
             ).length > 0
         ) {
             badGivenVersePosition = false;
@@ -69,7 +69,7 @@ export function getMultipleVerses(versions, book, chapter, verse, endChapter, en
     const verseUniquePositions = new Set();
     for (const version of versions) {
         let index = _getVerseIndexInVersion(version, book, chapter, verse);
-        if (!index) {
+        if (index === null || index === undefined) {
             // verse not found
             continue;
         }
@@ -79,7 +79,7 @@ export function getMultipleVerses(versions, book, chapter, verse, endChapter, en
             compareLists([verseObj.chapter, verseObj.verse], [endChapter, endVerse]) <= 0
         ) {
             verseUniquePositions.add(
-                JSON.stringify({ book: verseObj.book, chapter: verseObj.chapter, verse: verseObj.verse })
+                JSON.stringify({ book: verseObj.book, chapter: verseObj.chapter, verse: verseObj.verse }),
             );
             if (index === version.verses.length - 1) {
                 break;
@@ -91,7 +91,7 @@ export function getMultipleVerses(versions, book, chapter, verse, endChapter, en
     const versePositions = Array.from(verseUniquePositions).map((str) => JSON.parse(str));
     // get verses
     return versePositions.map((position) =>
-        versions.map((version) => _getVerseInVersion(version, position.book, position.chapter, position.verse))
+        versions.map((version) => _getVerseInVersion(version, position.book, position.chapter, position.verse)),
     );
 }
 
@@ -104,9 +104,9 @@ export function _getChapterEndVerse(versions, book, chapter) {
             Math.max(
                 ...version.verses
                     .filter((verseObj) => verseObj.book === book && verseObj.chapter === chapter)
-                    .map((verseObj) => verseObj.verse)
-            )
-        )
+                    .map((verseObj) => verseObj.verse),
+            ),
+        ),
     );
 }
 
@@ -138,7 +138,7 @@ export function versesToRangeText(verses) {
                 }
             } else {
                 returnRanges.push(
-                    `${bookName} ${startVerse.chapter}:${startVerse.verse}-${endVerse.chapter}:${endVerse.verse}`
+                    `${bookName} ${startVerse.chapter}:${startVerse.verse}-${endVerse.chapter}:${endVerse.verse}`,
                 );
             }
         } catch (error) {
