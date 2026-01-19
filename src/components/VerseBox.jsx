@@ -408,7 +408,7 @@ export function ReaderVerseBox({ verseObjs, selected }) {
                             ? isRed
                                 ? red_background
                                 : blue_background
-                            : red_background
+                            : null
                         : null,
                 }}
             >
