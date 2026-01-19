@@ -219,7 +219,7 @@ export default function IMETextArea({ text, setText, DICTIONARY, onDisplay, onPr
 
         // Now handle numeric recommendation picks
         if (recommendations.length === 0) return;
-        const num = parseInt(event.key, 10);
+        const num = event.key === " " ? 1 : parseInt(event.key, 10);
         if (!isNaN(num) && num >= 1 && num <= recommendations.length) {
             // Replace last word with dictionary value
             const chosenKey = recommendations[num - 1];
