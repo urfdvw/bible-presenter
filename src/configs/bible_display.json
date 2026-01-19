@@ -39,10 +39,16 @@
             "default": "开头"
         },
         "display_type": {
-            "title": "投影显示方式",
+            "title": "投影显示模式",
             "type": "string",
             "enum": ["经节", "整章"],
             "default": "经节"
+        },
+        "chapter_theme": {
+            "title": "整章模式字体颜色",
+            "type": "string",
+            "enum": ["默认", "红蓝"],
+            "default": "默认"
         },
         "menu_to_projector": {
             "title": "从圣经目录直接投影",
