@@ -3,6 +3,7 @@ import { Grid, Box, Typography } from "@mui/material";
 import { useContext, useState } from "react";
 import AppContext from "../AppContext";
 import { sortAndUnique } from "../utilFunctions/jsHelper";
+import VerseRef from "../models/VerseRef";
 
 const FourFixedColumns = ({ books, onClick }) => {
     return (
@@ -100,17 +101,9 @@ export default function TableOfContents() {
     const bookName = versions[0].verses.filter((verseObj) => verseObj.book === book)[0].book_name;
 
     function setChapter(chapter) {
-        setPreviewVerse({
-            book: book,
-            chapter: chapter,
-            verse: 1,
-        });
+        setPreviewVerse(new VerseRef({ book, chapter, verse: 1 }));
         if (appConfig.config.bible_display.menu_to_projector) {
-            setDisplayVerse({
-                book: book,
-                chapter: chapter,
-                verse: 1,
-            });
+            setDisplayVerse(new VerseRef({ book, chapter, verse: 1 }));
         }
     }
 

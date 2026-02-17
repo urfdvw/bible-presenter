@@ -5,6 +5,7 @@ import { scroller, Element } from "react-scroll";
 import { ReaderVerseBox } from "./VerseBox";
 import { compareLists } from "../utilFunctions/jsHelper";
 import TabToolBar from "../utilComponents/TabToolBar";
+import VerseRef from "../models/VerseRef";
 
 export function ReaderTitle() {
     const { displayVerse, getMultipleVerses } = useContext(AppContext);
@@ -76,13 +77,13 @@ export default function Reader({ popupWindow }) {
                 console.log("to next chapter");
                 setDisplayVerse((verseObj) => {
                     const nextVerse = getNextVerse(verseObj.book, verseObj.chapter, verses.at(-1)[0].verse);
-                    return nextVerse;
+                    return VerseRef.from(nextVerse);
                 });
                 return;
             }
             const nextPage = firstIndexes.filter((i) => i > displayVerse.verse)[0];
             setDisplayVerse((verseObj) => {
-                return { ...verseObj, verse: nextPage, endChapter: null, endVerse: null };
+                return VerseRef.from(verseObj).with({ verse: nextPage, endChapter: null, endVerse: null });
             });
         } else if (pageTurnTrigger < 0) {
             console.log("page Up");
@@ -90,13 +91,13 @@ export default function Reader({ popupWindow }) {
                 console.log("to previous chapter");
                 setDisplayVerse((verseObj) => {
                     const previousVerse = getPreviousVerse(verseObj.book, verseObj.chapter, 1);
-                    return previousVerse;
+                    return VerseRef.from(previousVerse);
                 });
                 return;
             }
             const lastPage = firstIndexes.filter((i) => i <= displayVerse.verse).at(-2);
             setDisplayVerse((verseObj) => {
-                return { ...verseObj, verse: lastPage, endChapter: null, endVerse: null };
+                return VerseRef.from(verseObj).with({ verse: lastPage, endChapter: null, endVerse: null });
             });
         }
     }, [pageTurnTrigger]);
@@ -106,13 +107,13 @@ export default function Reader({ popupWindow }) {
             console.log("next verse");
             setDisplayVerse((verseObj) => {
                 const nextVerse = getNextVerse(verseObj.book, verseObj.chapter, verseObj.verse);
-                return nextVerse;
+                return VerseRef.from(nextVerse);
             });
         } else if (verseTurnTrigger < 0) {
             console.log("previous verse");
             setDisplayVerse((verseObj) => {
                 const previousVerse = getPreviousVerse(verseObj.book, verseObj.chapter, verseObj.verse);
-                return previousVerse;
+                return VerseRef.from(previousVerse);
             });
         }
     }, [verseTurnTrigger]);

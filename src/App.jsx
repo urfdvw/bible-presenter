@@ -29,6 +29,9 @@ import useChannel from "./utilHooks/useChannel";
 // Bible data
 import bible from "./bible";
 import useBibleData from "./bible/useBibleData";
+import VerseRef from "./models/VerseRef";
+
+/** @typedef {import("./models/VerseRef").VerseRefLike} VerseRefLike */
 
 function App() {
     // testing state
@@ -71,23 +74,15 @@ function App() {
     const { getMultipleVerses, getChapterVerses, getSelectedVersions, getNextVerse, getPreviousVerse, verseExists } =
         useBibleData(bible, appConfig.config.bible_display);
     // Bible control
-    const [displayVerse, setDisplayVerse] = useState({
-        book: 43,
-        chapter: 3,
-        verse: 16,
-        endChapter: null,
-        endVerse: null,
-    });
-    const [previewVerse, setPreviewVerse] = useState({
-        book: 43,
-        chapter: 3,
-        verse: 16,
-        endChapter: null,
-        endVerse: null,
-    });
+    /** @type {[VerseRef, import("react").Dispatch<import("react").SetStateAction<VerseRef>>]} */
+    const [displayVerse, setDisplayVerse] = useState(new VerseRef({ book: 43, chapter: 3, verse: 16 }));
+    /** @type {[VerseRef, import("react").Dispatch<import("react").SetStateAction<VerseRef>>]} */
+    const [previewVerse, setPreviewVerse] = useState(new VerseRef({ book: 43, chapter: 3, verse: 16 }));
     // history
+    /** @type {[VerseRefLike[], import("react").Dispatch<import("react").SetStateAction<VerseRefLike[]>>]} */
     const [history, setHistory] = useState([]);
     // notes
+    /** @type {[VerseRefLike[], import("react").Dispatch<import("react").SetStateAction<VerseRefLike[]>>]} */
     const [noteList, setNoteList] = useState([]);
 
     if (!appConfig.ready) {

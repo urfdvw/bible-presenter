@@ -5,6 +5,7 @@ import TabToolBar from "../utilComponents/TabToolBar";
 import { useSingleFileSystemAccess } from "../utilHooks/useSingleFileSystemAccess";
 import { downloadFile } from "../utilFunctions/jsHelper";
 import { selectTabById } from "../layout/layoutUtils";
+import VerseRef from "../models/VerseRef";
 
 function NoteListBody() {
     const { noteList } = useContext(AppContext);
@@ -20,7 +21,8 @@ export default function Notes() {
         console.log(content);
         if (content) {
             try {
-                setNoteList(JSON.parse(content));
+                const parsed = JSON.parse(content);
+                setNoteList(Array.isArray(parsed) ? parsed.map((item) => VerseRef.from(item)) : []);
             } catch (error) {
                 console.error(error);
             }

@@ -3,6 +3,11 @@ import AppContext from "../AppContext";
 import MarkdownExtended from "../utilComponents/MarkdownExtended";
 import { versesToRangeText, versesToParagraphsMD } from "../bible/utils";
 
+/** @typedef {import("../models/VerseRef").VerseRefLike} VerseRefLike */
+
+/**
+ * @param {{verseObj: VerseRefLike}} props
+ */
 export default function VerseParagraph({ verseObj }) {
     const { appConfig, getMultipleVerses } = useContext(AppContext);
 

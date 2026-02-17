@@ -1,3 +1,5 @@
+/** @typedef {import("../models/VerseRef").VerseRefLike} VerseRefLike */
+
 /**
  * Compare two arrays (arr1, arr2) in a Python-like lexicographical manner.
  * Returns:
@@ -37,6 +39,10 @@ export function sortAndUnique(array) {
     });
 }
 
+/**
+ * @param {VerseRefLike[]} data
+ * @returns {VerseRefLike[]}
+ */
 export function removeAllDuplicatesKeepLast(data) {
     // A helper to generate a unique key for each object
     const getKey = (obj) => `${obj.book}:${obj.chapter}:${obj.verse}:${obj.endChapter}:${obj.endVerse}`;

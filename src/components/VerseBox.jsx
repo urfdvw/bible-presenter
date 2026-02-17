@@ -18,6 +18,9 @@ import { useContext, useEffect, useState } from "react";
 import { compareLists, removeAllDuplicatesKeepLast } from "../utilFunctions/jsHelper";
 import HighlightedSpan from "../utilComponents/HighlightedSpan";
 import VerseParagraph from "./VerseParagraph";
+import VerseRef from "../models/VerseRef";
+
+/** @typedef {import("../models/VerseRef").VerseRefLike} VerseRefLike */
 
 function Icon({ tooltip, children, onClick }) {
     return (
@@ -50,15 +53,10 @@ const highlightedVerseBoxStyle = { ...verseBoxStyle, border: "2px solid #700000"
 
 export function PreviewVerseBox({ book, chapter, verse, highlighted, selected, setSelected }) {
     const { getMultipleVerses, setDisplayVerse, setHistory, setNoteList } = useContext(AppContext);
+    /** @type {[VerseRef | null, import("react").Dispatch<import("react").SetStateAction<VerseRef | null>>]} */
     const [multipleVerses, setMultipleVerses] = useState(null);
     useEffect(() => {
-        var verseObj = {
-            book: book,
-            chapter: chapter,
-            verse: verse,
-            endChapter: null,
-            endVerse: null,
-        };
+        let verseObj = new VerseRef({ book, chapter, verse });
 
         if (selected) {
             if (selected.book === book) {
@@ -66,14 +64,13 @@ export function PreviewVerseBox({ book, chapter, verse, highlighted, selected, s
                     verseObj.endChapter = selected.chapter;
                     verseObj.endVerse = selected.verse;
                 } else {
-                    verseObj = {
-                        book: book,
+                    verseObj = new VerseRef({
+                        book,
                         chapter: selected.chapter,
                         verse: selected.verse,
                         endChapter: chapter,
                         endVerse: verse,
-                        note: "",
-                    };
+                    });
                 }
             }
         }
@@ -84,6 +81,9 @@ export function PreviewVerseBox({ book, chapter, verse, highlighted, selected, s
     const mdText = versesToParagraphsMD(verses).join("\n\n");
 
     const handleShow = () => {
+        if (!multipleVerses) {
+            return;
+        }
         setDisplayVerse(multipleVerses);
         setHistory((history) => removeAllDuplicatesKeepLast([...history, multipleVerses]));
 
@@ -93,6 +93,9 @@ export function PreviewVerseBox({ book, chapter, verse, highlighted, selected, s
     };
 
     const handleAddToNote = () => {
+        if (!multipleVerses) {
+            return;
+        }
         setNoteList((notes) => [...notes, multipleVerses]);
         if (selected) {
             setSelected(null);
@@ -105,11 +108,7 @@ export function PreviewVerseBox({ book, chapter, verse, highlighted, selected, s
         if (selected) {
             setSelected(null);
         } else {
-            setSelected({
-                book: book,
-                chapter: chapter,
-                verse: verse,
-            });
+            setSelected(new VerseRef({ book, chapter, verse }));
         }
     };
 
@@ -138,39 +137,17 @@ export function HistoryVerseBox({ book, chapter, verse, endChapter, endVerse, hi
     const range = versesToRangeText(verses);
 
     const handleShow = () => {
-        const verseObj = {
-            book: book,
-            chapter: chapter,
-            verse: verse,
-            endChapter: endChapter,
-            endVerse: endVerse,
-        };
+        const verseObj = new VerseRef({ book, chapter, verse, endChapter, endVerse });
         setDisplayVerse(verseObj);
         // setHistory((history) => removeAllDuplicatesKeepLast([...history, verseObj]));
     };
 
     const handlePreview = () => {
-        setPreviewVerse({
-            book: book,
-            chapter: chapter,
-            verse: verse,
-            endChapter: endChapter,
-            endVerse: endVerse,
-        });
+        setPreviewVerse(new VerseRef({ book, chapter, verse, endChapter, endVerse }));
     };
 
     const handleAddToNote = () => {
-        setNoteList((notes) => [
-            ...notes,
-            {
-                book: book,
-                chapter: chapter,
-                verse: verse,
-                endChapter: endChapter,
-                endVerse: endVerse,
-                note: "",
-            },
-        ]);
+        setNoteList((notes) => [...notes, new VerseRef({ book, chapter, verse, endChapter, endVerse })]);
     };
 
     const handleRemove = () => {
@@ -209,6 +186,9 @@ export function HistoryVerseBox({ book, chapter, verse, endChapter, endVerse, hi
     );
 }
 
+/**
+ * @param {{verseObj: VerseRefLike, boxIndex: number, highlighted?: boolean}} props
+ */
 export function NoteVerseBox({ verseObj, boxIndex, highlighted }) {
     const { getMultipleVerses, setDisplayVerse, noteList, setNoteList, setPreviewVerse } = useContext(AppContext);
     const verses = getMultipleVerses(
@@ -221,7 +201,7 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted }) {
     const range = versesToRangeText(verses);
 
     const handleShow = () => {
-        setDisplayVerse(verseObj);
+        setDisplayVerse(VerseRef.from(verseObj));
         // setHistory((history) => removeAllDuplicatesKeepLast([...history, verseObj]));
     };
     const handleEdit = () => {
@@ -241,7 +221,7 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted }) {
     };
 
     const handlePreview = () => {
-        setPreviewVerse(verseObj);
+        setPreviewVerse(VerseRef.from(verseObj));
     };
 
     const handleMoveUp = () => {
@@ -331,38 +311,33 @@ export function SearchVerseBox({ verseObj, keyWords }) {
     const { setDisplayVerse, setPreviewVerse, setHistory, setNoteList } = useContext(AppContext);
 
     const handleShow = () => {
-        const verseObjToDisplay = {
+        const verseObjToDisplay = new VerseRef({
             book: verseObj.book,
             chapter: verseObj.chapter,
             verse: verseObj.verse,
-            endChapter: null,
-            endVerse: null,
-        };
+        });
         setDisplayVerse(verseObjToDisplay);
         setHistory((history) => removeAllDuplicatesKeepLast([...history, verseObjToDisplay]));
     };
 
     const handlePreview = () => {
-        setPreviewVerse({
-            book: verseObj.book,
-            chapter: verseObj.chapter,
-            verse: verseObj.verse,
-            endChapter: null,
-            endVerse: null,
-        });
+        setPreviewVerse(
+            new VerseRef({
+                book: verseObj.book,
+                chapter: verseObj.chapter,
+                verse: verseObj.verse,
+            })
+        );
     };
 
     const handleAddToNote = () => {
         setNoteList((notes) => [
             ...notes,
-            {
+            new VerseRef({
                 book: verseObj.book,
                 chapter: verseObj.chapter,
                 verse: verseObj.verse,
-                endChapter: null,
-                endVerse: null,
-                note: "",
-            },
+            }),
         ]);
     };
 
@@ -429,17 +404,17 @@ export function LocateVerseBox({ verseObj }) {
     const { setDisplayVerse, setPreviewVerse, setHistory, setNoteList, verseExists } = useContext(AppContext);
 
     const handleShow = () => {
-        const verseObjToDisplay = verseObj;
+        const verseObjToDisplay = VerseRef.from(verseObj);
         setDisplayVerse(verseObjToDisplay);
         setHistory((history) => removeAllDuplicatesKeepLast([...history, verseObjToDisplay]));
     };
 
     const handlePreview = () => {
-        setPreviewVerse(verseObj);
+        setPreviewVerse(VerseRef.from(verseObj));
     };
 
     const handleAddToNote = () => {
-        setNoteList((notes) => [...notes, verseObj]);
+        setNoteList((notes) => [...notes, VerseRef.from(verseObj)]);
     };
 
     return (

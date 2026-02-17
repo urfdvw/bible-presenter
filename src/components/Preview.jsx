@@ -5,6 +5,7 @@ import { scroller, Element } from "react-scroll";
 import { Button, Typography } from "@mui/material";
 import TabToolBar from "../utilComponents/TabToolBar";
 import { selectTabById } from "../layout/layoutUtils";
+import VerseRef from "../models/VerseRef";
 
 function PreviewList({ selected, setSelected }) {
     const { getChapterVerses, previewVerse } = useContext(AppContext);
@@ -76,11 +77,7 @@ export default function Preview() {
                     return;
                 }
                 console.log("上一章");
-                setPreviewVerse({
-                    book: previewVerse.book,
-                    chapter: previewVerse.chapter - 1,
-                    verse: 1,
-                });
+                setPreviewVerse(new VerseRef({ book: previewVerse.book, chapter: previewVerse.chapter - 1, verse: 1 }));
             },
         },
         {
@@ -92,11 +89,7 @@ export default function Preview() {
                     return;
                 }
                 console.log("下一章");
-                setPreviewVerse({
-                    book: previewVerse.book,
-                    chapter: previewVerse.chapter + 1,
-                    verse: 1,
-                });
+                setPreviewVerse(new VerseRef({ book: previewVerse.book, chapter: previewVerse.chapter + 1, verse: 1 }));
             },
         },
         {

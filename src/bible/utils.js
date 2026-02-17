@@ -1,4 +1,5 @@
 import { compareLists } from "../utilFunctions/jsHelper";
+import VerseRef from "../models/VerseRef";
 
 /**
  * Get verses from index
@@ -189,60 +190,60 @@ export function versesToParagraphsMD(verses) {
 export function getNextVerse(versions, book, chapter, verse) {
     var attempt;
     for (var i = 1; i <= 3; i++) {
-        attempt = {
+        attempt = new VerseRef({
             book: book,
             chapter: chapter,
             verse: verse + i,
-        };
+        });
         if (verseExists(versions, attempt.book, attempt.chapter, attempt.verse)) {
             return attempt;
         }
     }
 
-    attempt = {
+    attempt = new VerseRef({
         book: book,
         chapter: chapter + 1,
         verse: 1,
-    };
+    });
     if (verseExists(versions, attempt.book, attempt.chapter, attempt.verse)) {
         return attempt;
     }
 
     console.log("already at the end of book");
 
-    return {
+    return new VerseRef({
         book: book,
         chapter: chapter,
         verse: verse,
-    };
+    });
 }
 export function getPreviousVerse(versions, book, chapter, verse) {
     var attempt;
     for (var i = 1; i <= 3; i++) {
-        attempt = {
+        attempt = new VerseRef({
             book: book,
             chapter: chapter,
             verse: verse - i,
-        };
+        });
         if (verseExists(versions, attempt.book, attempt.chapter, attempt.verse)) {
             return attempt;
         }
     }
 
-    attempt = {
+    attempt = new VerseRef({
         book: book,
         chapter: chapter - 1,
         verse: _getChapterEndVerse(versions, book, chapter - 1),
-    };
+    });
     if (verseExists(versions, attempt.book, attempt.chapter, attempt.verse)) {
         return attempt;
     }
 
     console.log("already at the start of book");
 
-    return {
+    return new VerseRef({
         book: book,
         chapter: chapter,
         verse: verse,
-    };
+    });
 }
