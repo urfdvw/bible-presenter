@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import AppContext from "../AppContext";
 import { NoteVerseBox, HistoryVerseBox, PreviewVerseBox } from "./VerseBox";
+import VerseRef from "../models/VerseRef";
 
 export default function Placeholder({ node }) {
     const { testCount, setTestCount, notify, clearNotification } = useContext(AppContext);
@@ -17,12 +18,19 @@ export default function Placeholder({ node }) {
 
             <br />
 
-            <NoteVerseBox book={43} chapter={3} verse={16} endVerse={18}></NoteVerseBox>
-            <NoteVerseBox book={43} chapter={3} verse={16} endVerse={18} highlighted={true}></NoteVerseBox>
-            <HistoryVerseBox book={43} chapter={3} verse={16} endVerse={18}></HistoryVerseBox>
-            <HistoryVerseBox book={43} chapter={3} verse={16} endVerse={18} highlighted={true}></HistoryVerseBox>
-            <PreviewVerseBox book={43} chapter={3} verse={16}></PreviewVerseBox>
-            <PreviewVerseBox book={43} chapter={3} verse={17} highlighted={true}></PreviewVerseBox>
+            <NoteVerseBox verseObj={new VerseRef({ book: 43, chapter: 3, verse: 16, endVerse: 18 })} boxIndex={0}></NoteVerseBox>
+            <NoteVerseBox
+                verseObj={new VerseRef({ book: 43, chapter: 3, verse: 16, endVerse: 18 })}
+                boxIndex={1}
+                highlighted={true}
+            ></NoteVerseBox>
+            <HistoryVerseBox verseObj={new VerseRef({ book: 43, chapter: 3, verse: 16, endVerse: 18 })}></HistoryVerseBox>
+            <HistoryVerseBox
+                verseObj={new VerseRef({ book: 43, chapter: 3, verse: 16, endVerse: 18 })}
+                highlighted={true}
+            ></HistoryVerseBox>
+            <PreviewVerseBox verseObj={new VerseRef({ book: 43, chapter: 3, verse: 16 })}></PreviewVerseBox>
+            <PreviewVerseBox verseObj={new VerseRef({ book: 43, chapter: 3, verse: 17 })} highlighted={true}></PreviewVerseBox>
         </div>
     );
 }

@@ -38,9 +38,13 @@ function PreviewList({ selected, setSelected }) {
                         <PreviewVerseBox
                             setSelected={setSelected}
                             selected={selected}
-                            book={verseVersions[0].book}
-                            chapter={verseVersions[0].chapter}
-                            verse={verseVersions[0].verse}
+                            verseObj={
+                                new VerseRef({
+                                    book: verseVersions[0].book,
+                                    chapter: verseVersions[0].chapter,
+                                    verse: verseVersions[0].verse,
+                                })
+                            }
                             highlighted={
                                 selected &&
                                 verseVersions[0].book === selected.book &&
@@ -62,7 +66,7 @@ export default function Preview() {
     const verses = getChapterVerses(previewVerse.book, previewVerse.chapter);
     const notificationHeight = selected ? "5em" : "0em";
 
-    const selectedVerseObj = selected ? getMultipleVerses(selected.book, selected.chapter, selected.verse) : null;
+    const selectedVerseObj = selected ? getMultipleVerses(selected) : null;
 
     const notification = selectedVerseObj
         ? `已选中 ${selectedVerseObj[0][0].book_name} ${selectedVerseObj[0][0].chapter}:${selectedVerseObj[0][0].verse}`
@@ -83,7 +87,9 @@ export default function Preview() {
         {
             text: "下一章",
             handler: () => {
-                const testVerse = getMultipleVerses(previewVerse.book, previewVerse.chapter + 1, 1);
+                const testVerse = getMultipleVerses(
+                    new VerseRef({ book: previewVerse.book, chapter: previewVerse.chapter + 1, verse: 1 })
+                );
                 if (testVerse.length === 0) {
                     console.log("没有下一章了");
                     return;

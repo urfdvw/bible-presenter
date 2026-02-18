@@ -51,33 +51,34 @@ const verseBoxStyle = {
 
 const highlightedVerseBoxStyle = { ...verseBoxStyle, border: "2px solid #700000", background: "#FFF0F0" };
 
-export function PreviewVerseBox({ book, chapter, verse, highlighted, selected, setSelected }) {
+export function PreviewVerseBox({ verseObj, highlighted, selected, setSelected }) {
     const { getMultipleVerses, setDisplayVerse, setHistory, setNoteList } = useContext(AppContext);
+    const baseVerse = VerseRef.from(verseObj);
     /** @type {[VerseRef | null, import("react").Dispatch<import("react").SetStateAction<VerseRef | null>>]} */
     const [multipleVerses, setMultipleVerses] = useState(null);
     useEffect(() => {
-        let verseObj = new VerseRef({ book, chapter, verse });
+        let verseObjToProject = VerseRef.from(baseVerse);
 
         if (selected) {
-            if (selected.book === book) {
-                if (compareLists([selected.chapter, selected.verse], [chapter, verse]) > 0) {
-                    verseObj.endChapter = selected.chapter;
-                    verseObj.endVerse = selected.verse;
+            if (selected.book === baseVerse.book) {
+                if (compareLists([selected.chapter, selected.verse], [baseVerse.chapter, baseVerse.verse]) > 0) {
+                    verseObjToProject.endChapter = selected.chapter;
+                    verseObjToProject.endVerse = selected.verse;
                 } else {
-                    verseObj = new VerseRef({
-                        book,
+                    verseObjToProject = new VerseRef({
+                        book: baseVerse.book,
                         chapter: selected.chapter,
                         verse: selected.verse,
-                        endChapter: chapter,
-                        endVerse: verse,
+                        endChapter: baseVerse.chapter,
+                        endVerse: baseVerse.verse,
                     });
                 }
             }
         }
-        setMultipleVerses(verseObj);
-    }, [book, chapter, verse, selected]);
+        setMultipleVerses(verseObjToProject);
+    }, [baseVerse, selected]);
 
-    const verses = getMultipleVerses(book, chapter, verse);
+    const verses = getMultipleVerses(baseVerse);
     const mdText = versesToParagraphsMD(verses).join("\n\n");
 
     const handleShow = () => {
@@ -108,13 +109,13 @@ export function PreviewVerseBox({ book, chapter, verse, highlighted, selected, s
         if (selected) {
             setSelected(null);
         } else {
-            setSelected(new VerseRef({ book, chapter, verse }));
+            setSelected(baseVerse);
         }
     };
 
     return (
         <Box onClick={handleShow} sx={highlighted ? highlightedVerseBoxStyle : verseBoxStyle}>
-            <Typography sx={{ paddingRight: 1, flexShrink: 0 }}>{verse}</Typography>
+            <Typography sx={{ paddingRight: 1, flexShrink: 0 }}>{baseVerse.verse}</Typography>
             <div style={{ flexGrow: 1 }}>
                 <MarkdownExtended>{mdText}</MarkdownExtended>
             </div>
@@ -131,23 +132,23 @@ export function PreviewVerseBox({ book, chapter, verse, highlighted, selected, s
     );
 }
 
-export function HistoryVerseBox({ book, chapter, verse, endChapter, endVerse, highlighted }) {
+export function HistoryVerseBox({ verseObj, highlighted }) {
     const { getMultipleVerses, setDisplayVerse, setPreviewVerse, setHistory, setNoteList } = useContext(AppContext);
-    const verses = getMultipleVerses(book, chapter, verse, endChapter, endVerse);
+    const normalizedVerse = VerseRef.from(verseObj);
+    const verses = getMultipleVerses(normalizedVerse);
     const range = versesToRangeText(verses);
 
     const handleShow = () => {
-        const verseObj = new VerseRef({ book, chapter, verse, endChapter, endVerse });
-        setDisplayVerse(verseObj);
+        setDisplayVerse(normalizedVerse);
         // setHistory((history) => removeAllDuplicatesKeepLast([...history, verseObj]));
     };
 
     const handlePreview = () => {
-        setPreviewVerse(new VerseRef({ book, chapter, verse, endChapter, endVerse }));
+        setPreviewVerse(normalizedVerse);
     };
 
     const handleAddToNote = () => {
-        setNoteList((notes) => [...notes, new VerseRef({ book, chapter, verse, endChapter, endVerse })]);
+        setNoteList((notes) => [...notes, normalizedVerse]);
     };
 
     const handleRemove = () => {
@@ -156,12 +157,12 @@ export function HistoryVerseBox({ book, chapter, verse, endChapter, endVerse, hi
         setHistory((history) =>
             history.filter(
                 (item) =>
-                    !(
-                        item.book === book &&
-                        item.chapter === chapter &&
-                        item.verse === verse &&
-                        item.endChapter === endChapter &&
-                        item.endVerse === endVerse
+                        !(
+                        item.book === normalizedVerse.book &&
+                        item.chapter === normalizedVerse.chapter &&
+                        item.verse === normalizedVerse.verse &&
+                        item.endChapter === normalizedVerse.endChapter &&
+                        item.endVerse === normalizedVerse.endVerse
                     )
             )
         );
@@ -191,13 +192,7 @@ export function HistoryVerseBox({ book, chapter, verse, endChapter, endVerse, hi
  */
 export function NoteVerseBox({ verseObj, boxIndex, highlighted }) {
     const { getMultipleVerses, setDisplayVerse, noteList, setNoteList, setPreviewVerse } = useContext(AppContext);
-    const verses = getMultipleVerses(
-        verseObj.book,
-        verseObj.chapter,
-        verseObj.verse,
-        verseObj.endChapter,
-        verseObj.endVerse
-    );
+    const verses = getMultipleVerses(verseObj);
     const range = versesToRangeText(verses);
 
     const handleShow = () => {
@@ -419,7 +414,7 @@ export function LocateVerseBox({ verseObj }) {
 
     return (
         <Box onClick={handleShow} sx={verseBoxStyle}>
-            {verseExists(verseObj.book, verseObj.chapter, verseObj.verse, verseObj.endChapter, verseObj.endVerse) ? (
+            {verseExists(verseObj) ? (
                 <>
                     <Box sx={{ flexGrow: 1 }}>
                         <VerseParagraph verseObj={{ ...verseObj, note: null }} />

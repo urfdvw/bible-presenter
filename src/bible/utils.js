@@ -5,12 +5,16 @@ import VerseRef from "../models/VerseRef";
  * Get verses from index
  */
 
-export function verseExists(versions, book, chapter, verse) {
+export function verseExists(versions, verseRef) {
+    const position = VerseRef.from(verseRef);
     let badGivenVersePosition = true;
     for (let version of versions) {
         if (
             version.verses.filter(
-                (verseObj) => verseObj.book === book && verseObj.chapter === chapter && verseObj.verse === verse,
+                (verseObj) =>
+                    verseObj.book === position.book &&
+                    verseObj.chapter === position.chapter &&
+                    verseObj.verse === position.verse,
             ).length > 0
         ) {
             badGivenVersePosition = false;
@@ -19,20 +23,30 @@ export function verseExists(versions, book, chapter, verse) {
     return !badGivenVersePosition;
 }
 
-export function _getVerseInVersion(version, book, chapter, verse) {
+export function _getVerseInVersion(version, verseRef) {
+    const position = VerseRef.from(verseRef);
     const foundVerse = version.verses.filter((verseObj) => {
-        return verseObj.book === book && verseObj.chapter === chapter && verseObj.verse === verse;
+        return (
+            verseObj.book === position.book &&
+            verseObj.chapter === position.chapter &&
+            verseObj.verse === position.verse
+        );
     });
     return foundVerse.length > 0 ? foundVerse[0] : null;
 }
 
-export function _getVerseIndexInVersion(version, book, chapter, verse) {
+export function _getVerseIndexInVersion(version, verseRef) {
+    const position = VerseRef.from(verseRef);
     const foundVerse = version.verses
         .map((verse, index) => {
             return { ...verse, index: index };
         })
         .filter((verseObj) => {
-            return verseObj.book === book && verseObj.chapter === chapter && verseObj.verse === verse;
+            return (
+                verseObj.book === position.book &&
+                verseObj.chapter === position.chapter &&
+                verseObj.verse === position.verse
+            );
         });
     if (foundVerse.length === 0) {
         return null;
@@ -41,7 +55,13 @@ export function _getVerseIndexInVersion(version, book, chapter, verse) {
     }
 }
 
-export function getMultipleVerses(versions, book, chapter, verse, endChapter, endVerse) {
+export function getMultipleVerses(versions, verseRef) {
+    const position = VerseRef.from(verseRef);
+    let book = position.book;
+    let chapter = position.chapter;
+    let verse = position.verse;
+    let endChapter = position.endChapter;
+    let endVerse = position.endVerse;
     // auto fill
     if (!endChapter) {
         endChapter = chapter;
@@ -50,11 +70,11 @@ export function getMultipleVerses(versions, book, chapter, verse, endChapter, en
         endVerse = verse;
     }
     // verify
-    if (!verseExists(versions, book, chapter, verse)) {
+    if (!verseExists(versions, new VerseRef({ book, chapter, verse }))) {
         console.error("starting verse does not exist", [book, chapter, verse]);
         return [];
     }
-    if (!verseExists(versions, book, endChapter, endVerse)) {
+    if (!verseExists(versions, new VerseRef({ book, chapter: endChapter, verse: endVerse }))) {
         console.error("ending verse does not exist", [book, endChapter, endVerse]);
         return [];
     }
@@ -69,7 +89,7 @@ export function getMultipleVerses(versions, book, chapter, verse, endChapter, en
     // get position list
     const verseUniquePositions = new Set();
     for (const version of versions) {
-        let index = _getVerseIndexInVersion(version, book, chapter, verse);
+        let index = _getVerseIndexInVersion(version, new VerseRef({ book, chapter, verse }));
         if (index === null || index === undefined) {
             // verse not found
             continue;
@@ -92,12 +112,12 @@ export function getMultipleVerses(versions, book, chapter, verse, endChapter, en
     const versePositions = Array.from(verseUniquePositions).map((str) => JSON.parse(str));
     // get verses
     return versePositions.map((position) =>
-        versions.map((version) => _getVerseInVersion(version, position.book, position.chapter, position.verse)),
+        versions.map((version) => _getVerseInVersion(version, position)),
     );
 }
 
 export function _getChapterEndVerse(versions, book, chapter) {
-    if (!verseExists(versions, book, chapter, 1)) {
+    if (!verseExists(versions, new VerseRef({ book, chapter, verse: 1 }))) {
         return -1;
     }
     return Math.max(
@@ -113,7 +133,7 @@ export function _getChapterEndVerse(versions, book, chapter) {
 
 export function getChapterVerses(versions, book, chapter) {
     const endVerse = _getChapterEndVerse(versions, book, chapter);
-    return getMultipleVerses(versions, book, chapter, 1, null, endVerse);
+    return getMultipleVerses(versions, new VerseRef({ book, chapter, verse: 1, endVerse }));
 }
 
 /**
@@ -187,7 +207,9 @@ export function versesToParagraphsMD(verses) {
  * navigation
  */
 
-export function getNextVerse(versions, book, chapter, verse) {
+export function getNextVerse(versions, verseRef) {
+    const position = VerseRef.from(verseRef);
+    const { book, chapter, verse } = position;
     var attempt;
     for (var i = 1; i <= 3; i++) {
         attempt = new VerseRef({
@@ -195,7 +217,7 @@ export function getNextVerse(versions, book, chapter, verse) {
             chapter: chapter,
             verse: verse + i,
         });
-        if (verseExists(versions, attempt.book, attempt.chapter, attempt.verse)) {
+        if (verseExists(versions, attempt)) {
             return attempt;
         }
     }
@@ -205,7 +227,7 @@ export function getNextVerse(versions, book, chapter, verse) {
         chapter: chapter + 1,
         verse: 1,
     });
-    if (verseExists(versions, attempt.book, attempt.chapter, attempt.verse)) {
+    if (verseExists(versions, attempt)) {
         return attempt;
     }
 
@@ -217,7 +239,9 @@ export function getNextVerse(versions, book, chapter, verse) {
         verse: verse,
     });
 }
-export function getPreviousVerse(versions, book, chapter, verse) {
+export function getPreviousVerse(versions, verseRef) {
+    const position = VerseRef.from(verseRef);
+    const { book, chapter, verse } = position;
     var attempt;
     for (var i = 1; i <= 3; i++) {
         attempt = new VerseRef({
@@ -225,7 +249,7 @@ export function getPreviousVerse(versions, book, chapter, verse) {
             chapter: chapter,
             verse: verse - i,
         });
-        if (verseExists(versions, attempt.book, attempt.chapter, attempt.verse)) {
+        if (verseExists(versions, attempt)) {
             return attempt;
         }
     }
@@ -235,7 +259,7 @@ export function getPreviousVerse(versions, book, chapter, verse) {
         chapter: chapter - 1,
         verse: _getChapterEndVerse(versions, book, chapter - 1),
     });
-    if (verseExists(versions, attempt.book, attempt.chapter, attempt.verse)) {
+    if (verseExists(versions, attempt)) {
         return attempt;
     }
 

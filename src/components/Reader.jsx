@@ -9,14 +9,14 @@ import VerseRef from "../models/VerseRef";
 
 export function ReaderTitle() {
     const { displayVerse, getMultipleVerses } = useContext(AppContext);
-    const verseObj = getMultipleVerses(displayVerse.book, displayVerse.chapter, displayVerse.verse);
+    const verseObj = getMultipleVerses(displayVerse);
     const title = `${verseObj[0][0].book_name} ${displayVerse.chapter}`;
     return <Typography>{title}</Typography>;
 }
 
 export function ReaderMenu() {
     const { setPageTurnTrigger, setVerseTurnTrigger, displayVerse, getMultipleVerses } = useContext(AppContext);
-    const verseObj = getMultipleVerses(displayVerse.book, displayVerse.chapter, displayVerse.verse);
+    const verseObj = getMultipleVerses(displayVerse);
     const title = `${verseObj[0][0].book_name} ${displayVerse.chapter}`;
     const tools = [
         {
@@ -76,7 +76,7 @@ export default function Reader({ popupWindow }) {
             if (displayVerse.verse >= firstIndexes.at(-1)) {
                 console.log("to next chapter");
                 setDisplayVerse((verseObj) => {
-                    const nextVerse = getNextVerse(verseObj.book, verseObj.chapter, verses.at(-1)[0].verse);
+                    const nextVerse = getNextVerse(VerseRef.from(verseObj).with({ verse: verses.at(-1)[0].verse }));
                     return VerseRef.from(nextVerse);
                 });
                 return;
@@ -90,7 +90,7 @@ export default function Reader({ popupWindow }) {
             if (displayVerse.verse < firstIndexes[1]) {
                 console.log("to previous chapter");
                 setDisplayVerse((verseObj) => {
-                    const previousVerse = getPreviousVerse(verseObj.book, verseObj.chapter, 1);
+                    const previousVerse = getPreviousVerse(VerseRef.from(verseObj).with({ verse: 1 }));
                     return VerseRef.from(previousVerse);
                 });
                 return;
@@ -106,13 +106,13 @@ export default function Reader({ popupWindow }) {
         if (verseTurnTrigger > 0) {
             console.log("next verse");
             setDisplayVerse((verseObj) => {
-                const nextVerse = getNextVerse(verseObj.book, verseObj.chapter, verseObj.verse);
+                const nextVerse = getNextVerse(verseObj);
                 return VerseRef.from(nextVerse);
             });
         } else if (verseTurnTrigger < 0) {
             console.log("previous verse");
             setDisplayVerse((verseObj) => {
-                const previousVerse = getPreviousVerse(verseObj.book, verseObj.chapter, verseObj.verse);
+                const previousVerse = getPreviousVerse(verseObj);
                 return VerseRef.from(previousVerse);
             });
         }

@@ -1,4 +1,5 @@
 import { getMultipleVerses, getChapterVerses, getNextVerse, getPreviousVerse, verseExists } from "./utils";
+import VerseRef from "../models/VerseRef";
 export default function useBibleData(bible, BibleVersionConfig) {
     function _getSelectedVersions() {
         const ChineseVersion = BibleVersionConfig.chinese === "简体" ? bible.cuvs : bible.cuvt;
@@ -17,33 +18,41 @@ export default function useBibleData(bible, BibleVersionConfig) {
         }
     }
 
-    function _getMultipleVerses(book, chapter, verse, endChapter, endVerse) {
+    function _getMultipleVerses(verseRef) {
         const versions = _getSelectedVersions();
-        return getMultipleVerses(versions, book, chapter, verse, endChapter, endVerse);
+        return getMultipleVerses(versions, verseRef);
     }
 
     function _getChapterVerses(book, chapter) {
         const versions = _getSelectedVersions();
         return getChapterVerses(versions, book, chapter);
     }
-    function _getNextVerse(book, chapter, verse) {
+    function _getNextVerse(verseRef) {
         const versions = _getSelectedVersions();
-        return getNextVerse(versions, book, chapter, verse);
+        return getNextVerse(versions, verseRef);
     }
 
-    function _getPreviousVerse(book, chapter, verse) {
+    function _getPreviousVerse(verseRef) {
         const versions = _getSelectedVersions();
-        return getPreviousVerse(versions, book, chapter, verse);
+        return getPreviousVerse(versions, verseRef);
     }
 
-    function _verseExists(book, chapter, verse, endChapter, endVerse) {
-        if (!endChapter) {
-            endChapter = chapter;
-        }
+    function _verseExists(verseRef) {
+        const normalized = VerseRef.from(verseRef);
+        const start = new VerseRef({
+            book: normalized.book,
+            chapter: normalized.chapter,
+            verse: normalized.verse,
+        });
+        const end = new VerseRef({
+            book: normalized.book,
+            chapter: normalized.endChapter || normalized.chapter,
+            verse: normalized.endVerse,
+        });
         const versions = _getSelectedVersions();
-        const startExists = verseExists(versions, book, chapter, verse);
-        const endExists = verseExists(versions, book, endChapter, endVerse);
-        return endVerse ? startExists && endExists : startExists;
+        const startExists = verseExists(versions, start);
+        const endExists = verseExists(versions, end);
+        return normalized.endVerse ? startExists && endExists : startExists;
     }
 
     return {

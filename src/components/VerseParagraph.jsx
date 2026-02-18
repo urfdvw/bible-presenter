@@ -13,13 +13,7 @@ export default function VerseParagraph({ verseObj }) {
 
     console.log("VerseParagraph render", verseObj);
 
-    const verses = getMultipleVerses(
-        verseObj.book,
-        verseObj.chapter,
-        verseObj.verse,
-        verseObj.endChapter,
-        verseObj.endVerse
-    );
+    const verses = getMultipleVerses(verseObj);
     const rangeList = versesToRangeText(verses);
     const textList = versesToParagraphsMD(verses);
     const paragraphs = rangeList.map((range, versionIndex) => {
