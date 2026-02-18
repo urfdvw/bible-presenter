@@ -11,8 +11,6 @@ import { versesToRangeText, versesToParagraphsMD } from "../bible/utils";
 export default function VerseParagraph({ verseObj }) {
     const { appConfig, getMultipleVerses } = useContext(AppContext);
 
-    console.log("VerseParagraph render", verseObj);
-
     const verses = getMultipleVerses(verseObj);
     const rangeList = versesToRangeText(verses);
     const textList = versesToParagraphsMD(verses);

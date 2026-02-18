@@ -194,7 +194,7 @@ export function HistoryVerseBox({ verseObj, highlighted }) {
  * @param {{verseObj: VerseRefLike, boxIndex: number, highlighted?: boolean}} props
  */
 export function NoteVerseBox({ verseObj, boxIndex, highlighted }) {
-    const { getMultipleVerses, setDisplayVerse, noteList, setNoteList, setPreviewVerse, appConfig, verseExists } =
+    const { getMultipleVerses, setDisplayVerse, setNoteList, setPreviewVerse, appConfig, verseExists } =
         useContext(AppContext);
     const baseVerse = VerseRef.from(verseObj);
     const verses = getMultipleVerses(verseObj);
@@ -324,7 +324,7 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted }) {
         }
         setNoteList((notes) => {
             const out = [];
-            for (var i = 0; i < noteList.length; i++) {
+            for (var i = 0; i < notes.length; i++) {
                 if (i === boxIndex) {
                     out.push(notes[boxIndex - 1]);
                 } else if (i === boxIndex - 1) {
@@ -339,12 +339,12 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted }) {
     };
 
     const handleMoveDown = () => {
-        if (boxIndex === noteList.length - 1) {
-            return;
-        }
         setNoteList((notes) => {
+            if (boxIndex === notes.length - 1) {
+                return notes;
+            }
             const out = [];
-            for (var i = 0; i < noteList.length; i++) {
+            for (var i = 0; i < notes.length; i++) {
                 if (i === boxIndex) {
                     out.push(notes[boxIndex + 1]);
                 } else if (i === boxIndex + 1) {
