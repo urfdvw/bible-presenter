@@ -1,4 +1,4 @@
-import { Box, Typography, IconButton, Tooltip } from "@mui/material";
+import { Box, Typography, IconButton, Tooltip, Modal, TextField, Button } from "@mui/material";
 // Import any icons you want to use from Material-UI icons
 import PreviewIcon from "@mui/icons-material/PreviewOutlined";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpwardOutlined";
@@ -9,6 +9,7 @@ import ChecklistIcon from "@mui/icons-material/ChecklistOutlined";
 import EditIcon from "@mui/icons-material/EditOutlined";
 
 import { versesToParagraphsMD, versesToRangeText } from "../bible/utils";
+import { siNames, trNames, enNames, siDict, trDict, enDict } from "../bible";
 
 import MarkdownExtended from "../utilComponents/MarkdownExtended";
 
@@ -19,6 +20,8 @@ import { compareLists, removeAllDuplicatesKeepLast } from "../utilFunctions/jsHe
 import HighlightedSpan from "../utilComponents/HighlightedSpan";
 import VerseParagraph from "./VerseParagraph";
 import VerseRef from "../models/VerseRef";
+import IMETextArea from "./IMETextArea";
+import { getBook, getChapterVerse } from "../bible/parser";
 
 /** @typedef {import("../models/VerseRef").VerseRefLike} VerseRefLike */
 
@@ -191,28 +194,124 @@ export function HistoryVerseBox({ verseObj, highlighted }) {
  * @param {{verseObj: VerseRefLike, boxIndex: number, highlighted?: boolean}} props
  */
 export function NoteVerseBox({ verseObj, boxIndex, highlighted }) {
-    const { getMultipleVerses, setDisplayVerse, noteList, setNoteList, setPreviewVerse } = useContext(AppContext);
+    const { getMultipleVerses, setDisplayVerse, noteList, setNoteList, setPreviewVerse, appConfig, verseExists } =
+        useContext(AppContext);
+    const baseVerse = VerseRef.from(verseObj);
     const verses = getMultipleVerses(verseObj);
     const range = versesToRangeText(verses);
+    const [editOpen, setEditOpen] = useState(false);
+    const [draftNote, setDraftNote] = useState(baseVerse.note || "");
+    const [locateText, setLocateText] = useState("");
+    const [stagedVerse, setStagedVerse] = useState(new VerseRef({}));
+    const [locateTarget, setLocateTarget] = useState(baseVerse);
+
+    const currentBookNames =
+        appConfig.config.bible_display.language === "English"
+            ? enNames
+            : appConfig.config.bible_display.chinese === "简体"
+            ? siNames
+            : trNames;
+    const IMEDictionary =
+        appConfig.config.bible_display.language === "English"
+            ? enDict
+            : appConfig.config.bible_display.chinese === "简体"
+            ? siDict
+            : trDict;
+
+    function verseToQuickLocateText(target) {
+        if (!target?.book || !target?.chapter || !target?.verse) {
+            return "";
+        }
+        const bookName = currentBookNames[target.book] || "";
+        const start = `${target.chapter}:${target.verse}`;
+        if (!target.endVerse) {
+            return `${bookName} ${start}`.trim();
+        }
+        const end =
+            target.endChapter && target.endChapter !== target.chapter
+                ? `${target.endChapter}:${target.endVerse}`
+                : `${target.endVerse}`;
+        return `${bookName} ${start}-${end}`.trim();
+    }
+
+    /**
+     * @param {VerseRefLike} original
+     * @param {VerseRefLike} staged
+     * @returns {VerseRef}
+     */
+    function fusion(original, staged) {
+        let target = VerseRef.from(original);
+        if (!staged.book && !staged.chapter && !staged.verse && !staged.endChapter && !staged.endVerse) {
+            return target;
+        } else if (staged.book && staged.chapter && staged.verse) {
+            target = new VerseRef({
+                book: staged.book,
+                chapter: staged.chapter,
+                verse: staged.verse,
+                endChapter: staged.endChapter,
+                endVerse: staged.endVerse,
+            });
+        } else if (!staged.book && staged.chapter && staged.verse) {
+            target = new VerseRef({
+                book: original.book,
+                chapter: staged.chapter,
+                verse: staged.verse,
+                endChapter: staged.endChapter,
+                endVerse: staged.endVerse,
+            });
+        } else if (!staged.book && !staged.chapter && staged.verse) {
+            target = new VerseRef({
+                book: original.book,
+                chapter: original.chapter,
+                verse: staged.verse,
+                endChapter: staged.endChapter,
+                endVerse: staged.endVerse,
+            });
+        } else if (!staged.book && !staged.chapter && !staged.verse) {
+            target = new VerseRef({
+                book: original.book,
+                chapter: original.chapter,
+                verse: original.verse,
+                endChapter: staged.endChapter,
+                endVerse: staged.endVerse,
+            });
+        }
+        return target;
+    }
+
+    useEffect(() => {
+        const { book, remnant } = getBook(locateText);
+        const { chapter, verse, endChapter, endVerse } = getChapterVerse(remnant);
+        setStagedVerse(new VerseRef({ book, chapter, verse, endChapter, endVerse }));
+    }, [locateText]);
+
+    useEffect(() => {
+        setLocateTarget(fusion(baseVerse, stagedVerse));
+    }, [baseVerse, stagedVerse]);
+
+    const isRangeValid = locateTarget.book && locateTarget.chapter && locateTarget.verse && verseExists(locateTarget);
 
     const handleShow = () => {
         setDisplayVerse(VerseRef.from(verseObj));
         // setHistory((history) => removeAllDuplicatesKeepLast([...history, verseObj]));
     };
     const handleEdit = () => {
-        const note = prompt("编辑笔记内容", verseObj.note || "");
-        verseObj.note = note;
+        setDraftNote(baseVerse.note || "");
+        setLocateText(verseToQuickLocateText(baseVerse));
+        setStagedVerse(new VerseRef({}));
+        setLocateTarget(baseVerse);
+        setEditOpen(true);
+    };
+
+    const handleSaveEdit = () => {
+        if (!isRangeValid) {
+            return;
+        }
+        const updatedVerseObj = VerseRef.from(locateTarget).with({ note: draftNote });
         setNoteList((notes) => {
-            const out = [];
-            for (var i = 0; i < noteList.length; i++) {
-                if (i === boxIndex) {
-                    out.push(verseObj);
-                } else {
-                    out.push(notes[i]);
-                }
-            }
-            return out;
+            return notes.map((note, index) => (index === boxIndex ? updatedVerseObj : note));
         });
+        setEditOpen(false);
     };
 
     const handlePreview = () => {
@@ -272,33 +371,134 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted }) {
     };
 
     const note = verseObj.note || "";
+    const previewMarkdown = draftNote || "";
 
     return (
-        <Box onClick={handleShow} sx={highlighted ? highlightedVerseBoxStyle : verseBoxStyle}>
-            <MarkdownExtended sx={{ flexGrow: 1 }}>{note + "\n\n" + range[0]}</MarkdownExtended>
+        <>
+            <Box onClick={handleShow} sx={highlighted ? highlightedVerseBoxStyle : verseBoxStyle}>
+                <MarkdownExtended sx={{ flexGrow: 1 }}>{note + "\n\n" + range[0]}</MarkdownExtended>
 
-            <Box sx={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
-                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                    <Icon tooltip={"编辑"} onClick={handleEdit}>
-                        <EditIcon />
-                    </Icon>
-                    <Icon tooltip={"预览"} onClick={handlePreview}>
-                        <PreviewIcon />
-                    </Icon>
-                </Box>
-                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                    <Icon tooltip={"上移"} onClick={handleMoveUp}>
-                        <ArrowUpwardIcon />
-                    </Icon>
-                    <Icon tooltip={"下移"} onClick={handleMoveDown}>
-                        <ArrowDownwardIcon />
-                    </Icon>
-                    <Icon tooltip={"删除"} onClick={handleRemove}>
-                        <CloseIcon />
-                    </Icon>
+                <Box sx={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                    <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                        <Icon tooltip={"编辑"} onClick={handleEdit}>
+                            <EditIcon />
+                        </Icon>
+                        <Icon tooltip={"预览"} onClick={handlePreview}>
+                            <PreviewIcon />
+                        </Icon>
+                    </Box>
+                    <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                        <Icon tooltip={"上移"} onClick={handleMoveUp}>
+                            <ArrowUpwardIcon />
+                        </Icon>
+                        <Icon tooltip={"下移"} onClick={handleMoveDown}>
+                            <ArrowDownwardIcon />
+                        </Icon>
+                        <Icon tooltip={"删除"} onClick={handleRemove}>
+                            <CloseIcon />
+                        </Icon>
+                    </Box>
                 </Box>
             </Box>
-        </Box>
+            <Modal open={editOpen} onClose={() => setEditOpen(false)}>
+                <Box
+                    sx={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        width: "88vw",
+                        maxWidth: "1200px",
+                        height: "75vh",
+                        bgcolor: "background.paper",
+                        boxShadow: 24,
+                        borderRadius: 2,
+                        p: 2,
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 2,
+                        overflow: "hidden",
+                    }}
+                >
+                    <Typography variant="h6">编辑笔记内容</Typography>
+                    <Box sx={{ display: "flex", flexDirection: "row", gap: 2, minHeight: 0, flex: "0 0 40%" }}>
+                        <Box sx={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
+                            <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                                文本编辑
+                            </Typography>
+                            <TextField
+                                fullWidth
+                                multiline
+                                value={draftNote}
+                                onChange={(event) => setDraftNote(event.target.value)}
+                                sx={{
+                                    flexGrow: 1,
+                                    "& .MuiInputBase-root": {
+                                        height: "100%",
+                                        alignItems: "flex-start",
+                                    },
+                                    "& textarea": {
+                                        height: "100% !important",
+                                        overflow: "auto !important",
+                                    },
+                                }}
+                            />
+                        </Box>
+                        <Box sx={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
+                            <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                                Markdown 预览
+                            </Typography>
+                            <Box sx={{ flexGrow: 1, minHeight: 0, overflowY: "auto", border: "1px solid #ddd", borderRadius: 1, p: 1 }}>
+                                <MarkdownExtended>{previewMarkdown}</MarkdownExtended>
+                            </Box>
+                        </Box>
+                    </Box>
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                        <Typography variant="subtitle2">快速定位</Typography>
+                        <Box sx={{ width: "100%" }}>
+                            <IMETextArea
+                                text={locateText}
+                                setText={setLocateText}
+                                DICTIONARY={IMEDictionary}
+                                onDisplay={() => {}}
+                                onPreview={() => {}}
+                                onAddToNote={() => {}}
+                            />
+                        </Box>
+                    </Box>
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1, minHeight: 0, flex: 1 }}>
+                        <Typography variant="subtitle2">经文预览</Typography>
+                        <Box
+                            sx={{
+                                flex: 1,
+                                minHeight: 0,
+                                height: "100%",
+                                overflowY: "auto",
+                                overflowX: "hidden",
+                                overscrollBehavior: "contain",
+                                border: "1px solid #ddd",
+                                borderRadius: 1,
+                                p: 1,
+                            }}
+                        >
+                            {isRangeValid ? (
+                                <VerseParagraph verseObj={locateTarget.with({ note: null })} />
+                            ) : (
+                                <Typography color="error" variant="body2">
+                                    经文范围无效，请使用快速定位格式输入。
+                                </Typography>
+                            )}
+                        </Box>
+                    </Box>
+                    <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1, flexShrink: 0 }}>
+                        <Button onClick={() => setEditOpen(false)}>取消</Button>
+                        <Button variant="contained" onClick={handleSaveEdit} disabled={!isRangeValid}>
+                            保存
+                        </Button>
+                    </Box>
+                </Box>
+            </Modal>
+        </>
     );
 }
 
