@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function HighlightedSpan({ longString, shortString }) {
     // If there's no short string or it's empty, just render the longString as-is
     if (!shortString) {

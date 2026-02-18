@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState, useRef } from "react";
+import { useContext, useEffect, useState, useRef, useCallback } from "react";
 import { Box, Typography } from "@mui/material";
 import AppContext from "../AppContext";
 import { scroller, Element } from "react-scroll";
@@ -61,12 +61,19 @@ export default function Reader({ popupWindow }) {
     const verses = getChapterVerses(displayVerse.book, displayVerse.chapter);
 
     const [firstIndexes, setFirstIndexes] = useState([]);
+    const prevPageTurnTriggerRef = useRef(0);
+    const prevVerseTurnTriggerRef = useRef(0);
 
     // useEffect(() => {
     //     console.log(firstIndexes);
     // }, [firstIndexes]);
 
     useEffect(() => {
+        if (pageTurnTrigger === prevPageTurnTriggerRef.current) {
+            return;
+        }
+        prevPageTurnTriggerRef.current = pageTurnTrigger;
+
         if (firstIndexes.length <= 1) {
             console.log("no page to turn");
             return;
@@ -100,9 +107,22 @@ export default function Reader({ popupWindow }) {
                 return VerseRef.from(verseObj).with({ verse: lastPage, endChapter: null, endVerse: null });
             });
         }
-    }, [pageTurnTrigger]);
+    }, [
+        pageTurnTrigger,
+        firstIndexes,
+        displayVerse.verse,
+        verses,
+        setDisplayVerse,
+        getNextVerse,
+        getPreviousVerse,
+    ]);
 
     useEffect(() => {
+        if (verseTurnTrigger === prevVerseTurnTriggerRef.current) {
+            return;
+        }
+        prevVerseTurnTriggerRef.current = verseTurnTrigger;
+
         if (verseTurnTrigger > 0) {
             console.log("next verse");
             setDisplayVerse((verseObj) => {
@@ -116,7 +136,7 @@ export default function Reader({ popupWindow }) {
                 return VerseRef.from(previousVerse);
             });
         }
-    }, [verseTurnTrigger]);
+    }, [verseTurnTrigger, setDisplayVerse, getNextVerse, getPreviousVerse]);
 
     return (
         <ReaderList
@@ -134,7 +154,7 @@ function ReaderList({ verses, currentPosition, setFirstIndexes, popupWindow }) {
     const prevFirstIndexesRef = useRef([]);
 
     // Helper function to compute the first index in each column.
-    const computeFirstIndexes = () => {
+    const computeFirstIndexes = useCallback(() => {
         if (containerRef.current) {
             const children = containerRef.current.children;
             const newIndexes = [];
@@ -154,12 +174,12 @@ function ReaderList({ verses, currentPosition, setFirstIndexes, popupWindow }) {
                 setFirstIndexes(newIndexes);
             }
         }
-    };
+    }, [setFirstIndexes]);
 
     // Run computeFirstIndexes on mount and whenever 'verses' changes.
     useEffect(() => {
         computeFirstIndexes();
-    }, [verses]);
+    }, [verses, computeFirstIndexes]);
 
     useEffect(() => {
         const containerElement = containerRef.current;
@@ -181,7 +201,7 @@ function ReaderList({ verses, currentPosition, setFirstIndexes, popupWindow }) {
             resizeObserver.disconnect();
             containerElement.removeEventListener("wheel", disable);
         };
-    }, []);
+    }, [computeFirstIndexes]);
 
     // scroll
     useEffect(() => {

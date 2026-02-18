@@ -3,7 +3,7 @@ import { useContext } from "react";
 import { HistoryVerseBox } from "./VerseBox";
 
 export default function History() {
-    const { history, setHistory } = useContext(AppContext);
+    const { history } = useContext(AppContext);
     return history.map((verseObj, index) => (
         <HistoryVerseBox key={index} verseObj={verseObj} />
     ));

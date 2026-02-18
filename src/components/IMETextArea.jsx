@@ -188,7 +188,6 @@ export default function IMETextArea({
     const handleEnter = (event) => {
         event.preventDefault();
         setText("");
-        console.log("Enter pressed");
         onDisplay();
         // You can handle the normal Enter action here if desired
     };
@@ -196,7 +195,6 @@ export default function IMETextArea({
     // HANDLER: Shift+Enter
     const handleShiftEnter = (event) => {
         event.preventDefault();
-        console.log("Shift-Enter pressed");
         onPreview();
         // Handle multi-line break, for example, if you want special logic
     };
@@ -205,7 +203,6 @@ export default function IMETextArea({
     const handleCtrlEnter = (event) => {
         event.preventDefault();
         setText("");
-        console.log("Ctrl/Cmd-Enter pressed");
         onAddToNote();
         // Possibly handle form submission or something else
     };

@@ -28,7 +28,7 @@ function PreviewList({ selected, setSelected }) {
         if (selected && selected.book !== verses[0][0].book) {
             setSelected(null);
         }
-    }, [selected, verses]);
+    }, [selected, verses, setSelected]);
 
     return (
         <div id="previewContainer" style={{ height: "100%", overflowY: "auto" }}>

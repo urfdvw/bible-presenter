@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 // App
 import "./App.css";
 import AppContext from "./AppContext";
@@ -17,15 +17,13 @@ import Typography from "@mui/material/Typography";
 import { useConfig } from "react-user-config";
 import schemas from "./configs";
 // help
-import { useTabValueName } from "./utilComponents/TabedPages";
+import { useTabValueName } from "./utilComponents/useTabValueName";
 import docs from "./docs";
 // hot keys
 import useLayoutHotKeys from "./hotKeys/useLayoutHotKeys";
 import useDisplayHotKeys from "./hotKeys/useDisplayHotKeys";
 // theme
 import DarkTheme from "react-lazy-dark-theme";
-// channel
-import useChannel from "./utilHooks/useChannel";
 // Bible data
 import bible from "./bible";
 import useBibleData from "./bible/useBibleData";
@@ -50,8 +48,6 @@ function App() {
     // useEffect(() => {
     //     console.log("helpTabSelection", helpTabSelection);
     // }, [helpTabSelection]);
-    // channel
-    const { showDevFeatures, showBetaFeatures } = useChannel();
     // useEffect(() => {
     //     console.log("[showDevFeatures, showBetaFeatures]", [showDevFeatures, showBetaFeatures]);
     // }, [showDevFeatures, showBetaFeatures]);

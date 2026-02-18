@@ -1,6 +1,6 @@
 import { NoteVerseBox } from "./VerseBox";
 import AppContext from "../AppContext";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import TabToolBar from "../utilComponents/TabToolBar";
 import { useSingleFileSystemAccess } from "../utilHooks/useSingleFileSystemAccess";
 import { downloadFile } from "../utilFunctions/jsHelper";
@@ -18,7 +18,6 @@ export default function Notes() {
     const { noteList, setNoteList, flexModel, helpTabSelection } = useContext(AppContext);
     const { content, fileName, openFile, saveToFile } = useSingleFileSystemAccess();
     useEffect(() => {
-        console.log(content);
         if (content) {
             try {
                 const parsed = JSON.parse(content);

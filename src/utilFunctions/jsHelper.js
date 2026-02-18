@@ -87,7 +87,7 @@ export function downloadFile(content, name) {
 }
 
 export function filterUndefined(original) {
-    return Object.fromEntries(Object.entries(original).filter(([key, value]) => value !== undefined));
+    return Object.fromEntries(Object.entries(original).filter(([, value]) => value !== undefined));
 }
 
 export async function downloadUrlContent(url, filename = "downloaded_file") {

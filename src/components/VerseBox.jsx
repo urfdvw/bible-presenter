@@ -104,11 +104,9 @@ export function PreviewVerseBox({ verseObj, highlighted, selected, setSelected }
         if (selected) {
             setSelected(null);
         }
-        console.log("adding to note");
     };
 
     const handleSelect = () => {
-        console.log("selecting multiple");
         if (selected) {
             setSelected(null);
         } else {
@@ -155,8 +153,6 @@ export function HistoryVerseBox({ verseObj, highlighted }) {
     };
 
     const handleRemove = () => {
-        console.log("verse moved up in notes"); // will be imported form context
-
         setHistory((history) =>
             history.filter(
                 (item) =>
@@ -335,7 +331,6 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted }) {
             }
             return out;
         });
-        console.log("verse moved up in notes"); // will be imported form context
     };
 
     const handleMoveDown = () => {
@@ -355,7 +350,6 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted }) {
             }
             return out;
         });
-        console.log("verse moved up in notes"); // will be imported form context
     };
 
     const handleRemove = () => {
@@ -367,7 +361,6 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted }) {
                 .filter((note) => note.index !== boxIndex)
                 .map((note) => note.note)
         );
-        console.log("verse moved up in notes"); // will be imported form context
     };
 
     const note = verseObj.note || "";

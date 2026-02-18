@@ -1,5 +1,4 @@
 const CACHE_NAME = "bible-presenter-cache-v1";
-const OFFLINE_URL = "/index.html";
 
 // List all URLs you want to cache
 const urlsToCache = ["/", "/index.html"];
