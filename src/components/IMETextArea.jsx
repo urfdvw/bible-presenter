@@ -93,7 +93,15 @@ function getRecommendations(inputValue, dictionary) {
     return uniqueCandidates.slice(0, 10);
 }
 
-export default function IMETextArea({ text, setText, DICTIONARY, onDisplay, onPreview, onAddToNote }) {
+export default function IMETextArea({
+    text,
+    setText,
+    DICTIONARY,
+    onDisplay,
+    onPreview,
+    onAddToNote,
+    disableEnterActions = false,
+}) {
     const [recommendations, setRecommendations] = useState([]);
     const [anchorCoords, setAnchorCoords] = useState({ top: 0, left: 0 });
     const [selectionStart, setSelectionStart] = useState(0);
@@ -208,6 +216,10 @@ export default function IMETextArea({ text, setText, DICTIONARY, onDisplay, onPr
     const handleKeyDown = (event) => {
         // Detect Enter variants first
         if (event.key === "Enter") {
+            if (disableEnterActions) {
+                event.preventDefault();
+                return;
+            }
             if (event.shiftKey) {
                 handleShiftEnter(event);
             } else if (event.ctrlKey || event.metaKey) {

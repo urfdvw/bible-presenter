@@ -454,7 +454,7 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted }) {
                         </Box>
                     </Box>
                     <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                        <Typography variant="subtitle2">快速定位</Typography>
+                        <Typography variant="subtitle2">经文范围</Typography>
                         <Box sx={{ width: "100%" }}>
                             <IMETextArea
                                 text={locateText}
@@ -463,6 +463,7 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted }) {
                                 onDisplay={() => {}}
                                 onPreview={() => {}}
                                 onAddToNote={() => {}}
+                                disableEnterActions={true}
                             />
                         </Box>
                     </Box>
