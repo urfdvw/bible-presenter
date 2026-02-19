@@ -9,11 +9,10 @@ const PREVIEW_COMPONENT = "preview";
 const DEFAULT_PREVIEW_TAB_ID = "preview_tab_1";
 const DEFAULT_PREVIEW_VERSE = new VerseRef({ book: 43, chapter: 3, verse: 16 });
 
-const ACTIONS_NEED_SYNC = new Set([
+const STRUCTURE_ACTIONS = new Set([
     FlexLayout.Actions.ADD_NODE,
     FlexLayout.Actions.DELETE_TAB,
     FlexLayout.Actions.MOVE_NODE,
-    FlexLayout.Actions.UPDATE_NODE_ATTRIBUTES,
 ]);
 
 function isPreviewTabNode(node) {
@@ -53,27 +52,58 @@ function getBookNames(bibleDisplayConfig) {
     return siNames;
 }
 
+function isSameVerseRef(a, b) {
+    if (!a || !b) {
+        return false;
+    }
+    return (
+        a.book === b.book &&
+        a.chapter === b.chapter &&
+        a.verse === b.verse &&
+        a.endChapter === b.endChapter &&
+        a.endVerse === b.endVerse &&
+        a.note === b.note
+    );
+}
+
+function findPreferredPreviewTabId(model, preferredTabId) {
+    const preferredNode = preferredTabId ? model.getNodeById(preferredTabId) : undefined;
+    if (isPreviewTabNode(preferredNode)) {
+        return preferredTabId;
+    }
+
+    const selectedPreviewTab = getAllPreviewTabs(model).find((tabNode) => tabNode.isSelected());
+    if (selectedPreviewTab) {
+        return selectedPreviewTab.getId();
+    }
+
+    const firstPreviewTab = getAllPreviewTabs(model)[0];
+    return firstPreviewTab ? firstPreviewTab.getId() : undefined;
+}
+
 export default function usePreviewTabs(flexModel, bibleDisplayConfig) {
     const [previewVersesByTabId, setPreviewVersesByTabId] = useState({
         [DEFAULT_PREVIEW_TAB_ID]: DEFAULT_PREVIEW_VERSE,
     });
     const [latestActivePreviewTabId, setLatestActivePreviewTabId] = useState(DEFAULT_PREVIEW_TAB_ID);
     const previewTabCounterRef = useRef(2);
+    const internalActionDepthRef = useRef(0);
     const currentBookNames = getBookNames(bibleDisplayConfig);
 
+    const doInternalAction = useCallback(
+        (action) => {
+            internalActionDepthRef.current += 1;
+            try {
+                flexModel.doAction(action);
+            } finally {
+                internalActionDepthRef.current -= 1;
+            }
+        },
+        [flexModel]
+    );
+
     const getLatestPreviewTabId = useCallback(() => {
-        const latestNode = flexModel.getNodeById(latestActivePreviewTabId);
-        if (isPreviewTabNode(latestNode)) {
-            return latestActivePreviewTabId;
-        }
-
-        const selectedPreviewTab = getAllPreviewTabs(flexModel).find((tabNode) => tabNode.isSelected());
-        if (selectedPreviewTab) {
-            return selectedPreviewTab.getId();
-        }
-
-        const firstPreviewTab = getAllPreviewTabs(flexModel)[0];
-        return firstPreviewTab ? firstPreviewTab.getId() : undefined;
+        return findPreferredPreviewTabId(flexModel, latestActivePreviewTabId);
     }, [flexModel, latestActivePreviewTabId]);
 
     const setPreviewVerseForTab = useCallback((tabId, verseObj) => {
@@ -81,7 +111,13 @@ export default function usePreviewTabs(flexModel, bibleDisplayConfig) {
             return;
         }
         const normalized = VerseRef.from(verseObj);
-        setPreviewVersesByTabId((map) => ({ ...map, [tabId]: normalized }));
+        setPreviewVersesByTabId((map) => {
+            const existing = map[tabId];
+            if (existing && isSameVerseRef(existing, normalized)) {
+                return map;
+            }
+            return { ...map, [tabId]: normalized };
+        });
     }, []);
 
     const getPreviewVerseForTab = useCallback(
@@ -105,28 +141,18 @@ export default function usePreviewTabs(flexModel, bibleDisplayConfig) {
         [getLatestPreviewTabId, setPreviewVerseForTab]
     );
 
-    const syncPreviewTabRules = useCallback(
+    const syncPreviewStructureRules = useCallback(
         (model) => {
             const previewTabsets = getPreviewTabsets(model);
             const allPreviewTabs = previewTabsets.flatMap((entry) => entry.previewTabs);
-            const showRangeInName = allPreviewTabs.length > 1;
 
             previewTabsets.forEach(({ previewTabs }) => {
                 previewTabs.forEach((tabNode, index) => {
                     const shouldEnableClose = index > 0;
                     if (tabNode.isEnableClose() !== shouldEnableClose) {
-                        model.doAction(
+                        doInternalAction(
                             FlexLayout.Actions.updateNodeAttributes(tabNode.getId(), { enableClose: shouldEnableClose })
                         );
-                    }
-
-                    const tabVerse = previewVersesByTabId[tabNode.getId()];
-                    const bookName = tabVerse?.book ? currentBookNames[tabVerse.book] : null;
-                    const chapter = tabVerse?.chapter;
-                    const expectedName =
-                        showRangeInName && bookName && chapter ? `预览 ${bookName} ${chapter}` : "预览";
-                    if (tabNode.getName() !== expectedName) {
-                        model.doAction(FlexLayout.Actions.updateNodeAttributes(tabNode.getId(), { name: expectedName }));
                     }
                 });
             });
@@ -152,18 +178,36 @@ export default function usePreviewTabs(flexModel, bibleDisplayConfig) {
                 return filtered;
             });
 
-            const latestTabId = getLatestPreviewTabId();
-            if (latestTabId && latestTabId !== latestActivePreviewTabId) {
-                setLatestActivePreviewTabId(latestTabId);
-            }
+            setLatestActivePreviewTabId((prev) => {
+                const next = findPreferredPreviewTabId(model, prev);
+                return next || prev;
+            });
         },
-        [currentBookNames, getLatestPreviewTabId, latestActivePreviewTabId, previewVersesByTabId]
+        [doInternalAction]
+    );
+
+    const syncPreviewTabNames = useCallback(
+        (model) => {
+            const allPreviewTabs = getAllPreviewTabs(model);
+            const showRangeInName = allPreviewTabs.length > 1;
+
+            allPreviewTabs.forEach((tabNode) => {
+                const tabVerse = previewVersesByTabId[tabNode.getId()] || DEFAULT_PREVIEW_VERSE;
+                const bookName = tabVerse?.book ? currentBookNames[tabVerse.book] : null;
+                const chapter = tabVerse?.chapter;
+                const expectedName = showRangeInName && bookName && chapter ? `预览 ${bookName} ${chapter}` : "预览";
+                if (tabNode.getName() !== expectedName) {
+                    doInternalAction(FlexLayout.Actions.updateNodeAttributes(tabNode.getId(), { name: expectedName }));
+                }
+            });
+        },
+        [currentBookNames, doInternalAction, previewVersesByTabId]
     );
 
     const addPreviewTabToTabset = useCallback(
         (tabsetId) => {
             const sourceTabId = getLatestPreviewTabId();
-            const sourceVerse = sourceTabId ? getPreviewVerseForTab(sourceTabId) : VerseRef.from(DEFAULT_PREVIEW_VERSE);
+            const sourceVerse = sourceTabId ? getPreviewVerseForTab(sourceTabId) : DEFAULT_PREVIEW_VERSE;
             const newPreviewTabId = `preview_tab_${previewTabCounterRef.current++}`;
 
             flexModel.doAction(
@@ -216,6 +260,10 @@ export default function usePreviewTabs(flexModel, bibleDisplayConfig) {
 
     const handleLayoutModelChange = useCallback(
         (model, action) => {
+            if (internalActionDepthRef.current > 0) {
+                return;
+            }
+
             if (action.type === FlexLayout.Actions.SELECT_TAB) {
                 const selectedTabId = action.data.tabNode;
                 const selectedNode = model.getNodeById(selectedTabId);
@@ -225,11 +273,11 @@ export default function usePreviewTabs(flexModel, bibleDisplayConfig) {
                 return;
             }
 
-            if (ACTIONS_NEED_SYNC.has(action.type)) {
-                syncPreviewTabRules(model);
+            if (STRUCTURE_ACTIONS.has(action.type)) {
+                syncPreviewStructureRules(model);
             }
         },
-        [syncPreviewTabRules]
+        [syncPreviewStructureRules]
     );
 
     useEffect(() => {
@@ -242,8 +290,12 @@ export default function usePreviewTabs(flexModel, bibleDisplayConfig) {
             return Math.max(max, Number(match[1]));
         }, 1);
         previewTabCounterRef.current = maxIndex + 1;
-        syncPreviewTabRules(flexModel);
-    }, [flexModel, syncPreviewTabRules]);
+        syncPreviewStructureRules(flexModel);
+    }, [flexModel, syncPreviewStructureRules]);
+
+    useEffect(() => {
+        syncPreviewTabNames(flexModel);
+    }, [flexModel, syncPreviewTabNames]);
 
     const previewVerse = getPreviewVerseForTab(getLatestPreviewTabId());
 
