@@ -7,9 +7,10 @@ import TabToolBar from "../utilComponents/TabToolBar";
 import { selectTabById } from "../layout/layoutUtils";
 import VerseRef from "../models/VerseRef";
 
-function PreviewList({ selected, setSelected }) {
-    const { getChapterVerses, previewVerse } = useContext(AppContext);
+function PreviewList({ selected, setSelected, previewVerse, tabId }) {
+    const { getChapterVerses } = useContext(AppContext);
     const verses = getChapterVerses(previewVerse.book, previewVerse.chapter);
+    const containerId = `previewContainer-${tabId}`;
 
     useEffect(() => {
         if (!previewVerse.verse) {
@@ -20,9 +21,9 @@ function PreviewList({ selected, setSelected }) {
             duration: 800,
             delay: 0,
             smooth: "easeInOutQuart",
-            containerId: "previewContainer",
+            containerId: containerId,
         });
-    }, [previewVerse]);
+    }, [previewVerse, containerId]);
 
     useEffect(() => {
         if (selected && selected.book !== verses[0][0].book) {
@@ -31,7 +32,7 @@ function PreviewList({ selected, setSelected }) {
     }, [selected, verses, setSelected]);
 
     return (
-        <div id="previewContainer" style={{ height: "100%", overflowY: "auto" }}>
+        <div id={containerId} style={{ height: "100%", overflowY: "auto" }}>
             {verses.map((verseVersions) => {
                 return (
                     <Element key={verseVersions[0].verse} name={`preview-verse-${verseVersions[0].verse}`}>
@@ -59,10 +60,17 @@ function PreviewList({ selected, setSelected }) {
     );
 }
 
-export default function Preview() {
+export default function Preview({ tabId }) {
     const [selected, setSelected] = useState(null);
-    const { getChapterVerses, previewVerse, setPreviewVerse, getMultipleVerses, helpTabSelection, flexModel } =
-        useContext(AppContext);
+    const {
+        getChapterVerses,
+        getPreviewVerseForTab,
+        setPreviewVerseForTab,
+        getMultipleVerses,
+        helpTabSelection,
+        flexModel,
+    } = useContext(AppContext);
+    const previewVerse = getPreviewVerseForTab(tabId);
     const verses = getChapterVerses(previewVerse.book, previewVerse.chapter);
     const notificationHeight = selected ? "5em" : "0em";
 
@@ -81,7 +89,7 @@ export default function Preview() {
                     return;
                 }
                 console.log("上一章");
-                setPreviewVerse(new VerseRef({ book: previewVerse.book, chapter: previewVerse.chapter - 1, verse: 1 }));
+                setPreviewVerseForTab(tabId, new VerseRef({ book: previewVerse.book, chapter: previewVerse.chapter - 1, verse: 1 }));
             },
         },
         {
@@ -95,7 +103,7 @@ export default function Preview() {
                     return;
                 }
                 console.log("下一章");
-                setPreviewVerse(new VerseRef({ book: previewVerse.book, chapter: previewVerse.chapter + 1, verse: 1 }));
+                setPreviewVerseForTab(tabId, new VerseRef({ book: previewVerse.book, chapter: previewVerse.chapter + 1, verse: 1 }));
             },
         },
         {
@@ -111,7 +119,7 @@ export default function Preview() {
             <div style={{ flexGrow: 0 }}>
                 <TabToolBar title={`${verses[0][0].book_name} ${verses[0][0].chapter}`} tools={tools} />
             </div>
-            <PreviewList selected={selected} setSelected={setSelected} />
+            <PreviewList selected={selected} setSelected={setSelected} previewVerse={previewVerse} tabId={tabId} />
             <Typography
                 sx={{
                     flexGrow: 0,

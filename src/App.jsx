@@ -28,6 +28,7 @@ import DarkTheme from "react-lazy-dark-theme";
 import bible from "./bible";
 import useBibleData from "./bible/useBibleData";
 import VerseRef from "./models/VerseRef";
+import usePreviewTabs from "./layout/usePreviewTabs";
 
 /** @typedef {import("./models/VerseRef").VerseRefLike} VerseRefLike */
 
@@ -35,22 +36,14 @@ function App() {
     // testing state
     const [testCount, setTestCount] = useState(0);
     // layout
-    const [flexModel, setFlexModel] = useState(FlexLayout.Model.fromJson(layout));
+    const [flexModel] = useState(FlexLayout.Model.fromJson(layout));
     // notification
     const { notify, clearNotification, notificationText, notificationHeight } = useNotification();
     // config
     const appConfig = useConfig(schemas);
-    // useEffect(() => {
-    //     console.log("config", appConfig);
-    // }, [appConfig]);
     // help
     const helpTabSelection = useTabValueName(docs);
-    // useEffect(() => {
-    //     console.log("helpTabSelection", helpTabSelection);
-    // }, [helpTabSelection]);
-    // useEffect(() => {
-    //     console.log("[showDevFeatures, showBetaFeatures]", [showDevFeatures, showBetaFeatures]);
-    // }, [showDevFeatures, showBetaFeatures]);
+
     // projector control
     const [projectorWindowPopped, setProjectorWindowPopped] = useState(false);
     const [projectorDisplay, setProjectorDisplay] = useState(true);
@@ -72,14 +65,21 @@ function App() {
     // Bible control
     /** @type {[VerseRef, import("react").Dispatch<import("react").SetStateAction<VerseRef>>]} */
     const [displayVerse, setDisplayVerse] = useState(new VerseRef({ book: 43, chapter: 3, verse: 16 }));
-    /** @type {[VerseRef, import("react").Dispatch<import("react").SetStateAction<VerseRef>>]} */
-    const [previewVerse, setPreviewVerse] = useState(new VerseRef({ book: 43, chapter: 3, verse: 16 }));
     // history
     /** @type {[VerseRefLike[], import("react").Dispatch<import("react").SetStateAction<VerseRefLike[]>>]} */
     const [history, setHistory] = useState([]);
     // notes
     /** @type {[VerseRefLike[], import("react").Dispatch<import("react").SetStateAction<VerseRefLike[]>>]} */
     const [noteList, setNoteList] = useState([]);
+
+    const {
+        previewVerse,
+        setPreviewVerse,
+        getPreviewVerseForTab,
+        setPreviewVerseForTab,
+        handleRenderTabSet,
+        handleLayoutModelChange,
+    } = usePreviewTabs(flexModel, appConfig.config.bible_display);
 
     if (!appConfig.ready) {
         return;
@@ -122,6 +122,8 @@ function App() {
                 setDisplayVerse,
                 previewVerse,
                 setPreviewVerse,
+                getPreviewVerseForTab,
+                setPreviewVerseForTab,
                 history,
                 setHistory,
                 noteList,
@@ -144,7 +146,12 @@ function App() {
                     <AppMenu />
                 </div>
                 <div className="app-body">
-                    <FlexLayout.Layout model={flexModel} factory={Factory} />
+                    <FlexLayout.Layout
+                        model={flexModel}
+                        factory={Factory}
+                        onRenderTabSet={handleRenderTabSet}
+                        onModelChange={handleLayoutModelChange}
+                    />
                 </div>
                 <Typography
                     component="div"

@@ -99,7 +99,9 @@
                     {
                         "type": "tab",
                         "name": "预览",
-                        "component": "preview"
+                        "id": "preview_tab_1",
+                        "component": "preview",
+                        "enableClose": false
                     }
                 ]
             },
