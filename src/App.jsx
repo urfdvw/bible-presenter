@@ -17,7 +17,7 @@ import Typography from "@mui/material/Typography";
 import { useConfig } from "react-user-config";
 import schemas from "./configs";
 // help
-import { useTabValueName } from "./utilComponents/useTabValueName";
+import { useTabValueName } from "./utilHooks/useTabValueName";
 import docs from "./docs";
 // hot keys
 import useLayoutHotKeys from "./hotKeys/useLayoutHotKeys";
