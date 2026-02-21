@@ -28,7 +28,7 @@ import DarkTheme from "react-lazy-dark-theme";
 import bible from "./bible";
 import useBibleData from "./bible/useBibleData";
 import VerseRef from "./models/VerseRef";
-import usePreviewTabs from "./layout/usePreviewTabs";
+import usePreviewTabs from "./utilHooks/usePreviewTabs";
 
 /** @typedef {import("./models/VerseRef").VerseRefLike} VerseRefLike */
 
