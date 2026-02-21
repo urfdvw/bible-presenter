@@ -1,5 +1,6 @@
-import { getMultipleVerses, getChapterVerses, getNextVerse, getPreviousVerse, verseExists } from "./utils";
+import { getMultipleVerses, getChapterVerses, getNextVerse, getPreviousVerse, verseExists, getBookMeta } from "./utils";
 import VerseRef from "../models/VerseRef";
+import { preloadVersionFuseIndices } from "./fuseIndex";
 export default function useBibleData(bible, BibleVersionConfig) {
     function _getSelectedVersions() {
         const ChineseVersion = BibleVersionConfig.chinese === "简体" ? bible.cuvs : bible.cuvt;
@@ -9,13 +10,16 @@ export default function useBibleData(bible, BibleVersionConfig) {
                 : BibleVersionConfig.english === "ASV"
                 ? bible.asv
                 : bible.web;
+        let versions = [];
         if (BibleVersionConfig.language === "中文") {
-            return [ChineseVersion];
+            versions = [ChineseVersion];
         } else if (BibleVersionConfig.language === "English") {
-            return [EnglishVersion];
+            versions = [EnglishVersion];
         } else if (BibleVersionConfig.language === "对照") {
-            return [ChineseVersion, EnglishVersion];
+            versions = [ChineseVersion, EnglishVersion];
         }
+        preloadVersionFuseIndices(versions);
+        return versions;
     }
 
     function _getMultipleVerses(verseRef) {
@@ -55,6 +59,11 @@ export default function useBibleData(bible, BibleVersionConfig) {
         return normalized.endVerse ? startExists && endExists : startExists;
     }
 
+    function _getBookMeta(book) {
+        const versions = _getSelectedVersions();
+        return getBookMeta(versions, book);
+    }
+
     return {
         getMultipleVerses: _getMultipleVerses,
         getChapterVerses: _getChapterVerses,
@@ -62,5 +71,6 @@ export default function useBibleData(bible, BibleVersionConfig) {
         getNextVerse: _getNextVerse,
         getPreviousVerse: _getPreviousVerse,
         verseExists: _verseExists,
+        getBookMeta: _getBookMeta,
     };
 }

@@ -2,7 +2,6 @@ import { abbreviations } from "../bible";
 import { Grid, Box, Typography } from "@mui/material";
 import { useContext, useState } from "react";
 import AppContext from "../AppContext";
-import { sortAndUnique } from "../utilFunctions/jsHelper";
 import VerseRef from "../models/VerseRef";
 
 const FourFixedColumns = ({ books, onClick }) => {
@@ -82,7 +81,7 @@ const FiveFixedColumns = ({ chapters, onClick }) => {
 };
 
 export default function TableOfContents() {
-    const { appConfig, getSelectedVersions, setPreviewVerse, setDisplayVerse } = useContext(AppContext);
+    const { appConfig, getBookMeta, setPreviewVerse, setDisplayVerse } = useContext(AppContext);
     const [book, setBook] = useState(1);
 
     const chinese = appConfig.config.bible_display.chinese === "简体" ? "si" : "tr";
@@ -94,11 +93,7 @@ export default function TableOfContents() {
             index: i,
         });
     }
-    const versions = getSelectedVersions();
-    const chapters = sortAndUnique(
-        versions[0].verses.filter((verseObj) => verseObj.book === book).map((verseObj) => verseObj.chapter)
-    );
-    const bookName = versions[0].verses.filter((verseObj) => verseObj.book === book)[0].book_name;
+    const { chapters, bookName } = getBookMeta(book);
 
     function setChapter(chapter) {
         setPreviewVerse(new VerseRef({ book, chapter, verse: 1 }));

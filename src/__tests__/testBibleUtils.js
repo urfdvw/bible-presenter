@@ -8,6 +8,8 @@ import {
     versesToParagraphsMD,
     _getChapterEndVerse,
     getChapterVerses,
+    searchVerses,
+    getBookMeta,
 } from "../bible/utils";
 import VerseRef from "../models/VerseRef";
 
@@ -143,6 +145,44 @@ describe("Test getVerseInVersion", () => {
                 versePosition(43, 3, 18)
             )
         ).toStrictEqual(null);
+    });
+});
+
+describe("Test searchVerses", () => {
+    test("HE single version exact substring", () => {
+        const versions = [
+            {
+                verses: [
+                    { book: 43, chapter: 3, verse: 16, text: "For God so loved the world" },
+                    { book: 43, chapter: 3, verse: 17, text: "The world did not know him" },
+                    { book: 43, chapter: 3, verse: 18, text: "abc def" },
+                ],
+            },
+        ];
+        expect(searchVerses(versions, "world")).toStrictEqual([
+            { book: 43, chapter: 3, verse: 16, text: "For God so loved the world" },
+            { book: 43, chapter: 3, verse: 17, text: "The world did not know him" },
+        ]);
+    });
+
+    test("BE empty search term", () => {
+        const versions = [{ verses: [{ book: 43, chapter: 3, verse: 16, text: "hello world" }] }];
+        expect(searchVerses(versions, "")).toStrictEqual([]);
+    });
+});
+
+describe("Test getBookMeta", () => {
+    test("HE", () => {
+        const versions = [
+            {
+                verses: [
+                    { book: 43, book_name: "John", chapter: 3, verse: 16, text: "a" },
+                    { book: 43, book_name: "John", chapter: 4, verse: 1, text: "b" },
+                    { book: 43, book_name: "John", chapter: 4, verse: 2, text: "c" },
+                ],
+            },
+        ];
+        expect(getBookMeta(versions, 43)).toStrictEqual({ bookName: "John", chapters: [3, 4] });
     });
 });
 

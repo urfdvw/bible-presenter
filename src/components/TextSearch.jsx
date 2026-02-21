@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import AppContext from "../AppContext";
 import { Box, TextField, Button, Typography } from "@mui/material";
 import { SearchVerseBox } from "./VerseBox";
+import { searchVerses } from "../bible/utils";
 
 export default function TextSearch() {
     const { getSelectedVersions } = useContext(AppContext);
@@ -18,9 +19,6 @@ export default function TextSearch() {
 
     // Number of items (verses) per page
     const resultsPerPage = 10;
-
-    // Flatten all verses from the data
-    const allVerses = data.flatMap((item) => item.verses);
 
     // Handle search logic
     const handleSearch = () => {
@@ -41,8 +39,7 @@ export default function TextSearch() {
             setWarning("");
         }
 
-        // Filter verses that include the searchTerm in their text (case-insensitive)
-        const results = allVerses.filter((verse) => verse.text.toLowerCase().includes(searchTerm.toLowerCase()));
+        const results = searchVerses(data, searchTerm);
 
         setFilteredResults(results);
         setCurrentPage(1); // Reset to first page when new search

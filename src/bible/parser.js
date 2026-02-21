@@ -1,24 +1,60 @@
 import siNames from "./si_names.json";
 import trNames from "./tr_names.json";
 import enNames from "./en_names.json";
+import Fuse from "fuse.js";
 
 const nameLists = [siNames, trNames, enNames];
+const bookEntries = [];
+for (const names of nameLists) {
+    for (let key = 1; key <= 66; key++) {
+        const name = names[key];
+        if (!name) {
+            continue;
+        }
+        bookEntries.push({ book: key, name });
+    }
+}
+
+const bookFuse = new Fuse(bookEntries, {
+    keys: ["name"],
+    includeScore: true,
+    threshold: 0.4,
+    ignoreLocation: true,
+    shouldSort: true,
+});
 
 export function getBook(string) {
-    for (const names of nameLists) {
-        for (var key = 66; key > 0; key--) {
-            if (string.includes(names[key])) {
-                const book = parseInt(key);
-                return {
-                    book: book,
-                    remnant: string.split(names[key]).join("").trim(),
-                };
-            }
+    const trimmed = (string || "").trim();
+    if (!trimmed) {
+        return {
+            book: undefined,
+            remnant: "",
+        };
+    }
+
+    const probe = trimmed.split(/[\s\d:：-]/)[0] || trimmed;
+    const candidates = bookFuse.search(probe, { limit: 20 });
+    let matched = null;
+    for (const result of candidates) {
+        const candidate = result.item;
+        if (!trimmed.includes(candidate.name)) {
+            continue;
+        }
+        if (!matched || candidate.name.length > matched.name.length) {
+            matched = candidate;
         }
     }
+
+    if (matched) {
+        return {
+            book: matched.book,
+            remnant: trimmed.split(matched.name).join("").trim(),
+        };
+    }
+
     return {
         book: undefined,
-        remnant: string.trim(),
+        remnant: trimmed,
     };
 }
 /**

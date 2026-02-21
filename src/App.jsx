@@ -60,7 +60,15 @@ function App() {
         setProjectorDisplay
     );
     // Bible Data
-    const { getMultipleVerses, getChapterVerses, getSelectedVersions, getNextVerse, getPreviousVerse, verseExists } =
+    const {
+        getMultipleVerses,
+        getChapterVerses,
+        getSelectedVersions,
+        getNextVerse,
+        getPreviousVerse,
+        verseExists,
+        getBookMeta,
+    } =
         useBibleData(bible, appConfig.config.bible_display);
     // Bible control
     /** @type {[VerseRef, import("react").Dispatch<import("react").SetStateAction<VerseRef>>]} */
@@ -118,6 +126,7 @@ function App() {
                 getNextVerse,
                 getPreviousVerse,
                 verseExists,
+                getBookMeta,
                 displayVerse,
                 setDisplayVerse,
                 previewVerse,
