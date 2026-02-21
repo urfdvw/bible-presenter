@@ -195,7 +195,7 @@ export default function usePreviewTabs(flexModel, bibleDisplayConfig) {
                 const tabVerse = previewVersesByTabId[tabNode.getId()] || DEFAULT_PREVIEW_VERSE;
                 const bookName = tabVerse?.book ? currentBookNames[tabVerse.book] : null;
                 const chapter = tabVerse?.chapter;
-                const expectedName = showRangeInName && bookName && chapter ? `预览 ${bookName} ${chapter}` : "预览";
+                const expectedName = showRangeInName && bookName && chapter ? `${bookName} ${chapter}` : "预览";
                 if (tabNode.getName() !== expectedName) {
                     doInternalAction(FlexLayout.Actions.updateNodeAttributes(tabNode.getId(), { name: expectedName }));
                 }
