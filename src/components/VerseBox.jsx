@@ -53,6 +53,16 @@ const verseBoxStyle = {
 };
 
 const highlightedVerseBoxStyle = { ...verseBoxStyle, border: "2px solid #700000", background: "#FFF0F0" };
+const printVerseBoxStyle = {
+    border: "none",
+    borderBottom: "1px solid #d9d9d9",
+    borderRadius: 0,
+    padding: 1,
+    display: "flex",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    cursor: "pointer",
+};
 
 export function PreviewVerseBox({ verseObj, highlighted, selected, setSelected }) {
     const { getMultipleVerses, setDisplayVerse, setHistory, setNoteList } = useContext(AppContext);
@@ -187,9 +197,9 @@ export function HistoryVerseBox({ verseObj, highlighted }) {
 }
 
 /**
- * @param {{verseObj: VerseRefLike, boxIndex: number, highlighted?: boolean}} props
+ * @param {{verseObj: VerseRefLike, boxIndex: number, highlighted?: boolean, printMode?: boolean}} props
  */
-export function NoteVerseBox({ verseObj, boxIndex, highlighted }) {
+export function NoteVerseBox({ verseObj, boxIndex, highlighted, printMode = false }) {
     const { getMultipleVerses, setDisplayVerse, setNoteList, setPreviewVerse, appConfig, verseExists } =
         useContext(AppContext);
     const baseVerse = VerseRef.from(verseObj);
@@ -370,39 +380,43 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted }) {
             ? range[0] || ""
             : [range[0] || "", note].filter((text) => text && text.length > 0).join("\n\n");
     const previewMarkdown = draftNote || "";
+    const shouldShowFullVerse = noteDisplay === "经文和笔记" || noteDisplay === "打印";
+    const currentBoxStyle = printMode ? printVerseBoxStyle : highlighted ? highlightedVerseBoxStyle : verseBoxStyle;
 
     return (
         <>
-            <Box onClick={handleShow} sx={highlighted ? highlightedVerseBoxStyle : verseBoxStyle}>
+            <Box onClick={handleShow} sx={currentBoxStyle}>
                 <Box sx={{ flexGrow: 1 }}>
-                    {noteDisplay === "经文和笔记" ? (
+                    {shouldShowFullVerse ? (
                         <VerseParagraph verseObj={baseVerse} />
                     ) : (
                         <MarkdownExtended>{noteCardMarkdown}</MarkdownExtended>
                     )}
                 </Box>
 
-                <Box sx={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
-                    <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                        <Icon tooltip={"编辑"} onClick={handleEdit}>
-                            <EditIcon />
-                        </Icon>
-                        <Icon tooltip={"预览"} onClick={handlePreview}>
-                            <PreviewIcon />
-                        </Icon>
+                {!printMode && (
+                    <Box sx={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                            <Icon tooltip={"编辑"} onClick={handleEdit}>
+                                <EditIcon />
+                            </Icon>
+                            <Icon tooltip={"预览"} onClick={handlePreview}>
+                                <PreviewIcon />
+                            </Icon>
+                        </Box>
+                        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                            <Icon tooltip={"上移"} onClick={handleMoveUp}>
+                                <ArrowUpwardIcon />
+                            </Icon>
+                            <Icon tooltip={"下移"} onClick={handleMoveDown}>
+                                <ArrowDownwardIcon />
+                            </Icon>
+                            <Icon tooltip={"删除"} onClick={handleRemove}>
+                                <CloseIcon />
+                            </Icon>
+                        </Box>
                     </Box>
-                    <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                        <Icon tooltip={"上移"} onClick={handleMoveUp}>
-                            <ArrowUpwardIcon />
-                        </Icon>
-                        <Icon tooltip={"下移"} onClick={handleMoveDown}>
-                            <ArrowDownwardIcon />
-                        </Icon>
-                        <Icon tooltip={"删除"} onClick={handleRemove}>
-                            <CloseIcon />
-                        </Icon>
-                    </Box>
-                </Box>
+                )}
             </Box>
             <Modal open={editOpen} onClose={() => setEditOpen(false)}>
                 <Box

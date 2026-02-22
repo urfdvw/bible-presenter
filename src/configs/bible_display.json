@@ -39,9 +39,9 @@
             "default": "开头"
         },
         "note_display": {
-            "title": "笔记显示",
+            "title": "笔记显示模式",
             "type": "string",
-            "enum": ["范围", "范围和笔记", "经文和笔记"],
+            "enum": ["范围", "范围和笔记", "经文和笔记", "打印"],
             "default": "范围和笔记"
         },
         "display_type": {
