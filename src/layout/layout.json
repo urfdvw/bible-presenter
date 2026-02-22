@@ -57,6 +57,7 @@
                 {
                     "type": "tab",
                     "name": "设置",
+                    "id": "config_tab",
                     "component": "config",
                     "enableClose": false
                 }

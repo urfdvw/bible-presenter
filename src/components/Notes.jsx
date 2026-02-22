@@ -2,6 +2,7 @@ import { NoteVerseBox } from "./VerseBox";
 import AppContext from "../AppContext";
 import { useContext, useEffect } from "react";
 import TabToolBar from "../utilComponents/TabToolBar";
+import Menu from "../utilComponents/Menu";
 import { useSingleFileSystemAccess } from "../utilHooks/useSingleFileSystemAccess";
 import { downloadFile } from "../utilFunctions/jsHelper";
 import { selectTabById } from "../layout/layoutUtils";
@@ -15,7 +16,7 @@ function NoteListBody() {
 }
 
 export default function Notes() {
-    const { noteList, setNoteList, flexModel, helpTabSelection } = useContext(AppContext);
+    const { noteList, setNoteList, flexModel, helpTabSelection, appConfig } = useContext(AppContext);
     const { content, fileName, openFile, saveToFile } = useSingleFileSystemAccess();
     useEffect(() => {
         if (content) {
@@ -57,7 +58,28 @@ export default function Notes() {
     return (
         <div style={{ display: "flex", height: "100%", flexDirection: "column" }}>
             <div style={{ flexGrow: 0 }}>
-                <TabToolBar title={fileName} tools={tools} />
+                <TabToolBar
+                    title={fileName}
+                    tools={tools}
+                >
+                    <Menu
+                        label="笔记显示"
+                        options={[
+                            {
+                                text: "范围",
+                                handler: () => appConfig.setConfigField("bible_display", "note_display", "范围"),
+                            },
+                            {
+                                text: "范围和笔记",
+                                handler: () => appConfig.setConfigField("bible_display", "note_display", "范围和笔记"),
+                            },
+                            {
+                                text: "经文和笔记",
+                                handler: () => appConfig.setConfigField("bible_display", "note_display", "经文和笔记"),
+                            },
+                        ]}
+                    />
+                </TabToolBar>
             </div>
             <div style={{ flexGrow: 1, overflowY: "auto" }}>
                 <NoteListBody />

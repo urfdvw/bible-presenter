@@ -38,6 +38,12 @@
             "enum": ["开头", "结尾", "不显示"],
             "default": "开头"
         },
+        "note_display": {
+            "title": "笔记显示",
+            "type": "string",
+            "enum": ["范围", "范围和笔记", "经文和笔记"],
+            "default": "范围和笔记"
+        },
         "display_type": {
             "title": "投影显示模式",
             "type": "string",

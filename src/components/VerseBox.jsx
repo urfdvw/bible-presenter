@@ -364,12 +364,23 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted }) {
     };
 
     const note = verseObj.note || "";
+    const noteDisplay = appConfig.config.bible_display.note_display || "范围和笔记";
+    const noteCardMarkdown =
+        noteDisplay === "范围"
+            ? range[0] || ""
+            : [range[0] || "", note].filter((text) => text && text.length > 0).join("\n\n");
     const previewMarkdown = draftNote || "";
 
     return (
         <>
             <Box onClick={handleShow} sx={highlighted ? highlightedVerseBoxStyle : verseBoxStyle}>
-                <MarkdownExtended sx={{ flexGrow: 1 }}>{note + "\n\n" + range[0]}</MarkdownExtended>
+                <Box sx={{ flexGrow: 1 }}>
+                    {noteDisplay === "经文和笔记" ? (
+                        <VerseParagraph verseObj={baseVerse} />
+                    ) : (
+                        <MarkdownExtended>{noteCardMarkdown}</MarkdownExtended>
+                    )}
+                </Box>
 
                 <Box sx={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
