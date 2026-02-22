@@ -14,7 +14,7 @@ import AppMenu from "./components/AppMenu";
 import useNotification from "./utilHooks/useNotification";
 import Typography from "@mui/material/Typography";
 // config
-import { useConfig } from "react-user-config";
+import { useConfig } from "./utilComponents/react-user-config";
 import schemas from "./configs";
 // help
 import { useTabValueName } from "./utilHooks/useTabValueName";
@@ -43,6 +43,7 @@ function App() {
     const appConfig = useConfig(schemas);
     // help
     const helpTabSelection = useTabValueName(docs);
+    const configTabSelection = useTabValueName(schemas);
 
     // projector control
     const [projectorWindowPopped, setProjectorWindowPopped] = useState(false);
@@ -115,6 +116,7 @@ function App() {
                 clearNotification,
                 appConfig,
                 helpTabSelection,
+                configTabSelection,
                 projectorWindowPopped,
                 setProjectorWindowPopped,
                 projectorDisplay,
