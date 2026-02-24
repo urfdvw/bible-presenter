@@ -2,12 +2,15 @@ import TabToolBar from "../utilComponents/TabToolBar";
 import { selectTabById } from "../layout/layoutUtils";
 import { useContext, useEffect, useState } from "react";
 import AppContext from "../AppContext";
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import IMETextArea from "./IMETextArea";
 import { siDict, trDict, enDict } from "../bible";
 import { getBook, getChapterVerse } from "../bible/parser";
 import { removeAllDuplicatesKeepLast } from "../utilFunctions/jsHelper";
 import { LocateVerseBox } from "./VerseBox";
+import VerseRef from "../models/VerseRef";
+
+/** @typedef {import("../models/VerseRef").VerseRefLike} VerseRefLike */
 
 export default function QuickLocate() {
     const {
@@ -21,65 +24,58 @@ export default function QuickLocate() {
         setHistory,
     } = useContext(AppContext);
     const [text, setText] = useState("");
-    const [stagedVerse, setStagedVerse] = useState({ verse: 99 });
-    const [displayTarget, setDisplayTarget] = useState(displayVerse);
+    /** @type {[VerseRefLike, import("react").Dispatch<import("react").SetStateAction<VerseRefLike>>]} */
+    const [stagedVerse, setStagedVerse] = useState(new VerseRef({ verse: 99 }));
+    /** @type {[VerseRef, import("react").Dispatch<import("react").SetStateAction<VerseRef>>]} */
+    const [displayTarget, setDisplayTarget] = useState(VerseRef.from(displayVerse));
 
     useEffect(() => {
         const { book, remnant } = getBook(text);
-        // console.log(book, remnant);
         const { chapter, verse, endChapter, endVerse } = getChapterVerse(remnant);
-        // console.log(chapter, verse, endChapter, endVerse);
-        setStagedVerse({
-            book: book,
-            chapter: chapter,
-            verse: verse,
-            endChapter: endChapter,
-            endVerse: endVerse,
-        });
+        setStagedVerse(new VerseRef({ book, chapter, verse, endChapter, endVerse }));
     }, [text]);
 
+    /**
+     * @param {VerseRefLike} original
+     * @param {VerseRefLike} staged
+     * @returns {VerseRef}
+     */
     function fusion(original, staged) {
-        var target = {
-            book: original.book,
-            chapter: original.chapter,
-            verse: original.verse,
-            endChapter: original.endChapter,
-            endVerse: original.endVerse,
-        };
+        let target = VerseRef.from(original);
         if (!staged.book && !staged.chapter && !staged.verse && !staged.endChapter && !staged.endVerse) {
             return target;
         } else if (staged.book && staged.chapter && staged.verse) {
-            target = {
+            target = new VerseRef({
                 book: staged.book,
                 chapter: staged.chapter,
                 verse: staged.verse,
                 endChapter: staged.endChapter,
                 endVerse: staged.endVerse,
-            };
+            });
         } else if (!staged.book && staged.chapter && staged.verse) {
-            target = {
+            target = new VerseRef({
                 book: original.book,
                 chapter: staged.chapter,
                 verse: staged.verse,
                 endChapter: staged.endChapter,
                 endVerse: staged.endVerse,
-            };
+            });
         } else if (!staged.book && !staged.chapter && staged.verse) {
-            target = {
+            target = new VerseRef({
                 book: original.book,
                 chapter: original.chapter,
                 verse: staged.verse,
                 endChapter: staged.endChapter,
                 endVerse: staged.endVerse,
-            };
+            });
         } else if (!staged.book && !staged.chapter && !staged.verse) {
-            target = {
+            target = new VerseRef({
                 book: original.book,
                 chapter: original.chapter,
                 verse: original.verse,
                 endChapter: staged.endChapter,
                 endVerse: staged.endVerse,
-            };
+            });
         }
         return target;
     }
@@ -88,7 +84,7 @@ export default function QuickLocate() {
         if (!displayVerse) {
             return;
         }
-        setDisplayTarget(fusion(displayVerse, stagedVerse));
+        setDisplayTarget(fusion(VerseRef.from(displayVerse), stagedVerse));
     }, [stagedVerse, displayVerse]);
 
     const tools = [

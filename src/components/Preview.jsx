@@ -5,10 +5,12 @@ import { scroller, Element } from "react-scroll";
 import { Button, Typography } from "@mui/material";
 import TabToolBar from "../utilComponents/TabToolBar";
 import { selectTabById } from "../layout/layoutUtils";
+import VerseRef from "../models/VerseRef";
 
-function PreviewList({ selected, setSelected }) {
-    const { getChapterVerses, previewVerse } = useContext(AppContext);
+function PreviewList({ selected, setSelected, previewVerse, tabId }) {
+    const { getChapterVerses } = useContext(AppContext);
     const verses = getChapterVerses(previewVerse.book, previewVerse.chapter);
+    const containerId = `previewContainer-${tabId}`;
 
     useEffect(() => {
         if (!previewVerse.verse) {
@@ -19,27 +21,31 @@ function PreviewList({ selected, setSelected }) {
             duration: 800,
             delay: 0,
             smooth: "easeInOutQuart",
-            containerId: "previewContainer",
+            containerId: containerId,
         });
-    }, [previewVerse]);
+    }, [previewVerse, containerId]);
 
     useEffect(() => {
         if (selected && selected.book !== verses[0][0].book) {
             setSelected(null);
         }
-    }, [selected, verses]);
+    }, [selected, verses, setSelected]);
 
     return (
-        <div id="previewContainer" style={{ height: "100%", overflowY: "auto" }}>
+        <div id={containerId} style={{ height: "100%", overflowY: "auto" }}>
             {verses.map((verseVersions) => {
                 return (
                     <Element key={verseVersions[0].verse} name={`preview-verse-${verseVersions[0].verse}`}>
                         <PreviewVerseBox
                             setSelected={setSelected}
                             selected={selected}
-                            book={verseVersions[0].book}
-                            chapter={verseVersions[0].chapter}
-                            verse={verseVersions[0].verse}
+                            verseObj={
+                                new VerseRef({
+                                    book: verseVersions[0].book,
+                                    chapter: verseVersions[0].chapter,
+                                    verse: verseVersions[0].verse,
+                                })
+                            }
                             highlighted={
                                 selected &&
                                 verseVersions[0].book === selected.book &&
@@ -54,14 +60,21 @@ function PreviewList({ selected, setSelected }) {
     );
 }
 
-export default function Preview() {
+export default function Preview({ tabId }) {
     const [selected, setSelected] = useState(null);
-    const { getChapterVerses, previewVerse, setPreviewVerse, getMultipleVerses, helpTabSelection, flexModel } =
-        useContext(AppContext);
+    const {
+        getChapterVerses,
+        getPreviewVerseForTab,
+        setPreviewVerseForTab,
+        getMultipleVerses,
+        helpTabSelection,
+        flexModel,
+    } = useContext(AppContext);
+    const previewVerse = getPreviewVerseForTab(tabId);
     const verses = getChapterVerses(previewVerse.book, previewVerse.chapter);
     const notificationHeight = selected ? "5em" : "0em";
 
-    const selectedVerseObj = selected ? getMultipleVerses(selected.book, selected.chapter, selected.verse) : null;
+    const selectedVerseObj = selected ? getMultipleVerses(selected) : null;
 
     const notification = selectedVerseObj
         ? `已选中 ${selectedVerseObj[0][0].book_name} ${selectedVerseObj[0][0].chapter}:${selectedVerseObj[0][0].verse}`
@@ -76,27 +89,21 @@ export default function Preview() {
                     return;
                 }
                 console.log("上一章");
-                setPreviewVerse({
-                    book: previewVerse.book,
-                    chapter: previewVerse.chapter - 1,
-                    verse: 1,
-                });
+                setPreviewVerseForTab(tabId, new VerseRef({ book: previewVerse.book, chapter: previewVerse.chapter - 1, verse: 1 }));
             },
         },
         {
             text: "下一章",
             handler: () => {
-                const testVerse = getMultipleVerses(previewVerse.book, previewVerse.chapter + 1, 1);
+                const testVerse = getMultipleVerses(
+                    new VerseRef({ book: previewVerse.book, chapter: previewVerse.chapter + 1, verse: 1 })
+                );
                 if (testVerse.length === 0) {
                     console.log("没有下一章了");
                     return;
                 }
                 console.log("下一章");
-                setPreviewVerse({
-                    book: previewVerse.book,
-                    chapter: previewVerse.chapter + 1,
-                    verse: 1,
-                });
+                setPreviewVerseForTab(tabId, new VerseRef({ book: previewVerse.book, chapter: previewVerse.chapter + 1, verse: 1 }));
             },
         },
         {
@@ -112,7 +119,7 @@ export default function Preview() {
             <div style={{ flexGrow: 0 }}>
                 <TabToolBar title={`${verses[0][0].book_name} ${verses[0][0].chapter}`} tools={tools} />
             </div>
-            <PreviewList selected={selected} setSelected={setSelected} />
+            <PreviewList selected={selected} setSelected={setSelected} previewVerse={previewVerse} tabId={tabId} />
             <Typography
                 sx={{
                     flexGrow: 0,

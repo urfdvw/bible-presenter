@@ -35,7 +35,7 @@ export default function useDisplayHotKeys(
     );
     useHotkeys(
         "alt+d",
-        (event) => {
+        () => {
             if (config.config.bible_display.display_type === "经节") {
                 config.setConfigField("bible_display", "display_type", "整章");
             }

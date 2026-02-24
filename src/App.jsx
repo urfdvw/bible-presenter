@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 // App
 import "./App.css";
 import AppContext from "./AppContext";
@@ -14,44 +14,39 @@ import AppMenu from "./components/AppMenu";
 import useNotification from "./utilHooks/useNotification";
 import Typography from "@mui/material/Typography";
 // config
-import { useConfig } from "react-user-config";
+import { useConfig } from "./utilComponents/react-user-config";
 import schemas from "./configs";
 // help
-import { useTabValueName } from "./utilComponents/TabedPages";
+import { useTabValueName } from "./utilHooks/useTabValueName";
 import docs from "./docs";
 // hot keys
 import useLayoutHotKeys from "./hotKeys/useLayoutHotKeys";
 import useDisplayHotKeys from "./hotKeys/useDisplayHotKeys";
 // theme
 import DarkTheme from "react-lazy-dark-theme";
-// channel
-import useChannel from "./utilHooks/useChannel";
 // Bible data
 import bible from "./bible";
 import useBibleData from "./bible/useBibleData";
+import VerseRef from "./models/VerseRef";
+import usePreviewTabs from "./utilHooks/usePreviewTabs";
+import TipsModal from "./components/TipsModal";
+import { tips } from "./tips";
+
+/** @typedef {import("./models/VerseRef").VerseRefLike} VerseRefLike */
 
 function App() {
     // testing state
     const [testCount, setTestCount] = useState(0);
     // layout
-    const [flexModel, setFlexModel] = useState(FlexLayout.Model.fromJson(layout));
+    const [flexModel] = useState(FlexLayout.Model.fromJson(layout));
     // notification
     const { notify, clearNotification, notificationText, notificationHeight } = useNotification();
     // config
     const appConfig = useConfig(schemas);
-    // useEffect(() => {
-    //     console.log("config", appConfig);
-    // }, [appConfig]);
     // help
     const helpTabSelection = useTabValueName(docs);
-    // useEffect(() => {
-    //     console.log("helpTabSelection", helpTabSelection);
-    // }, [helpTabSelection]);
-    // channel
-    const { showDevFeatures, showBetaFeatures } = useChannel();
-    // useEffect(() => {
-    //     console.log("[showDevFeatures, showBetaFeatures]", [showDevFeatures, showBetaFeatures]);
-    // }, [showDevFeatures, showBetaFeatures]);
+    const configTabSelection = useTabValueName(schemas);
+
     // projector control
     const [projectorWindowPopped, setProjectorWindowPopped] = useState(false);
     const [projectorDisplay, setProjectorDisplay] = useState(true);
@@ -68,31 +63,39 @@ function App() {
         setProjectorDisplay
     );
     // Bible Data
-    const { getMultipleVerses, getChapterVerses, getSelectedVersions, getNextVerse, getPreviousVerse, verseExists } =
+    const {
+        getMultipleVerses,
+        getChapterVerses,
+        getSelectedVersions,
+        getNextVerse,
+        getPreviousVerse,
+        verseExists,
+        getBookMeta,
+    } =
         useBibleData(bible, appConfig.config.bible_display);
     // Bible control
-    const [displayVerse, setDisplayVerse] = useState({
-        book: 43,
-        chapter: 3,
-        verse: 16,
-        endChapter: null,
-        endVerse: null,
-    });
-    const [previewVerse, setPreviewVerse] = useState({
-        book: 43,
-        chapter: 3,
-        verse: 16,
-        endChapter: null,
-        endVerse: null,
-    });
+    /** @type {[VerseRef, import("react").Dispatch<import("react").SetStateAction<VerseRef>>]} */
+    const [displayVerse, setDisplayVerse] = useState(new VerseRef({ book: 43, chapter: 3, verse: 16 }));
     // history
+    /** @type {[VerseRefLike[], import("react").Dispatch<import("react").SetStateAction<VerseRefLike[]>>]} */
     const [history, setHistory] = useState([]);
     // notes
+    /** @type {[VerseRefLike[], import("react").Dispatch<import("react").SetStateAction<VerseRefLike[]>>]} */
     const [noteList, setNoteList] = useState([]);
+
+    const {
+        previewVerse,
+        setPreviewVerse,
+        getPreviewVerseForTab,
+        setPreviewVerseForTab,
+        handleRenderTabSet,
+        handleLayoutModelChange,
+    } = usePreviewTabs(flexModel, appConfig.config.bible_display);
 
     if (!appConfig.ready) {
         return;
     }
+    const showTipsOnStartup = appConfig.config.general.show_tips_on_startup !== "否";
 
     // theme config
     let dark = null;
@@ -116,6 +119,7 @@ function App() {
                 clearNotification,
                 appConfig,
                 helpTabSelection,
+                configTabSelection,
                 projectorWindowPopped,
                 setProjectorWindowPopped,
                 projectorDisplay,
@@ -127,10 +131,13 @@ function App() {
                 getNextVerse,
                 getPreviousVerse,
                 verseExists,
+                getBookMeta,
                 displayVerse,
                 setDisplayVerse,
                 previewVerse,
                 setPreviewVerse,
+                getPreviewVerseForTab,
+                setPreviewVerseForTab,
                 history,
                 setHistory,
                 noteList,
@@ -143,6 +150,7 @@ function App() {
         >
             <DarkTheme dark={dark} highContrast={highContrast} />
             <div className="app">
+                <TipsModal tips={tips} showOnStartup={showTipsOnStartup} />
                 <div
                     className="app-header"
                     style={{
@@ -153,7 +161,12 @@ function App() {
                     <AppMenu />
                 </div>
                 <div className="app-body">
-                    <FlexLayout.Layout model={flexModel} factory={Factory} />
+                    <FlexLayout.Layout
+                        model={flexModel}
+                        factory={Factory}
+                        onRenderTabSet={handleRenderTabSet}
+                        onModelChange={handleLayoutModelChange}
+                    />
                 </div>
                 <Typography
                     component="div"

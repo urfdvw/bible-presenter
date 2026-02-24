@@ -7,6 +7,7 @@ import { NoTheme } from "react-lazy-dark-theme";
 import VerseParagraph from "./VerseParagraph";
 import Reader, { ReaderMenu, ReaderTitle } from "./Reader";
 import { Typography } from "@mui/material";
+import VerseRef from "../models/VerseRef";
 
 export default function Projector() {
     const { appConfig, projectorWindowPopped, setProjectorWindowPopped, projectorDisplay, displayVerse } =
@@ -73,7 +74,9 @@ export default function Projector() {
                 <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
                     <Typography>正在投影：</Typography>
                     <VerseParagraph
-                        verseObj={{ book: displayVerse.book, chapter: displayVerse.chapter, verse: displayVerse.verse }}
+                        verseObj={
+                            new VerseRef({ book: displayVerse.book, chapter: displayVerse.chapter, verse: displayVerse.verse })
+                        }
                     />
                 </Box>
             </Box>

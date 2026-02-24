@@ -7,9 +7,15 @@ import {
     versesToParagraphsMD,
     _getChapterEndVerse,
     getChapterVerses,
+    searchVerses,
+    getBookMeta,
 } from "../bible/utils";
+import VerseRef from "../models/VerseRef";
 
 import Bible from "../bible";
+
+const versePosition = (book, chapter, verse, endChapter, endVerse) =>
+    new VerseRef({ book, chapter, verse, endChapter, endVerse });
 
 describe("Test verseExists", () => {
     test("HE single version", () => {
@@ -23,9 +29,7 @@ describe("Test verseExists", () => {
                         ],
                     },
                 ],
-                43,
-                3,
-                16
+                versePosition(43, 3, 16)
             )
         ).toBe(true);
     });
@@ -41,9 +45,7 @@ describe("Test verseExists", () => {
                         ],
                     },
                 ],
-                43,
-                3,
-                18
+                versePosition(43, 3, 18)
             )
         ).toBe(false);
     });
@@ -65,9 +67,7 @@ describe("Test verseExists", () => {
                         ],
                     },
                 ],
-                43,
-                3,
-                16
+                versePosition(43, 3, 16)
             )
         ).toBe(true);
     });
@@ -89,9 +89,7 @@ describe("Test verseExists", () => {
                         ],
                     },
                 ],
-                43,
-                3,
-                15
+                versePosition(43, 3, 15)
             )
         ).toBe(true);
     });
@@ -113,9 +111,7 @@ describe("Test verseExists", () => {
                         ],
                     },
                 ],
-                43,
-                3,
-                14
+                versePosition(43, 3, 14)
             )
         ).toBe(false);
     });
@@ -131,9 +127,7 @@ describe("Test getVerseInVersion", () => {
                         { book: 43, chapter: 3, verse: 17, text: "43, 3, 17" },
                     ],
                 },
-                43,
-                3,
-                16
+                versePosition(43, 3, 16)
             )
         ).toStrictEqual({ book: 43, chapter: 3, verse: 16, text: "43, 3, 16" });
     });
@@ -147,11 +141,47 @@ describe("Test getVerseInVersion", () => {
                         { book: 43, chapter: 3, verse: 17, text: "43, 3, 17" },
                     ],
                 },
-                43,
-                3,
-                18
+                versePosition(43, 3, 18)
             )
         ).toStrictEqual(null);
+    });
+});
+
+describe("Test searchVerses", () => {
+    test("HE single version exact substring", () => {
+        const versions = [
+            {
+                verses: [
+                    { book: 43, chapter: 3, verse: 16, text: "For God so loved the world" },
+                    { book: 43, chapter: 3, verse: 17, text: "The world did not know him" },
+                    { book: 43, chapter: 3, verse: 18, text: "abc def" },
+                ],
+            },
+        ];
+        expect(searchVerses(versions, "world")).toStrictEqual([
+            { book: 43, chapter: 3, verse: 16, text: "For God so loved the world" },
+            { book: 43, chapter: 3, verse: 17, text: "The world did not know him" },
+        ]);
+    });
+
+    test("BE empty search term", () => {
+        const versions = [{ verses: [{ book: 43, chapter: 3, verse: 16, text: "hello world" }] }];
+        expect(searchVerses(versions, "")).toStrictEqual([]);
+    });
+});
+
+describe("Test getBookMeta", () => {
+    test("HE", () => {
+        const versions = [
+            {
+                verses: [
+                    { book: 43, book_name: "John", chapter: 3, verse: 16, text: "a" },
+                    { book: 43, book_name: "John", chapter: 4, verse: 1, text: "b" },
+                    { book: 43, book_name: "John", chapter: 4, verse: 2, text: "c" },
+                ],
+            },
+        ];
+        expect(getBookMeta(versions, 43)).toStrictEqual({ bookName: "John", chapters: [3, 4] });
     });
 });
 
@@ -166,9 +196,7 @@ describe("Test getVerseInVersion", () => {
                         { book: 43, chapter: 3, verse: 17, text: "43, 3, 17" },
                     ],
                 },
-                43,
-                3,
-                16
+                versePosition(43, 3, 16)
             )
         ).toBe(1);
     });
@@ -183,9 +211,7 @@ describe("Test getVerseInVersion", () => {
                         { book: 43, chapter: 3, verse: 17, text: "43, 3, 17" },
                     ],
                 },
-                43,
-                3,
-                18
+                versePosition(43, 3, 18)
             )
         ).toBe(null);
     });
@@ -205,11 +231,7 @@ describe("Test getMultipleVerses", () => {
                         ],
                     },
                 ],
-                43,
-                3,
-                16,
-                3,
-                17
+                versePosition(43, 3, 16, 3, 17)
             )
         ).toStrictEqual([[{ book: 43, chapter: 3, verse: 16 }], [{ book: 43, chapter: 3, verse: 17 }]]);
     });
@@ -230,11 +252,7 @@ describe("Test getMultipleVerses", () => {
                         ],
                     },
                 ],
-                43,
-                3,
-                16,
-                4,
-                2
+                versePosition(43, 3, 16, 4, 2)
             )
         ).toStrictEqual([
             [{ book: 43, chapter: 3, verse: 16 }],
@@ -265,11 +283,7 @@ describe("Test getMultipleVerses", () => {
                         ],
                     },
                 ],
-                43,
-                3,
-                16,
-                3,
-                17
+                versePosition(43, 3, 16, 3, 17)
             )
         ).toStrictEqual([
             [
@@ -293,9 +307,7 @@ describe("Test getMultipleVerses", () => {
                         ],
                     },
                 ],
-                43,
-                3,
-                16
+                versePosition(43, 3, 16)
             )
         ).toStrictEqual([[{ book: 43, chapter: 3, verse: 16 }]]);
     });
@@ -313,11 +325,7 @@ describe("Test getMultipleVerses", () => {
                         ],
                     },
                 ],
-                43,
-                3,
-                16,
-                null,
-                17
+                versePosition(43, 3, 16, null, 17)
             )
         ).toStrictEqual([[{ book: 43, chapter: 3, verse: 16 }], [{ book: 43, chapter: 3, verse: 17 }]]);
     });
@@ -335,9 +343,7 @@ describe("Test getMultipleVerses", () => {
                         ],
                     },
                 ],
-                43,
-                2,
-                16
+                versePosition(43, 2, 16)
             )
         ).toStrictEqual([]);
     });
@@ -355,11 +361,7 @@ describe("Test getMultipleVerses", () => {
                         ],
                     },
                 ],
-                43,
-                3,
-                16,
-                4,
-                99
+                versePosition(43, 3, 16, 4, 99)
             )
         ).toStrictEqual([]);
     });
@@ -377,11 +379,7 @@ describe("Test getMultipleVerses", () => {
                         ],
                     },
                 ],
-                43,
-                3,
-                18,
-                3,
-                16
+                versePosition(43, 3, 18, 3, 16)
             )
         ).toStrictEqual([
             [{ book: 43, chapter: 3, verse: 16 }],

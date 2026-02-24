@@ -28,4 +28,4 @@ for (const key in bookInd) {
 }
 
 export default bible;
-export { abbreviations, siDict, trDict, enDict };
+export { abbreviations, siDict, trDict, enDict, siNames, trNames, enNames };

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { TextField, Paper, List, ListItem, ListItemButton, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 
@@ -93,7 +93,15 @@ function getRecommendations(inputValue, dictionary) {
     return uniqueCandidates.slice(0, 10);
 }
 
-export default function IMETextArea({ text, setText, DICTIONARY, onDisplay, onPreview, onAddToNote }) {
+export default function IMETextArea({
+    text,
+    setText,
+    DICTIONARY,
+    onDisplay,
+    onPreview,
+    onAddToNote,
+    disableEnterActions = false,
+}) {
     const [recommendations, setRecommendations] = useState([]);
     const [anchorCoords, setAnchorCoords] = useState({ top: 0, left: 0 });
     const [selectionStart, setSelectionStart] = useState(0);
@@ -180,7 +188,6 @@ export default function IMETextArea({ text, setText, DICTIONARY, onDisplay, onPr
     const handleEnter = (event) => {
         event.preventDefault();
         setText("");
-        console.log("Enter pressed");
         onDisplay();
         // You can handle the normal Enter action here if desired
     };
@@ -188,7 +195,6 @@ export default function IMETextArea({ text, setText, DICTIONARY, onDisplay, onPr
     // HANDLER: Shift+Enter
     const handleShiftEnter = (event) => {
         event.preventDefault();
-        console.log("Shift-Enter pressed");
         onPreview();
         // Handle multi-line break, for example, if you want special logic
     };
@@ -197,7 +203,6 @@ export default function IMETextArea({ text, setText, DICTIONARY, onDisplay, onPr
     const handleCtrlEnter = (event) => {
         event.preventDefault();
         setText("");
-        console.log("Ctrl/Cmd-Enter pressed");
         onAddToNote();
         // Possibly handle form submission or something else
     };
@@ -208,6 +213,10 @@ export default function IMETextArea({ text, setText, DICTIONARY, onDisplay, onPr
     const handleKeyDown = (event) => {
         // Detect Enter variants first
         if (event.key === "Enter") {
+            if (disableEnterActions) {
+                event.preventDefault();
+                return;
+            }
             if (event.shiftKey) {
                 handleShiftEnter(event);
             } else if (event.ctrlKey || event.metaKey) {

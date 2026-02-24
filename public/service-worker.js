@@ -1,5 +1,4 @@
-const CACHE_NAME = "bible-presenter-cache-v1";
-const OFFLINE_URL = "/index.html";
+const CACHE_NAME = "bible-presenter-cache-v2";
 
 // List all URLs you want to cache
 const urlsToCache = ["/", "/index.html"];
@@ -29,13 +28,19 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
+    if (event.request.method !== "GET") {
+        return;
+    }
+
     event.respondWith(
         caches.open(CACHE_NAME).then((cache) => {
             return cache.match(event.request).then((cachedResponse) => {
                 const fetchPromise = fetch(event.request)
                     .then((networkResponse) => {
                         // Update the cache with the fresh resource
-                        cache.put(event.request, networkResponse.clone());
+                        if (networkResponse && (networkResponse.ok || networkResponse.type === "opaque")) {
+                            cache.put(event.request, networkResponse.clone());
+                        }
                         return networkResponse;
                     })
                     .catch(() => {

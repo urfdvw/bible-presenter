@@ -47,7 +47,7 @@ const Factory = (node) => {
     } else if (component === "preview") {
         return (
             <div className="tab_content" style={fullSize}>
-                <Preview />
+                <Preview tabId={node.getId()} />
             </div>
         );
     } else if (component === "table_of_contents") {

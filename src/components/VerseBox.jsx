@@ -1,5 +1,4 @@
-import { Box, Typography, IconButton, Tooltip } from "@mui/material";
-// Import any icons you want to use from Material-UI icons
+import { Box, Typography, IconButton, Tooltip, Modal, TextField, Button, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import PreviewIcon from "@mui/icons-material/PreviewOutlined";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpwardOutlined";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownwardOutlined";
@@ -9,6 +8,7 @@ import ChecklistIcon from "@mui/icons-material/ChecklistOutlined";
 import EditIcon from "@mui/icons-material/EditOutlined";
 
 import { versesToParagraphsMD, versesToRangeText } from "../bible/utils";
+import { siNames, trNames, enNames, siDict, trDict, enDict } from "../bible";
 
 import MarkdownExtended from "../utilComponents/MarkdownExtended";
 
@@ -18,6 +18,11 @@ import { useContext, useEffect, useState } from "react";
 import { compareLists, removeAllDuplicatesKeepLast } from "../utilFunctions/jsHelper";
 import HighlightedSpan from "../utilComponents/HighlightedSpan";
 import VerseParagraph from "./VerseParagraph";
+import VerseRef from "../models/VerseRef";
+import IMETextArea from "./IMETextArea";
+import { getBook, getChapterVerse } from "../bible/parser";
+
+/** @typedef {import("../models/VerseRef").VerseRefLike} VerseRefLike */
 
 function Icon({ tooltip, children, onClick }) {
     return (
@@ -47,43 +52,51 @@ const verseBoxStyle = {
 };
 
 const highlightedVerseBoxStyle = { ...verseBoxStyle, border: "2px solid #700000", background: "#FFF0F0" };
+const printVerseBoxStyle = {
+    border: "none",
+    borderBottom: "1px solid #d9d9d9",
+    borderRadius: 0,
+    padding: 1,
+    display: "flex",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    cursor: "pointer",
+};
 
-export function PreviewVerseBox({ book, chapter, verse, highlighted, selected, setSelected }) {
+export function PreviewVerseBox({ verseObj, highlighted, selected, setSelected }) {
     const { getMultipleVerses, setDisplayVerse, setHistory, setNoteList } = useContext(AppContext);
+    const baseVerse = VerseRef.from(verseObj);
+    /** @type {[VerseRef | null, import("react").Dispatch<import("react").SetStateAction<VerseRef | null>>]} */
     const [multipleVerses, setMultipleVerses] = useState(null);
     useEffect(() => {
-        var verseObj = {
-            book: book,
-            chapter: chapter,
-            verse: verse,
-            endChapter: null,
-            endVerse: null,
-        };
+        let verseObjToProject = VerseRef.from(baseVerse);
 
         if (selected) {
-            if (selected.book === book) {
-                if (compareLists([selected.chapter, selected.verse], [chapter, verse]) > 0) {
-                    verseObj.endChapter = selected.chapter;
-                    verseObj.endVerse = selected.verse;
+            if (selected.book === baseVerse.book) {
+                if (compareLists([selected.chapter, selected.verse], [baseVerse.chapter, baseVerse.verse]) > 0) {
+                    verseObjToProject.endChapter = selected.chapter;
+                    verseObjToProject.endVerse = selected.verse;
                 } else {
-                    verseObj = {
-                        book: book,
+                    verseObjToProject = new VerseRef({
+                        book: baseVerse.book,
                         chapter: selected.chapter,
                         verse: selected.verse,
-                        endChapter: chapter,
-                        endVerse: verse,
-                        note: "",
-                    };
+                        endChapter: baseVerse.chapter,
+                        endVerse: baseVerse.verse,
+                    });
                 }
             }
         }
-        setMultipleVerses(verseObj);
-    }, [book, chapter, verse, selected]);
+        setMultipleVerses(verseObjToProject);
+    }, [baseVerse, selected]);
 
-    const verses = getMultipleVerses(book, chapter, verse);
+    const verses = getMultipleVerses(baseVerse);
     const mdText = versesToParagraphsMD(verses).join("\n\n");
 
     const handleShow = () => {
+        if (!multipleVerses) {
+            return;
+        }
         setDisplayVerse(multipleVerses);
         setHistory((history) => removeAllDuplicatesKeepLast([...history, multipleVerses]));
 
@@ -93,29 +106,26 @@ export function PreviewVerseBox({ book, chapter, verse, highlighted, selected, s
     };
 
     const handleAddToNote = () => {
+        if (!multipleVerses) {
+            return;
+        }
         setNoteList((notes) => [...notes, multipleVerses]);
         if (selected) {
             setSelected(null);
         }
-        console.log("adding to note");
     };
 
     const handleSelect = () => {
-        console.log("selecting multiple");
         if (selected) {
             setSelected(null);
         } else {
-            setSelected({
-                book: book,
-                chapter: chapter,
-                verse: verse,
-            });
+            setSelected(baseVerse);
         }
     };
 
     return (
         <Box onClick={handleShow} sx={highlighted ? highlightedVerseBoxStyle : verseBoxStyle}>
-            <Typography sx={{ paddingRight: 1, flexShrink: 0 }}>{verse}</Typography>
+            <Typography sx={{ paddingRight: 1, flexShrink: 0 }}>{baseVerse.verse}</Typography>
             <div style={{ flexGrow: 1 }}>
                 <MarkdownExtended>{mdText}</MarkdownExtended>
             </div>
@@ -132,59 +142,34 @@ export function PreviewVerseBox({ book, chapter, verse, highlighted, selected, s
     );
 }
 
-export function HistoryVerseBox({ book, chapter, verse, endChapter, endVerse, highlighted }) {
+export function HistoryVerseBox({ verseObj, highlighted }) {
     const { getMultipleVerses, setDisplayVerse, setPreviewVerse, setHistory, setNoteList } = useContext(AppContext);
-    const verses = getMultipleVerses(book, chapter, verse, endChapter, endVerse);
+    const normalizedVerse = VerseRef.from(verseObj);
+    const verses = getMultipleVerses(normalizedVerse);
     const range = versesToRangeText(verses);
 
     const handleShow = () => {
-        const verseObj = {
-            book: book,
-            chapter: chapter,
-            verse: verse,
-            endChapter: endChapter,
-            endVerse: endVerse,
-        };
-        setDisplayVerse(verseObj);
-        // setHistory((history) => removeAllDuplicatesKeepLast([...history, verseObj]));
+        setDisplayVerse(normalizedVerse);
     };
 
     const handlePreview = () => {
-        setPreviewVerse({
-            book: book,
-            chapter: chapter,
-            verse: verse,
-            endChapter: endChapter,
-            endVerse: endVerse,
-        });
+        setPreviewVerse(normalizedVerse);
     };
 
     const handleAddToNote = () => {
-        setNoteList((notes) => [
-            ...notes,
-            {
-                book: book,
-                chapter: chapter,
-                verse: verse,
-                endChapter: endChapter,
-                endVerse: endVerse,
-                note: "",
-            },
-        ]);
+        setNoteList((notes) => [...notes, normalizedVerse]);
     };
 
     const handleRemove = () => {
-        console.log("verse moved up in notes"); // will be imported form context
-
         setHistory((history) =>
             history.filter(
                 (item) =>
-                    !(
-                        item.book === book &&
-                        item.chapter === chapter &&
-                        item.verse === verse &&
-                        item.endChapter === endChapter &&
-                        item.endVerse === endVerse
+                        !(
+                        item.book === normalizedVerse.book &&
+                        item.chapter === normalizedVerse.chapter &&
+                        item.verse === normalizedVerse.verse &&
+                        item.endChapter === normalizedVerse.endChapter &&
+                        item.endVerse === normalizedVerse.endVerse
                     )
             )
         );
@@ -209,39 +194,136 @@ export function HistoryVerseBox({ book, chapter, verse, endChapter, endVerse, hi
     );
 }
 
-export function NoteVerseBox({ verseObj, boxIndex, highlighted }) {
-    const { getMultipleVerses, setDisplayVerse, noteList, setNoteList, setPreviewVerse } = useContext(AppContext);
-    const verses = getMultipleVerses(
-        verseObj.book,
-        verseObj.chapter,
-        verseObj.verse,
-        verseObj.endChapter,
-        verseObj.endVerse
-    );
-    const range = versesToRangeText(verses);
+/**
+ * @param {{verseObj: VerseRefLike, boxIndex: number, highlighted?: boolean, printMode?: boolean}} props
+ */
+export function NoteVerseBox({ verseObj, boxIndex, highlighted, printMode = false }) {
+    const { getMultipleVerses, setDisplayVerse, setNoteList, setPreviewVerse, appConfig, verseExists } =
+        useContext(AppContext);
+    const baseVerse = VerseRef.from(verseObj);
+    const hasVerseIdentity = Boolean(baseVerse.book && baseVerse.chapter && baseVerse.verse);
+    const hasVerseRef = hasVerseIdentity && verseExists(baseVerse);
+    const verses = hasVerseRef ? getMultipleVerses(baseVerse) : [];
+    const range = hasVerseRef ? versesToRangeText(verses) : [""];
+    const [editOpen, setEditOpen] = useState(false);
+    const [draftNote, setDraftNote] = useState(baseVerse.note || "");
+    const [draftNotePosition, setDraftNotePosition] = useState(baseVerse.notePosition || "开头");
+    const [locateText, setLocateText] = useState("");
+    const [stagedVerse, setStagedVerse] = useState(new VerseRef({}));
+    const [locateTarget, setLocateTarget] = useState(baseVerse);
+    const notePositionSelectId = `note-position-${boxIndex}`;
+
+    const currentBookNames =
+        appConfig.config.bible_display.language === "English"
+            ? enNames
+            : appConfig.config.bible_display.chinese === "简体"
+            ? siNames
+            : trNames;
+    const IMEDictionary =
+        appConfig.config.bible_display.language === "English"
+            ? enDict
+            : appConfig.config.bible_display.chinese === "简体"
+            ? siDict
+            : trDict;
+
+    function verseToQuickLocateText(target) {
+        if (!target?.book || !target?.chapter || !target?.verse) {
+            return "";
+        }
+        const bookName = currentBookNames[target.book] || "";
+        const start = `${target.chapter}:${target.verse}`;
+        if (!target.endVerse) {
+            return `${bookName} ${start}`.trim();
+        }
+        const end =
+            target.endChapter && target.endChapter !== target.chapter
+                ? `${target.endChapter}:${target.endVerse}`
+                : `${target.endVerse}`;
+        return `${bookName} ${start}-${end}`.trim();
+    }
+
+    /**
+     * @param {VerseRefLike} original
+     * @param {VerseRefLike} staged
+     * @returns {VerseRef}
+     */
+    function fusion(original, staged) {
+        let target = VerseRef.from(original);
+        if (!staged.book && !staged.chapter && !staged.verse && !staged.endChapter && !staged.endVerse) {
+            return target;
+        } else if (staged.book && staged.chapter && staged.verse) {
+            target = new VerseRef({
+                book: staged.book,
+                chapter: staged.chapter,
+                verse: staged.verse,
+                endChapter: staged.endChapter,
+                endVerse: staged.endVerse,
+            });
+        } else if (!staged.book && staged.chapter && staged.verse) {
+            target = new VerseRef({
+                book: original.book,
+                chapter: staged.chapter,
+                verse: staged.verse,
+                endChapter: staged.endChapter,
+                endVerse: staged.endVerse,
+            });
+        } else if (!staged.book && !staged.chapter && staged.verse) {
+            target = new VerseRef({
+                book: original.book,
+                chapter: original.chapter,
+                verse: staged.verse,
+                endChapter: staged.endChapter,
+                endVerse: staged.endVerse,
+            });
+        } else if (!staged.book && !staged.chapter && !staged.verse) {
+            target = new VerseRef({
+                book: original.book,
+                chapter: original.chapter,
+                verse: original.verse,
+                endChapter: staged.endChapter,
+                endVerse: staged.endVerse,
+            });
+        }
+        return target;
+    }
+
+    useEffect(() => {
+        const { book, remnant } = getBook(locateText);
+        const { chapter, verse, endChapter, endVerse } = getChapterVerse(remnant);
+        setStagedVerse(new VerseRef({ book, chapter, verse, endChapter, endVerse }));
+    }, [locateText]);
+
+    useEffect(() => {
+        setLocateTarget(fusion(baseVerse, stagedVerse));
+    }, [baseVerse, stagedVerse]);
+
+    const isRangeValid = locateTarget.book && locateTarget.chapter && locateTarget.verse && verseExists(locateTarget);
 
     const handleShow = () => {
-        setDisplayVerse(verseObj);
-        // setHistory((history) => removeAllDuplicatesKeepLast([...history, verseObj]));
+        setDisplayVerse(VerseRef.from(verseObj));
     };
     const handleEdit = () => {
-        const note = prompt("编辑笔记内容", verseObj.note || "");
-        verseObj.note = note;
+        setDraftNote(baseVerse.note || "");
+        setDraftNotePosition(baseVerse.notePosition || "开头");
+        setLocateText(verseToQuickLocateText(baseVerse));
+        setStagedVerse(new VerseRef({}));
+        setLocateTarget(baseVerse);
+        setEditOpen(true);
+    };
+
+    const handleSaveEdit = () => {
+        if (!isRangeValid) {
+            return;
+        }
+        const updatedVerseObj = VerseRef.from(locateTarget).with({ note: draftNote, notePosition: draftNotePosition });
         setNoteList((notes) => {
-            const out = [];
-            for (var i = 0; i < noteList.length; i++) {
-                if (i === boxIndex) {
-                    out.push(verseObj);
-                } else {
-                    out.push(notes[i]);
-                }
-            }
-            return out;
+            return notes.map((note, index) => (index === boxIndex ? updatedVerseObj : note));
         });
+        setEditOpen(false);
     };
 
     const handlePreview = () => {
-        setPreviewVerse(verseObj);
+        setPreviewVerse(VerseRef.from(verseObj));
     };
 
     const handleMoveUp = () => {
@@ -250,7 +332,7 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted }) {
         }
         setNoteList((notes) => {
             const out = [];
-            for (var i = 0; i < noteList.length; i++) {
+            for (var i = 0; i < notes.length; i++) {
                 if (i === boxIndex) {
                     out.push(notes[boxIndex - 1]);
                 } else if (i === boxIndex - 1) {
@@ -261,16 +343,15 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted }) {
             }
             return out;
         });
-        console.log("verse moved up in notes"); // will be imported form context
     };
 
     const handleMoveDown = () => {
-        if (boxIndex === noteList.length - 1) {
-            return;
-        }
         setNoteList((notes) => {
+            if (boxIndex === notes.length - 1) {
+                return notes;
+            }
             const out = [];
-            for (var i = 0; i < noteList.length; i++) {
+            for (var i = 0; i < notes.length; i++) {
                 if (i === boxIndex) {
                     out.push(notes[boxIndex + 1]);
                 } else if (i === boxIndex + 1) {
@@ -281,7 +362,6 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted }) {
             }
             return out;
         });
-        console.log("verse moved up in notes"); // will be imported form context
     };
 
     const handleRemove = () => {
@@ -293,37 +373,185 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted }) {
                 .filter((note) => note.index !== boxIndex)
                 .map((note) => note.note)
         );
-        console.log("verse moved up in notes"); // will be imported form context
     };
 
     const note = verseObj.note || "";
+    const cardNote = note.length > 0 ? note : "";
+    const noteDisplay = appConfig.config.bible_display.note_display || "范围和笔记";
+    const rangeMarkdown = range[0] || "";
+    const notePositionLabel = baseVerse.notePosition || "开头";
+    const isCardShowingNote = noteDisplay !== "范围" && cardNote.length > 0;
+    const noteCardMarkdown =
+        noteDisplay === "范围"
+            ? rangeMarkdown
+            : [rangeMarkdown, cardNote].filter((text) => text && text.length > 0).join("\n\n");
+    const previewMarkdown = draftNote || "";
+    const shouldShowFullVerse = noteDisplay === "经文和笔记" || noteDisplay === "打印";
+    const rawBoxStyle = printMode ? printVerseBoxStyle : highlighted ? highlightedVerseBoxStyle : verseBoxStyle;
+    const currentBoxStyle = rawBoxStyle;
 
     return (
-        <Box onClick={handleShow} sx={highlighted ? highlightedVerseBoxStyle : verseBoxStyle}>
-            <MarkdownExtended sx={{ flexGrow: 1 }}>{note + "\n\n" + range[0]}</MarkdownExtended>
+        <>
+            <Box onClick={handleShow} sx={currentBoxStyle}>
+                <Box sx={{ flexGrow: 1 }}>
+                    {shouldShowFullVerse ? (
+                        <VerseParagraph
+                            verseObj={baseVerse.with({ notePosition: cardNote ? "结尾" : baseVerse.notePosition })}
+                            forceNoteAfterVerse={true}
+                        />
+                    ) : (
+                        <MarkdownExtended>{noteCardMarkdown}</MarkdownExtended>
+                    )}
+                    {isCardShowingNote && (
+                        <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mt: 0.5 }}>
+                            笔记位置：{notePositionLabel}
+                        </Typography>
+                    )}
+                </Box>
 
-            <Box sx={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
-                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                    <Icon tooltip={"编辑"} onClick={handleEdit}>
-                        <EditIcon />
-                    </Icon>
-                    <Icon tooltip={"预览"} onClick={handlePreview}>
-                        <PreviewIcon />
-                    </Icon>
-                </Box>
-                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                    <Icon tooltip={"上移"} onClick={handleMoveUp}>
-                        <ArrowUpwardIcon />
-                    </Icon>
-                    <Icon tooltip={"下移"} onClick={handleMoveDown}>
-                        <ArrowDownwardIcon />
-                    </Icon>
-                    <Icon tooltip={"删除"} onClick={handleRemove}>
-                        <CloseIcon />
-                    </Icon>
-                </Box>
+                {!printMode && (
+                    <Box sx={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                            <Icon tooltip={"编辑"} onClick={handleEdit}>
+                                <EditIcon />
+                            </Icon>
+                            <Icon tooltip={"预览"} onClick={handlePreview}>
+                                <PreviewIcon />
+                            </Icon>
+                        </Box>
+                        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                            <Icon tooltip={"上移"} onClick={handleMoveUp}>
+                                <ArrowUpwardIcon />
+                            </Icon>
+                            <Icon tooltip={"下移"} onClick={handleMoveDown}>
+                                <ArrowDownwardIcon />
+                            </Icon>
+                            <Icon tooltip={"删除"} onClick={handleRemove}>
+                                <CloseIcon />
+                            </Icon>
+                        </Box>
+                    </Box>
+                )}
             </Box>
-        </Box>
+            <Modal open={editOpen} onClose={() => setEditOpen(false)}>
+                <Box
+                    sx={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        width: "88vw",
+                        maxWidth: "1200px",
+                        height: "75vh",
+                        bgcolor: "background.paper",
+                        boxShadow: 24,
+                        borderRadius: 2,
+                        p: 2,
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 2,
+                        overflow: "hidden",
+                    }}
+                >
+                    <Typography variant="h6">编辑笔记内容</Typography>
+                    <Box sx={{ display: "flex", flexDirection: "row", gap: 2, minHeight: 0, flex: "0 0 40%" }}>
+                        <Box sx={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
+                            <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                                文本编辑
+                            </Typography>
+                            <TextField
+                                fullWidth
+                                multiline
+                                value={draftNote}
+                                onChange={(event) => setDraftNote(event.target.value)}
+                                sx={{
+                                    flexGrow: 1,
+                                    "& .MuiInputBase-root": {
+                                        height: "100%",
+                                        alignItems: "flex-start",
+                                    },
+                                    "& textarea": {
+                                        height: "100% !important",
+                                        overflow: "auto !important",
+                                    },
+                                }}
+                            />
+                        </Box>
+                        <Box sx={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
+                            <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                                Markdown 预览
+                            </Typography>
+                            <Box sx={{ flexGrow: 1, minHeight: 0, overflowY: "auto", border: "1px solid #ddd", borderRadius: 1, p: 1 }}>
+                                <MarkdownExtended>{previewMarkdown}</MarkdownExtended>
+                            </Box>
+                        </Box>
+                    </Box>
+                    <Box sx={{ display: "flex", flexDirection: "row", gap: 2, alignItems: "flex-start" }}>
+                        <Box sx={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 1 }}>
+                            <Typography variant="subtitle2">经文范围</Typography>
+                            <Box sx={{ width: "100%" }}>
+                                <IMETextArea
+                                    text={locateText}
+                                    setText={setLocateText}
+                                    DICTIONARY={IMEDictionary}
+                                    onDisplay={() => {}}
+                                    onPreview={() => {}}
+                                    onAddToNote={() => {}}
+                                    disableEnterActions={true}
+                                />
+                            </Box>
+                        </Box>
+                        <Box sx={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 1 }}>
+                            <Typography variant="subtitle2">笔记位置</Typography>
+                            <FormControl fullWidth size="small">
+                                <InputLabel id={`${notePositionSelectId}-label`}>笔记位置</InputLabel>
+                                <Select
+                                    labelId={`${notePositionSelectId}-label`}
+                                    id={notePositionSelectId}
+                                    value={draftNotePosition}
+                                    label="笔记位置"
+                                    onChange={(event) => setDraftNotePosition(event.target.value)}
+                                >
+                                    <MenuItem value="开头">开头</MenuItem>
+                                    <MenuItem value="结尾">结尾</MenuItem>
+                                    <MenuItem value="不显示">不显示</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Box>
+                    </Box>
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1, minHeight: 0, flex: 1 }}>
+                        <Typography variant="subtitle2">经文预览</Typography>
+                        <Box
+                            sx={{
+                                flex: 1,
+                                minHeight: 0,
+                                height: "100%",
+                                overflowY: "auto",
+                                overflowX: "hidden",
+                                overscrollBehavior: "contain",
+                                border: "1px solid #ddd",
+                                borderRadius: 1,
+                                p: 1,
+                            }}
+                        >
+                            {isRangeValid ? (
+                                <VerseParagraph verseObj={locateTarget.with({ note: null })} />
+                            ) : (
+                                <Typography color="error" variant="body2">
+                                    经文范围无效，请使用快速定位格式输入。
+                                </Typography>
+                            )}
+                        </Box>
+                    </Box>
+                    <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1, flexShrink: 0 }}>
+                        <Button onClick={() => setEditOpen(false)}>取消</Button>
+                        <Button variant="contained" onClick={handleSaveEdit} disabled={!isRangeValid}>
+                            保存
+                        </Button>
+                    </Box>
+                </Box>
+            </Modal>
+        </>
     );
 }
 
@@ -331,38 +559,33 @@ export function SearchVerseBox({ verseObj, keyWords }) {
     const { setDisplayVerse, setPreviewVerse, setHistory, setNoteList } = useContext(AppContext);
 
     const handleShow = () => {
-        const verseObjToDisplay = {
+        const verseObjToDisplay = new VerseRef({
             book: verseObj.book,
             chapter: verseObj.chapter,
             verse: verseObj.verse,
-            endChapter: null,
-            endVerse: null,
-        };
+        });
         setDisplayVerse(verseObjToDisplay);
         setHistory((history) => removeAllDuplicatesKeepLast([...history, verseObjToDisplay]));
     };
 
     const handlePreview = () => {
-        setPreviewVerse({
-            book: verseObj.book,
-            chapter: verseObj.chapter,
-            verse: verseObj.verse,
-            endChapter: null,
-            endVerse: null,
-        });
+        setPreviewVerse(
+            new VerseRef({
+                book: verseObj.book,
+                chapter: verseObj.chapter,
+                verse: verseObj.verse,
+            })
+        );
     };
 
     const handleAddToNote = () => {
         setNoteList((notes) => [
             ...notes,
-            {
+            new VerseRef({
                 book: verseObj.book,
                 chapter: verseObj.chapter,
                 verse: verseObj.verse,
-                endChapter: null,
-                endVerse: null,
-                note: "",
-            },
+            }),
         ]);
     };
 
@@ -429,22 +652,22 @@ export function LocateVerseBox({ verseObj }) {
     const { setDisplayVerse, setPreviewVerse, setHistory, setNoteList, verseExists } = useContext(AppContext);
 
     const handleShow = () => {
-        const verseObjToDisplay = verseObj;
+        const verseObjToDisplay = VerseRef.from(verseObj);
         setDisplayVerse(verseObjToDisplay);
         setHistory((history) => removeAllDuplicatesKeepLast([...history, verseObjToDisplay]));
     };
 
     const handlePreview = () => {
-        setPreviewVerse(verseObj);
+        setPreviewVerse(VerseRef.from(verseObj));
     };
 
     const handleAddToNote = () => {
-        setNoteList((notes) => [...notes, verseObj]);
+        setNoteList((notes) => [...notes, VerseRef.from(verseObj)]);
     };
 
     return (
         <Box onClick={handleShow} sx={verseBoxStyle}>
-            {verseExists(verseObj.book, verseObj.chapter, verseObj.verse, verseObj.endChapter, verseObj.endVerse) ? (
+            {verseExists(verseObj) ? (
                 <>
                     <Box sx={{ flexGrow: 1 }}>
                         <VerseParagraph verseObj={{ ...verseObj, note: null }} />

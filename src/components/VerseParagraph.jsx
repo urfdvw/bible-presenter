@@ -3,18 +3,15 @@ import AppContext from "../AppContext";
 import MarkdownExtended from "../utilComponents/MarkdownExtended";
 import { versesToRangeText, versesToParagraphsMD } from "../bible/utils";
 
-export default function VerseParagraph({ verseObj }) {
+/** @typedef {import("../models/VerseRef").VerseRefLike} VerseRefLike */
+
+/**
+ * @param {{verseObj: VerseRefLike, forceNoteAfterVerse?: boolean}} props
+ */
+export default function VerseParagraph({ verseObj, forceNoteAfterVerse = false }) {
     const { appConfig, getMultipleVerses } = useContext(AppContext);
 
-    console.log("VerseParagraph render", verseObj);
-
-    const verses = getMultipleVerses(
-        verseObj.book,
-        verseObj.chapter,
-        verseObj.verse,
-        verseObj.endChapter,
-        verseObj.endVerse
-    );
+    const verses = getMultipleVerses(verseObj);
     const rangeList = versesToRangeText(verses);
     const textList = versesToParagraphsMD(verses);
     const paragraphs = rangeList.map((range, versionIndex) => {
@@ -29,13 +26,16 @@ export default function VerseParagraph({ verseObj }) {
             : `${textList[versionIndex]}\t——${range}`;
     });
 
-    const note_position = appConfig.config.bible_display.note_position;
+    const notePosition = verseObj.notePosition || "开头";
+    const isNoteHidden = notePosition === "不显示";
 
     let displayMarkdown = paragraphs.join("\n\n");
-    if (verseObj.note && verseObj.note.length > 0) {
-        if (note_position === "开头") {
+    if (!isNoteHidden && verseObj.note && verseObj.note.length > 0) {
+        if (forceNoteAfterVerse) {
+            displayMarkdown = [displayMarkdown, verseObj.note].filter((text) => text && text.length > 0).join("\n\n");
+        } else if (notePosition === "开头") {
             displayMarkdown = verseObj.note + "\n\n" + displayMarkdown;
-        } else if (note_position === "结尾") {
+        } else if (notePosition === "结尾") {
             displayMarkdown = displayMarkdown + "\n\n" + verseObj.note;
         } // other wise do nothing
     }
