@@ -31,9 +31,7 @@ export default function QuickLocate() {
 
     useEffect(() => {
         const { book, remnant } = getBook(text);
-        // console.log(book, remnant);
         const { chapter, verse, endChapter, endVerse } = getChapterVerse(remnant);
-        // console.log(chapter, verse, endChapter, endVerse);
         setStagedVerse(new VerseRef({ book, chapter, verse, endChapter, endVerse }));
     }, [text]);
 

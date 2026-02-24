@@ -1,5 +1,4 @@
 import { Box, Typography, IconButton, Tooltip, Modal, TextField, Button, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
-// Import any icons you want to use from Material-UI icons
 import PreviewIcon from "@mui/icons-material/PreviewOutlined";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpwardOutlined";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownwardOutlined";
@@ -151,7 +150,6 @@ export function HistoryVerseBox({ verseObj, highlighted }) {
 
     const handleShow = () => {
         setDisplayVerse(normalizedVerse);
-        // setHistory((history) => removeAllDuplicatesKeepLast([...history, verseObj]));
     };
 
     const handlePreview = () => {
@@ -303,7 +301,6 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted, printMode = fals
 
     const handleShow = () => {
         setDisplayVerse(VerseRef.from(verseObj));
-        // setHistory((history) => removeAllDuplicatesKeepLast([...history, verseObj]));
     };
     const handleEdit = () => {
         setDraftNote(baseVerse.note || "");

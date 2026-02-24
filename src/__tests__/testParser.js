@@ -1,4 +1,3 @@
-/* eslint-env jest */
 import { getBook, getChapterVerse } from "../bible/parser";
 
 describe("Test getBook", () => {

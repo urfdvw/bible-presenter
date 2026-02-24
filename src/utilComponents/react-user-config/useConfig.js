@@ -22,23 +22,6 @@ export default function useConfig(schemas) {
     const { localStorageState, setLocalStorageState, initLocalStorageState } = useLocalStorage("config");
     const [initStep, setInitStep] = useState(0);
 
-    useEffect(() => {
-        if (initStep === 0) {
-            console.log("init step 0: initialize localStorageState");
-            initLocalStorageState();
-            setInitStep(1);
-        }
-        if (initStep === 1) {
-            console.log("init step 1: update localStorageState by schema defaults");
-            for (const schema of schemas) {
-                const schema_name = schema.name;
-                var config_values = getConfigWithDefaults(get_config(schema_name), schema);
-                set_config(schema_name, config_values);
-            }
-            setInitStep(-1); // mark as done
-        }
-    }, [initStep]);
-
     function get_config(schema_name) {
         const config = localStorageState[schema_name];
         return isDefined(config) ? config : null;
@@ -47,6 +30,22 @@ export default function useConfig(schemas) {
     function set_config(schema_name, config_values) {
         setLocalStorageState(schema_name, config_values);
     }
+
+    useEffect(() => {
+        if (initStep === 0) {
+            initLocalStorageState();
+            setInitStep(1);
+        }
+        if (initStep === 1) {
+            for (const schema of schemas) {
+                const schema_name = schema.name;
+                const currentConfig = isDefined(localStorageState[schema_name]) ? localStorageState[schema_name] : null;
+                const configValues = getConfigWithDefaults(currentConfig, schema);
+                setLocalStorageState(schema_name, configValues);
+            }
+            setInitStep(-1); // mark as done
+        }
+    }, [initLocalStorageState, initStep, localStorageState, schemas, setLocalStorageState]);
 
     function set_config_field(schema_name, field_name, field_value) {
         const config = get_config(schema_name);
