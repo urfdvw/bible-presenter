@@ -29,6 +29,8 @@ import bible from "./bible";
 import useBibleData from "./bible/useBibleData";
 import VerseRef from "./models/VerseRef";
 import usePreviewTabs from "./utilHooks/usePreviewTabs";
+import TipsModal from "./components/TipsModal";
+import { tips } from "./tips";
 
 /** @typedef {import("./models/VerseRef").VerseRefLike} VerseRefLike */
 
@@ -93,6 +95,7 @@ function App() {
     if (!appConfig.ready) {
         return;
     }
+    const showTipsOnStartup = appConfig.config.general.show_tips_on_startup !== "否";
 
     // theme config
     let dark = null;
@@ -147,6 +150,7 @@ function App() {
         >
             <DarkTheme dark={dark} highContrast={highContrast} />
             <div className="app">
+                <TipsModal tips={tips} showOnStartup={showTipsOnStartup} />
                 <div
                     className="app-header"
                     style={{
