@@ -32,12 +32,6 @@
             "enum": ["开头", "结尾"],
             "default": "开头"
         },
-        "note_position": {
-            "title": "笔记位置",
-            "description": "",
-            "enum": ["开头", "结尾", "不显示"],
-            "default": "开头"
-        },
         "note_display": {
             "title": "笔记显示模式",
             "type": "string",

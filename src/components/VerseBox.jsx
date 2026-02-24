@@ -1,4 +1,4 @@
-import { Box, Typography, IconButton, Tooltip, Modal, TextField, Button } from "@mui/material";
+import { Box, Typography, IconButton, Tooltip, Modal, TextField, Button, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 // Import any icons you want to use from Material-UI icons
 import PreviewIcon from "@mui/icons-material/PreviewOutlined";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpwardOutlined";
@@ -203,13 +203,17 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted, printMode = fals
     const { getMultipleVerses, setDisplayVerse, setNoteList, setPreviewVerse, appConfig, verseExists } =
         useContext(AppContext);
     const baseVerse = VerseRef.from(verseObj);
-    const verses = getMultipleVerses(verseObj);
-    const range = versesToRangeText(verses);
+    const hasVerseIdentity = Boolean(baseVerse.book && baseVerse.chapter && baseVerse.verse);
+    const hasVerseRef = hasVerseIdentity && verseExists(baseVerse);
+    const verses = hasVerseRef ? getMultipleVerses(baseVerse) : [];
+    const range = hasVerseRef ? versesToRangeText(verses) : [""];
     const [editOpen, setEditOpen] = useState(false);
     const [draftNote, setDraftNote] = useState(baseVerse.note || "");
+    const [draftNotePosition, setDraftNotePosition] = useState(baseVerse.notePosition || "开头");
     const [locateText, setLocateText] = useState("");
     const [stagedVerse, setStagedVerse] = useState(new VerseRef({}));
     const [locateTarget, setLocateTarget] = useState(baseVerse);
+    const notePositionSelectId = `note-position-${boxIndex}`;
 
     const currentBookNames =
         appConfig.config.bible_display.language === "English"
@@ -303,6 +307,7 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted, printMode = fals
     };
     const handleEdit = () => {
         setDraftNote(baseVerse.note || "");
+        setDraftNotePosition(baseVerse.notePosition || "开头");
         setLocateText(verseToQuickLocateText(baseVerse));
         setStagedVerse(new VerseRef({}));
         setLocateTarget(baseVerse);
@@ -313,7 +318,7 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted, printMode = fals
         if (!isRangeValid) {
             return;
         }
-        const updatedVerseObj = VerseRef.from(locateTarget).with({ note: draftNote });
+        const updatedVerseObj = VerseRef.from(locateTarget).with({ note: draftNote, notePosition: draftNotePosition });
         setNoteList((notes) => {
             return notes.map((note, index) => (index === boxIndex ? updatedVerseObj : note));
         });
@@ -374,23 +379,36 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted, printMode = fals
     };
 
     const note = verseObj.note || "";
+    const cardNote = note.length > 0 ? note : "";
     const noteDisplay = appConfig.config.bible_display.note_display || "范围和笔记";
+    const rangeMarkdown = range[0] || "";
+    const notePositionLabel = baseVerse.notePosition || "开头";
+    const isCardShowingNote = noteDisplay !== "范围" && cardNote.length > 0;
     const noteCardMarkdown =
         noteDisplay === "范围"
-            ? range[0] || ""
-            : [range[0] || "", note].filter((text) => text && text.length > 0).join("\n\n");
+            ? rangeMarkdown
+            : [rangeMarkdown, cardNote].filter((text) => text && text.length > 0).join("\n\n");
     const previewMarkdown = draftNote || "";
     const shouldShowFullVerse = noteDisplay === "经文和笔记" || noteDisplay === "打印";
-    const currentBoxStyle = printMode ? printVerseBoxStyle : highlighted ? highlightedVerseBoxStyle : verseBoxStyle;
+    const rawBoxStyle = printMode ? printVerseBoxStyle : highlighted ? highlightedVerseBoxStyle : verseBoxStyle;
+    const currentBoxStyle = rawBoxStyle;
 
     return (
         <>
             <Box onClick={handleShow} sx={currentBoxStyle}>
                 <Box sx={{ flexGrow: 1 }}>
                     {shouldShowFullVerse ? (
-                        <VerseParagraph verseObj={baseVerse} />
+                        <VerseParagraph
+                            verseObj={baseVerse.with({ notePosition: cardNote ? "结尾" : baseVerse.notePosition })}
+                            forceNoteAfterVerse={true}
+                        />
                     ) : (
                         <MarkdownExtended>{noteCardMarkdown}</MarkdownExtended>
+                    )}
+                    {isCardShowingNote && (
+                        <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mt: 0.5 }}>
+                            笔记位置：{notePositionLabel}
+                        </Typography>
                     )}
                 </Box>
 
@@ -471,18 +489,37 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted, printMode = fals
                             </Box>
                         </Box>
                     </Box>
-                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                        <Typography variant="subtitle2">经文范围</Typography>
-                        <Box sx={{ width: "100%" }}>
-                            <IMETextArea
-                                text={locateText}
-                                setText={setLocateText}
-                                DICTIONARY={IMEDictionary}
-                                onDisplay={() => {}}
-                                onPreview={() => {}}
-                                onAddToNote={() => {}}
-                                disableEnterActions={true}
-                            />
+                    <Box sx={{ display: "flex", flexDirection: "row", gap: 2, alignItems: "flex-start" }}>
+                        <Box sx={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 1 }}>
+                            <Typography variant="subtitle2">经文范围</Typography>
+                            <Box sx={{ width: "100%" }}>
+                                <IMETextArea
+                                    text={locateText}
+                                    setText={setLocateText}
+                                    DICTIONARY={IMEDictionary}
+                                    onDisplay={() => {}}
+                                    onPreview={() => {}}
+                                    onAddToNote={() => {}}
+                                    disableEnterActions={true}
+                                />
+                            </Box>
+                        </Box>
+                        <Box sx={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 1 }}>
+                            <Typography variant="subtitle2">笔记位置</Typography>
+                            <FormControl fullWidth size="small">
+                                <InputLabel id={`${notePositionSelectId}-label`}>笔记位置</InputLabel>
+                                <Select
+                                    labelId={`${notePositionSelectId}-label`}
+                                    id={notePositionSelectId}
+                                    value={draftNotePosition}
+                                    label="笔记位置"
+                                    onChange={(event) => setDraftNotePosition(event.target.value)}
+                                >
+                                    <MenuItem value="开头">开头</MenuItem>
+                                    <MenuItem value="结尾">结尾</MenuItem>
+                                    <MenuItem value="不显示">不显示</MenuItem>
+                                </Select>
+                            </FormControl>
                         </Box>
                     </Box>
                     <Box sx={{ display: "flex", flexDirection: "column", gap: 1, minHeight: 0, flex: 1 }}>
