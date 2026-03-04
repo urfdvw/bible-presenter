@@ -1,5 +1,5 @@
 import * as FlexLayout from "flexlayout-react";
-import Placeholder from "../components/placeholder";
+import Placeholder from "../components/Placeholder";
 import UserConfigs from "../components/UserConfigs";
 import Help from "../components/Help";
 import QuickLocate from "../components/QuickLocate";
