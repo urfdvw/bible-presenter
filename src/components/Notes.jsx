@@ -23,7 +23,7 @@ function NoteListBody({ printMode }) {
 }
 
 export default function Notes() {
-    const { noteList, setNoteList, flexModel, helpTabSelection, appConfig } = useContext(AppContext);
+    const { noteList, setNoteList, flexModel, helpTabSelection, appConfig, isMobileReadingMode } = useContext(AppContext);
     const { content, fileName, openFile, saveToFile } = useSingleFileSystemAccess();
     const notePrintAreaRef = useRef(null);
     useEffect(() => {
@@ -178,38 +178,47 @@ export default function Notes() {
               ]
             : []),
     ];
+    const noteDisplayOptions = [
+        {
+            text: "范围",
+            handler: () => appConfig.setConfigField("bible_display", "note_display", "范围"),
+        },
+        {
+            text: "范围和笔记",
+            handler: () => appConfig.setConfigField("bible_display", "note_display", "范围和笔记"),
+        },
+        {
+            text: "经文和笔记",
+            handler: () => appConfig.setConfigField("bible_display", "note_display", "经文和笔记"),
+        },
+        {
+            text: "打印",
+            handler: () => appConfig.setConfigField("bible_display", "note_display", "打印"),
+        },
+    ];
+
+    const mobileMenuOptions = [
+        ...tools,
+        ...noteDisplayOptions.map((option) => ({
+            text: `显示模式：${option.text}`,
+            handler: option.handler,
+        })),
+    ];
     return (
         <div
             className={isPrintMode ? "notes-tab notes-tab-print" : "notes-tab"}
             style={{ display: "flex", height: "100%", flexDirection: "column" }}
         >
             <div className="notes-toolbar" style={{ flexGrow: 0 }}>
-                <TabToolBar
-                    title={fileName}
-                    tools={tools}
-                >
-                    <Menu
-                        label="笔记显示模式"
-                        options={[
-                            {
-                                text: "范围",
-                                handler: () => appConfig.setConfigField("bible_display", "note_display", "范围"),
-                            },
-                            {
-                                text: "范围和笔记",
-                                handler: () => appConfig.setConfigField("bible_display", "note_display", "范围和笔记"),
-                            },
-                            {
-                                text: "经文和笔记",
-                                handler: () => appConfig.setConfigField("bible_display", "note_display", "经文和笔记"),
-                            },
-                            {
-                                text: "打印",
-                                handler: () => appConfig.setConfigField("bible_display", "note_display", "打印"),
-                            },
-                        ]}
-                    />
-                </TabToolBar>
+                {isMobileReadingMode ? (
+                    <TabToolBar title={fileName}>
+                        <Menu label="选项" options={mobileMenuOptions} />
+                    </TabToolBar>
+                ) : (
+                    <TabToolBar title={fileName} tools={tools}>
+                        <Menu label="笔记显示模式" options={noteDisplayOptions} />
+                    </TabToolBar>
+                )}
             </div>
             <div className="notes-print-area" style={{ flexGrow: 1, overflowY: "auto" }} ref={notePrintAreaRef}>
                 <NoteListBody printMode={isPrintMode} />

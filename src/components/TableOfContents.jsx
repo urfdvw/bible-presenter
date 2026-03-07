@@ -81,7 +81,8 @@ const FiveFixedColumns = ({ chapters, onClick }) => {
 };
 
 export default function TableOfContents() {
-    const { appConfig, getBookMeta, setPreviewVerse, setDisplayVerse } = useContext(AppContext);
+    const { appConfig, isMobileReadingMode, collapseLeftSidebar, getBookMeta, setPreviewVerse, setDisplayVerse } =
+        useContext(AppContext);
     const [book, setBook] = useState(1);
 
     const chinese = appConfig.config.bible_display.chinese === "简体" ? "si" : "tr";
@@ -97,7 +98,9 @@ export default function TableOfContents() {
 
     function setChapter(chapter) {
         setPreviewVerse(new VerseRef({ book, chapter, verse: 1 }));
-        if (appConfig.config.bible_display.menu_to_projector) {
+        if (isMobileReadingMode) {
+            collapseLeftSidebar();
+        } else if (appConfig.config.bible_display.menu_to_projector) {
             setDisplayVerse(new VerseRef({ book, chapter, verse: 1 }));
         }
     }

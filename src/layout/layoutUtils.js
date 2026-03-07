@@ -21,3 +21,19 @@ export function toggleSelectTabById(model, tabNodeId) {
     if (!tabNode) return;
     model.doAction(Actions.selectTab(tabNodeId));
 }
+
+export function collapseLeftBorder(model) {
+    const leftBorderTabIds = ["quick_locate_tab", "bible_toc_tab", "search_tab", "history_tab"];
+    for (const tabId of leftBorderTabIds) {
+        const tabNode = model.getNodeById(tabId);
+        if (!tabNode) {
+            continue;
+        }
+        const parent = tabNode.getParent();
+        if (!parent || parent.getType() !== "border") {
+            continue;
+        }
+        model.doAction(Actions.updateNodeAttributes(parent.getId(), { selected: -1 }));
+        return;
+    }
+}

@@ -1,5 +1,5 @@
 import AppContext from "../AppContext";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { PreviewVerseBox } from "./VerseBox";
 import { scroller, Element } from "react-scroll";
 import { Button, Typography } from "@mui/material";
@@ -8,22 +8,71 @@ import { selectTabById } from "../layout/layoutUtils";
 import VerseRef from "../models/VerseRef";
 
 function PreviewList({ selected, setSelected, previewVerse, tabId }) {
-    const { getChapterVerses } = useContext(AppContext);
+    const { getChapterVerses, isMobileReadingMode } = useContext(AppContext);
     const verses = getChapterVerses(previewVerse.book, previewVerse.chapter);
     const containerId = `previewContainer-${tabId}`;
+    const latestTargetNameRef = useRef("");
+
+    const scrollPrecisely = useCallback(
+        (targetName) => {
+            const container = document.getElementById(containerId);
+            if (!container) {
+                return;
+            }
+            const target = document.getElementById(targetName);
+            if (!target) {
+                return;
+            }
+            const top =
+                container.scrollTop + target.getBoundingClientRect().top - container.getBoundingClientRect().top;
+            container.scrollTop = top;
+        },
+        [containerId]
+    );
 
     useEffect(() => {
         if (!previewVerse.verse) {
             return;
         }
         const targetName = `preview-verse-${previewVerse.verse}`;
-        scroller.scrollTo(targetName, {
-            duration: 800,
-            delay: 0,
-            smooth: "easeInOutQuart",
-            containerId: containerId,
+        latestTargetNameRef.current = targetName;
+        if (!isMobileReadingMode) {
+            scroller.scrollTo(targetName, {
+                duration: 800,
+                delay: 0,
+                smooth: "easeInOutQuart",
+                containerId: containerId,
+            });
+            return;
+        }
+
+        // Mobile: no animation, plus multiple recalculations for layout changes.
+        const rafId = requestAnimationFrame(() => scrollPrecisely(targetName));
+        const timeoutIds = [80, 180, 320, 520].map((delay) =>
+            setTimeout(() => scrollPrecisely(targetName), delay)
+        );
+        return () => {
+            cancelAnimationFrame(rafId);
+            timeoutIds.forEach(clearTimeout);
+        };
+    }, [previewVerse, containerId, isMobileReadingMode, scrollPrecisely, verses.length]);
+
+    useEffect(() => {
+        if (!isMobileReadingMode) {
+            return;
+        }
+        const container = document.getElementById(containerId);
+        if (!container) {
+            return;
+        }
+        const resizeObserver = new ResizeObserver(() => {
+            if (latestTargetNameRef.current) {
+                scrollPrecisely(latestTargetNameRef.current);
+            }
         });
-    }, [previewVerse, containerId]);
+        resizeObserver.observe(container);
+        return () => resizeObserver.disconnect();
+    }, [containerId, isMobileReadingMode, scrollPrecisely]);
 
     useEffect(() => {
         if (selected && selected.book !== verses[0][0].book) {
@@ -36,23 +85,25 @@ function PreviewList({ selected, setSelected, previewVerse, tabId }) {
             {verses.map((verseVersions) => {
                 return (
                     <Element key={verseVersions[0].verse} name={`preview-verse-${verseVersions[0].verse}`}>
-                        <PreviewVerseBox
-                            setSelected={setSelected}
-                            selected={selected}
-                            verseObj={
-                                new VerseRef({
-                                    book: verseVersions[0].book,
-                                    chapter: verseVersions[0].chapter,
-                                    verse: verseVersions[0].verse,
-                                })
-                            }
-                            highlighted={
-                                selected &&
-                                verseVersions[0].book === selected.book &&
-                                verseVersions[0].chapter === selected.chapter &&
-                                verseVersions[0].verse === selected.verse
-                            }
-                        />
+                        <div id={`preview-verse-${verseVersions[0].verse}`}>
+                            <PreviewVerseBox
+                                setSelected={setSelected}
+                                selected={selected}
+                                verseObj={
+                                    new VerseRef({
+                                        book: verseVersions[0].book,
+                                        chapter: verseVersions[0].chapter,
+                                        verse: verseVersions[0].verse,
+                                    })
+                                }
+                                highlighted={
+                                    selected &&
+                                    verseVersions[0].book === selected.book &&
+                                    verseVersions[0].chapter === selected.chapter &&
+                                    verseVersions[0].verse === selected.verse
+                                }
+                            />
+                        </div>
                     </Element>
                 );
             })}
