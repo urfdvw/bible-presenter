@@ -56,6 +56,12 @@
             "enum": ["默认", "红蓝"],
             "default": "默认"
         },
+        "chapter_highlight": {
+            "title": "高亮当前节",
+            "type": "string",
+            "enum": ["节号", "节号和文字"],
+            "default": "节号"
+        },
         "menu_to_projector": {
             "title": "从圣经目录直接投影",
             "type": "boolean",

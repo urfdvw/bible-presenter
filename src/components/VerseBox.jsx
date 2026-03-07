@@ -609,17 +609,37 @@ export function ReaderVerseBox({ verseObjs, selected }) {
     const red = "#E00000";
     const blue = "#0000E0";
     const red_background = "#fcd3d3";
-    const blue_background = "#d0d2ff";
+    const blue_background = "rgb(208, 210, 255)";
+    const gray_background = "#e2e2e2";
     const { appConfig } = useContext(AppContext);
     const red_blue = appConfig.config.bible_display.chapter_theme === "红蓝";
+    const highlightMode = appConfig.config.bible_display.chapter_highlight || "节号";
+    const highlightWholeVerse = highlightMode === "节号和文字";
     const useParallelContrastLayout =
         appConfig.config.bible_display.language === "对照" &&
         appConfig.config.bible_display.contrast_layout === "并排" &&
         verseObjs.length === 2;
     const isRed = verseObjs[0].verse % 2 === 1;
+    const wholeVerseBackground = selected
+        ? red_blue
+            ? isRed
+                ? red_background
+                : blue_background
+            : gray_background
+        : null;
     var sx = red_blue ? { color: isRed ? red : blue } : {};
     return (
-        <Typography component="div" sx={{ display: "flex", flexDirection: "row", width: "100%" }}>
+        <Typography
+            component="div"
+            sx={{
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+                borderRadius: highlightWholeVerse ? 1 : 0,
+                backgroundColor: highlightWholeVerse ? wholeVerseBackground : null,
+                px: highlightWholeVerse ? 0.5 : 0,
+            }}
+        >
             <Box
                 sx={{
                     flexGrow: 0,
