@@ -1,4 +1,5 @@
 import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 import { useContext } from "react";
 import AppContext from "../AppContext";
 import MarkdownExtended from "../utilComponents/MarkdownExtended";
@@ -7,25 +8,36 @@ import { versesToRangeText, versesToParagraphsMD } from "../bible/utils";
 /** @typedef {import("../models/VerseRef").VerseRefLike} VerseRefLike */
 
 /**
- * @param {{verseObj: VerseRefLike, forceNoteAfterVerse?: boolean}} props
+ * @param {{verseObj: VerseRefLike, forceNoteAfterVerse?: boolean, pureText?: boolean}} props
  */
-export default function VerseParagraph({ verseObj, forceNoteAfterVerse = false }) {
+export default function VerseParagraph({ verseObj, forceNoteAfterVerse = false, pureText = false }) {
     const { appConfig, getMultipleVerses } = useContext(AppContext);
 
     const verses = getMultipleVerses(verseObj);
-    const rangeList = versesToRangeText(verses);
-    const textList = versesToParagraphsMD(verses);
-    const paragraphs = rangeList.map((range, versionIndex) => {
-        if (verseObj.book === 19) {
-            return `### ${verses[0][versionIndex].book_name} ${verseObj.chapter} \n\n ${textList[versionIndex]}`;
-        }
-        if (textList[versionIndex].length === 0) {
-            return "";
-        }
-        return appConfig.config.bible_display.range_location === "开头"
-            ? `(${range}) ${textList[versionIndex]}`
-            : `${textList[versionIndex]}\t——${range}`;
-    });
+    const rangeList = pureText ? [] : versesToRangeText(verses);
+    const textList = pureText
+        ? verses.length > 0
+            ? verses[0].map((_, versionIndex) =>
+                  verses
+                      .map((versionVerse) => versionVerse[versionIndex]?.text || "")
+                      .filter((text) => text.length > 0)
+                      .join(" ")
+              )
+            : []
+        : versesToParagraphsMD(verses);
+    const paragraphs = pureText
+        ? textList
+        : rangeList.map((range, versionIndex) => {
+              if (verseObj.book === 19) {
+                  return `### ${verses[0][versionIndex].book_name} ${verseObj.chapter} \n\n ${textList[versionIndex]}`;
+              }
+              if (textList[versionIndex].length === 0) {
+                  return "";
+              }
+              return appConfig.config.bible_display.range_location === "开头"
+                  ? `(${range}) ${textList[versionIndex]}`
+                  : `${textList[versionIndex]}\t——${range}`;
+          });
 
     const useParallelContrastLayout =
         appConfig.config.bible_display.language === "对照" &&
@@ -50,14 +62,18 @@ export default function VerseParagraph({ verseObj, forceNoteAfterVerse = false }
                     }}
                 >
                     <Box>
-                        <MarkdownExtended>{paragraphs[0] || ""}</MarkdownExtended>
+                        {pureText ? <Typography>{paragraphs[0] || ""}</Typography> : <MarkdownExtended>{paragraphs[0] || ""}</MarkdownExtended>}
                     </Box>
                     <Box>
-                        <MarkdownExtended>{paragraphs[1] || ""}</MarkdownExtended>
+                        {pureText ? <Typography>{paragraphs[1] || ""}</Typography> : <MarkdownExtended>{paragraphs[1] || ""}</MarkdownExtended>}
                     </Box>
                 </Box>
             ) : (
-                <MarkdownExtended>{paragraphs.join("\n\n")}</MarkdownExtended>
+                pureText ? (
+                    paragraphs.map((paragraph, index) => <Typography key={index}>{paragraph}</Typography>)
+                ) : (
+                    <MarkdownExtended>{paragraphs.join("\n\n")}</MarkdownExtended>
+                )
             )}
             {showNoteAfter && <MarkdownExtended>{noteText}</MarkdownExtended>}
         </Box>

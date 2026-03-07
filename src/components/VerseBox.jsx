@@ -124,7 +124,7 @@ export function PreviewVerseBox({ verseObj, highlighted, selected, setSelected }
         <Box onClick={handleShow} sx={highlighted ? highlightedVerseBoxStyle : verseBoxStyle}>
             <Typography sx={{ paddingRight: 1, flexShrink: 0 }}>{baseVerse.verse}</Typography>
             <div style={{ flexGrow: 1 }}>
-                <VerseParagraph verseObj={baseVerse.with({ note: null })} />
+                <VerseParagraph verseObj={baseVerse.with({ note: null })} pureText={true} />
             </div>
 
             <Box sx={{ flexShrink: 0 }}>
