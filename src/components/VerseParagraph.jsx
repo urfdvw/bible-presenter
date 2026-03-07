@@ -1,3 +1,4 @@
+import Box from "@mui/material/Box";
 import { useContext } from "react";
 import AppContext from "../AppContext";
 import MarkdownExtended from "../utilComponents/MarkdownExtended";
@@ -26,19 +27,39 @@ export default function VerseParagraph({ verseObj, forceNoteAfterVerse = false }
             : `${textList[versionIndex]}\t——${range}`;
     });
 
+    const useParallelContrastLayout =
+        appConfig.config.bible_display.language === "对照" &&
+        appConfig.config.bible_display.contrast_layout === "并排" &&
+        paragraphs.length === 2;
     const notePosition = verseObj.notePosition || "开头";
     const isNoteHidden = notePosition === "不显示";
+    const noteText = verseObj.note || "";
+    const hasNote = !isNoteHidden && noteText.length > 0;
+    const showNoteBefore = hasNote && !forceNoteAfterVerse && notePosition === "开头";
+    const showNoteAfter = hasNote && (forceNoteAfterVerse || notePosition === "结尾");
 
-    let displayMarkdown = paragraphs.join("\n\n");
-    if (!isNoteHidden && verseObj.note && verseObj.note.length > 0) {
-        if (forceNoteAfterVerse) {
-            displayMarkdown = [displayMarkdown, verseObj.note].filter((text) => text && text.length > 0).join("\n\n");
-        } else if (notePosition === "开头") {
-            displayMarkdown = verseObj.note + "\n\n" + displayMarkdown;
-        } else if (notePosition === "结尾") {
-            displayMarkdown = displayMarkdown + "\n\n" + verseObj.note;
-        } // other wise do nothing
-    }
-
-    return <MarkdownExtended>{displayMarkdown}</MarkdownExtended>;
+    return (
+        <Box>
+            {showNoteBefore && <MarkdownExtended>{noteText}</MarkdownExtended>}
+            {useParallelContrastLayout ? (
+                <Box
+                    sx={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+                        gap: 2,
+                    }}
+                >
+                    <Box>
+                        <MarkdownExtended>{paragraphs[0] || ""}</MarkdownExtended>
+                    </Box>
+                    <Box>
+                        <MarkdownExtended>{paragraphs[1] || ""}</MarkdownExtended>
+                    </Box>
+                </Box>
+            ) : (
+                <MarkdownExtended>{paragraphs.join("\n\n")}</MarkdownExtended>
+            )}
+            {showNoteAfter && <MarkdownExtended>{noteText}</MarkdownExtended>}
+        </Box>
+    );
 }

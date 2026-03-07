@@ -21,6 +21,12 @@
             "enum": ["KJV", "ASV", "WEB"],
             "default": "ASV"
         },
+        "contrast_layout": {
+            "title": "对照显示排版",
+            "type": "string",
+            "enum": ["前后", "并排"],
+            "default": "前后"
+        },
         "zoom": {
             "title": "字体大小(%)",
             "type": "integer",
