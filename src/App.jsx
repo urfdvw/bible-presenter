@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // App
 import "./App.css";
 import AppContext from "./AppContext";
@@ -35,6 +35,26 @@ import { tips } from "./tips";
 /** @typedef {import("./models/VerseRef").VerseRefLike} VerseRefLike */
 
 function App() {
+    useEffect(() => {
+        const updateAppHeight = () => {
+            const viewportHeight = window.visualViewport?.height || window.innerHeight;
+            document.documentElement.style.setProperty("--app-height", `${Math.round(viewportHeight)}px`);
+        };
+
+        updateAppHeight();
+        window.addEventListener("resize", updateAppHeight);
+        window.addEventListener("orientationchange", updateAppHeight);
+        window.visualViewport?.addEventListener("resize", updateAppHeight);
+        window.visualViewport?.addEventListener("scroll", updateAppHeight);
+
+        return () => {
+            window.removeEventListener("resize", updateAppHeight);
+            window.removeEventListener("orientationchange", updateAppHeight);
+            window.visualViewport?.removeEventListener("resize", updateAppHeight);
+            window.visualViewport?.removeEventListener("scroll", updateAppHeight);
+        };
+    }, []);
+
     // testing state
     const [testCount, setTestCount] = useState(0);
     // layout

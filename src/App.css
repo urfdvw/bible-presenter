@@ -4,12 +4,12 @@
     margin: 0;
     padding: 0px;
 
-    /* Modern browsers: dynamic viewport height */
-    height: 100dvh;
-
     /* Fallbacks */
     height: 100vh;
-    min-height: -webkit-fill-available;
+    height: 100dvh;
+    /* Use visual viewport height when available (set in App.jsx). */
+    height: var(--app-height, 100dvh);
+    min-height: var(--app-height, 100dvh);
 
     width: 100vw;
     display: flex;
