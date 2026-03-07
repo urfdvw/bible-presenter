@@ -32,6 +32,11 @@
             "type": "integer",
             "default": 100
         },
+        "verse_fullscreen": {
+            "title": "经节投影满屏",
+            "type": "boolean",
+            "default": false
+        },
         "range_location": {
             "title": "经节范围注释位置",
             "type": "string",
