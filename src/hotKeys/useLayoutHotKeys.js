@@ -57,6 +57,9 @@ export default function useLayoutHotKeys(flexModel, setShowHints) {
             setShowHints(true);
             for (const tab_id of hint_tab_ids) {
                 const tab = flexModel.getNodeById(tab_id);
+                if (!tab) {
+                    continue;
+                }
                 flexModel.doAction(
                     Actions.updateNodeAttributes(tab_id, {
                         name: tab.attributes.altName,
@@ -74,6 +77,9 @@ export default function useLayoutHotKeys(flexModel, setShowHints) {
             setShowHints(false);
             for (const tab_id of hint_tab_ids) {
                 const tab = flexModel.getNodeById(tab_id);
+                if (!tab) {
+                    continue;
+                }
                 flexModel.doAction(
                     Actions.updateNodeAttributes(tab_id, {
                         name: tab.attributes.helpText,

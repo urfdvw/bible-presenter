@@ -64,7 +64,7 @@ const printVerseBoxStyle = {
 };
 
 export function PreviewVerseBox({ verseObj, highlighted, selected, setSelected }) {
-    const { setDisplayVerse, setHistory, setNoteList } = useContext(AppContext);
+    const { isMobileReadingMode, setDisplayVerse, setPreviewVerse, setHistory, setNoteList } = useContext(AppContext);
     const baseVerse = VerseRef.from(verseObj);
     /** @type {[VerseRef | null, import("react").Dispatch<import("react").SetStateAction<VerseRef | null>>]} */
     const [multipleVerses, setMultipleVerses] = useState(null);
@@ -94,8 +94,12 @@ export function PreviewVerseBox({ verseObj, highlighted, selected, setSelected }
         if (!multipleVerses) {
             return;
         }
-        setDisplayVerse(multipleVerses);
-        setHistory((history) => removeAllDuplicatesKeepLast([...history, multipleVerses]));
+        if (isMobileReadingMode) {
+            setPreviewVerse(multipleVerses);
+        } else {
+            setDisplayVerse(multipleVerses);
+            setHistory((history) => removeAllDuplicatesKeepLast([...history, multipleVerses]));
+        }
 
         if (selected) {
             setSelected(null);
@@ -140,13 +144,18 @@ export function PreviewVerseBox({ verseObj, highlighted, selected, setSelected }
 }
 
 export function HistoryVerseBox({ verseObj, highlighted }) {
-    const { getMultipleVerses, setDisplayVerse, setPreviewVerse, setHistory, setNoteList } = useContext(AppContext);
+    const { isMobileReadingMode, getMultipleVerses, setDisplayVerse, setPreviewVerse, setHistory, setNoteList } =
+        useContext(AppContext);
     const normalizedVerse = VerseRef.from(verseObj);
     const verses = getMultipleVerses(normalizedVerse);
     const range = versesToRangeText(verses);
 
     const handleShow = () => {
-        setDisplayVerse(normalizedVerse);
+        if (isMobileReadingMode) {
+            handlePreview();
+        } else {
+            setDisplayVerse(normalizedVerse);
+        }
     };
 
     const handlePreview = () => {
@@ -177,9 +186,11 @@ export function HistoryVerseBox({ verseObj, highlighted }) {
             <Typography sx={{ flexGrow: 1 }}>{range[0]}</Typography>
 
             <Box sx={{ flexShrink: 0 }}>
-                <Icon tooltip={"预览"} onClick={handlePreview}>
-                    <PreviewIcon />
-                </Icon>
+                {!isMobileReadingMode && (
+                    <Icon tooltip={"预览"} onClick={handlePreview}>
+                        <PreviewIcon />
+                    </Icon>
+                )}
                 <Icon tooltip={"加入笔记"} onClick={handleAddToNote}>
                     <NoteAddIcon />
                 </Icon>
@@ -195,7 +206,7 @@ export function HistoryVerseBox({ verseObj, highlighted }) {
  * @param {{verseObj: VerseRefLike, boxIndex: number, highlighted?: boolean, printMode?: boolean}} props
  */
 export function NoteVerseBox({ verseObj, boxIndex, highlighted, printMode = false }) {
-    const { getMultipleVerses, setDisplayVerse, setNoteList, setPreviewVerse, appConfig, verseExists } =
+    const { isMobileReadingMode, getMultipleVerses, setDisplayVerse, setNoteList, setPreviewVerse, appConfig, verseExists } =
         useContext(AppContext);
     const baseVerse = VerseRef.from(verseObj);
     const hasVerseIdentity = Boolean(baseVerse.book && baseVerse.chapter && baseVerse.verse);
@@ -297,7 +308,11 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted, printMode = fals
     const isRangeValid = locateTarget.book && locateTarget.chapter && locateTarget.verse && verseExists(locateTarget);
 
     const handleShow = () => {
-        setDisplayVerse(VerseRef.from(verseObj));
+        if (isMobileReadingMode) {
+            handlePreview();
+        } else {
+            setDisplayVerse(VerseRef.from(verseObj));
+        }
     };
     const handleEdit = () => {
         setDraftNote(baseVerse.note || "");
@@ -412,9 +427,11 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted, printMode = fals
                             <Icon tooltip={"编辑"} onClick={handleEdit}>
                                 <EditIcon />
                             </Icon>
-                            <Icon tooltip={"预览"} onClick={handlePreview}>
-                                <PreviewIcon />
-                            </Icon>
+                            {!isMobileReadingMode && (
+                                <Icon tooltip={"预览"} onClick={handlePreview}>
+                                    <PreviewIcon />
+                                </Icon>
+                            )}
                         </Box>
                         <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                             <Icon tooltip={"上移"} onClick={handleMoveUp}>
@@ -553,7 +570,8 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted, printMode = fals
 }
 
 export function SearchVerseBox({ verseObj, keyWords }) {
-    const { setDisplayVerse, setPreviewVerse, setHistory, setNoteList } = useContext(AppContext);
+    const { isMobileReadingMode, collapseLeftSidebar, setDisplayVerse, setPreviewVerse, setHistory, setNoteList } =
+        useContext(AppContext);
 
     const handleShow = () => {
         const verseObjToDisplay = new VerseRef({
@@ -561,8 +579,13 @@ export function SearchVerseBox({ verseObj, keyWords }) {
             chapter: verseObj.chapter,
             verse: verseObj.verse,
         });
-        setDisplayVerse(verseObjToDisplay);
-        setHistory((history) => removeAllDuplicatesKeepLast([...history, verseObjToDisplay]));
+        if (isMobileReadingMode) {
+            handlePreview();
+            collapseLeftSidebar();
+        } else {
+            setDisplayVerse(verseObjToDisplay);
+            setHistory((history) => removeAllDuplicatesKeepLast([...history, verseObjToDisplay]));
+        }
     };
 
     const handlePreview = () => {
@@ -594,9 +617,11 @@ export function SearchVerseBox({ verseObj, keyWords }) {
             </Typography>
 
             <Box sx={{ flexShrink: 0 }}>
-                <Icon tooltip={"预览"} onClick={handlePreview}>
-                    <PreviewIcon />
-                </Icon>
+                {!isMobileReadingMode && (
+                    <Icon tooltip={"预览"} onClick={handlePreview}>
+                        <PreviewIcon />
+                    </Icon>
+                )}
                 <Icon tooltip={"加入笔记"} onClick={handleAddToNote}>
                     <NoteAddIcon />
                 </Icon>
@@ -689,12 +714,18 @@ export function ReaderVerseBox({ verseObjs, selected }) {
 }
 
 export function LocateVerseBox({ verseObj }) {
-    const { setDisplayVerse, setPreviewVerse, setHistory, setNoteList, verseExists } = useContext(AppContext);
+    const { isMobileReadingMode, collapseLeftSidebar, setDisplayVerse, setPreviewVerse, setHistory, setNoteList, verseExists } =
+        useContext(AppContext);
 
     const handleShow = () => {
         const verseObjToDisplay = VerseRef.from(verseObj);
-        setDisplayVerse(verseObjToDisplay);
-        setHistory((history) => removeAllDuplicatesKeepLast([...history, verseObjToDisplay]));
+        if (isMobileReadingMode) {
+            handlePreview();
+            collapseLeftSidebar();
+        } else {
+            setDisplayVerse(verseObjToDisplay);
+            setHistory((history) => removeAllDuplicatesKeepLast([...history, verseObjToDisplay]));
+        }
     };
 
     const handlePreview = () => {
@@ -713,9 +744,11 @@ export function LocateVerseBox({ verseObj }) {
                         <VerseParagraph verseObj={{ ...verseObj, note: null }} />
                     </Box>
                     <Box sx={{ flexShrink: 0 }}>
-                        <Icon tooltip={"预览 Shift + Enter"} onClick={handlePreview}>
-                            <PreviewIcon />
-                        </Icon>
+                        {!isMobileReadingMode && (
+                            <Icon tooltip={"预览 Shift + Enter"} onClick={handlePreview}>
+                                <PreviewIcon />
+                            </Icon>
+                        )}
                         <Icon tooltip={"加入笔记\nCtrl/Cmd + Enter"} onClick={handleAddToNote}>
                             <NoteAddIcon />
                         </Icon>

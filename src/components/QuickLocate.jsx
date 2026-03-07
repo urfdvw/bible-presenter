@@ -17,6 +17,8 @@ export default function QuickLocate() {
         appConfig,
         helpTabSelection,
         flexModel,
+        isMobileReadingMode,
+        collapseLeftSidebar,
         displayVerse,
         setDisplayVerse,
         setPreviewVerse,
@@ -116,11 +118,19 @@ export default function QuickLocate() {
                         setText={setText}
                         DICTIONARY={IMEDictionary}
                         onDisplay={() => {
-                            setDisplayVerse(displayTarget);
-                            setHistory((history) => removeAllDuplicatesKeepLast([...history, displayTarget]));
+                            if (isMobileReadingMode) {
+                                setPreviewVerse(displayTarget);
+                                collapseLeftSidebar();
+                            } else {
+                                setDisplayVerse(displayTarget);
+                                setHistory((history) => removeAllDuplicatesKeepLast([...history, displayTarget]));
+                            }
                         }}
                         onPreview={() => {
                             setPreviewVerse(displayTarget);
+                            if (isMobileReadingMode) {
+                                collapseLeftSidebar();
+                            }
                         }}
                         onAddToNote={() => {
                             setNoteList((notes) => {

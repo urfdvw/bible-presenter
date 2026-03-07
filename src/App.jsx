@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 // App
 import "./App.css";
 import AppContext from "./AppContext";
 // layout
 import * as FlexLayout from "flexlayout-react";
-import layout from "./layout/layout.json";
 import Factory from "./layout/Factory";
 import "flexlayout-react/style/light.css";
 import { isMobile } from "react-device-detect";
@@ -31,34 +30,23 @@ import VerseRef from "./models/VerseRef";
 import usePreviewTabs from "./utilHooks/usePreviewTabs";
 import TipsModal from "./components/TipsModal";
 import { tips } from "./tips";
+import { collapseLeftBorder } from "./layout/layoutUtils";
+import useAppViewportHeight from "./utilHooks/useAppViewportHeight";
+import useMobileSidebarWidthSync from "./utilHooks/useMobileSidebarWidthSync";
+import { createLayoutJsonForMode } from "./utilFunctions/mobileLayout";
 
 /** @typedef {import("./models/VerseRef").VerseRefLike} VerseRefLike */
 
 function App() {
-    useEffect(() => {
-        const updateAppHeight = () => {
-            const viewportHeight = window.visualViewport?.height || window.innerHeight;
-            document.documentElement.style.setProperty("--app-height", `${Math.round(viewportHeight)}px`);
-        };
-
-        updateAppHeight();
-        window.addEventListener("resize", updateAppHeight);
-        window.addEventListener("orientationchange", updateAppHeight);
-        window.visualViewport?.addEventListener("resize", updateAppHeight);
-        window.visualViewport?.addEventListener("scroll", updateAppHeight);
-
-        return () => {
-            window.removeEventListener("resize", updateAppHeight);
-            window.removeEventListener("orientationchange", updateAppHeight);
-            window.visualViewport?.removeEventListener("resize", updateAppHeight);
-            window.visualViewport?.removeEventListener("scroll", updateAppHeight);
-        };
-    }, []);
+    useAppViewportHeight();
 
     // testing state
     const [testCount, setTestCount] = useState(0);
+    const isMobileReadingMode = isMobile;
     // layout
-    const [flexModel] = useState(FlexLayout.Model.fromJson(layout));
+    const [flexModel] = useState(() => FlexLayout.Model.fromJson(createLayoutJsonForMode(isMobileReadingMode)));
+    useMobileSidebarWidthSync(flexModel, isMobileReadingMode);
+    const collapseLeftSidebar = useCallback(() => collapseLeftBorder(flexModel), [flexModel]);
     // notification
     const { notify, clearNotification, notificationText, notificationHeight } = useNotification();
     // config
@@ -110,7 +98,7 @@ function App() {
         setPreviewVerseForTab,
         handleRenderTabSet,
         handleLayoutModelChange,
-    } = usePreviewTabs(flexModel, appConfig.config.bible_display);
+    } = usePreviewTabs(flexModel, appConfig.config.bible_display, isMobileReadingMode);
 
     if (!appConfig.ready) {
         return;
@@ -145,6 +133,7 @@ function App() {
                 projectorDisplay,
                 setProjectorDisplay,
                 showHints,
+                isMobileReadingMode,
                 getSelectedVersions,
                 getMultipleVerses,
                 getChapterVerses,
@@ -162,6 +151,7 @@ function App() {
                 setHistory,
                 noteList,
                 setNoteList,
+                collapseLeftSidebar,
                 pageTurnTrigger,
                 setPageTurnTrigger,
                 verseTurnTrigger,
