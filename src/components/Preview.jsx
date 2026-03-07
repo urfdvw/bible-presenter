@@ -34,7 +34,7 @@ function PreviewList({ selected, setSelected, previewVerse, tabId }) {
         if (!previewVerse.verse) {
             return;
         }
-        const targetName = `preview-verse-${previewVerse.verse}`;
+        const targetName = `preview-verse-${tabId}-${previewVerse.verse}`;
         latestTargetNameRef.current = targetName;
         if (!isMobileReadingMode) {
             scroller.scrollTo(targetName, {
@@ -83,9 +83,10 @@ function PreviewList({ selected, setSelected, previewVerse, tabId }) {
     return (
         <div id={containerId} style={{ height: "100%", overflowY: "auto" }}>
             {verses.map((verseVersions) => {
+                const verseAnchorName = `preview-verse-${tabId}-${verseVersions[0].verse}`;
                 return (
-                    <Element key={verseVersions[0].verse} name={`preview-verse-${verseVersions[0].verse}`}>
-                        <div id={`preview-verse-${verseVersions[0].verse}`}>
+                    <Element key={verseAnchorName} name={verseAnchorName}>
+                        <div id={verseAnchorName}>
                             <PreviewVerseBox
                                 setSelected={setSelected}
                                 selected={selected}
