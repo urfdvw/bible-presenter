@@ -21,10 +21,21 @@
             "enum": ["KJV", "ASV", "WEB"],
             "default": "ASV"
         },
+        "contrast_layout": {
+            "title": "对照显示排版",
+            "type": "string",
+            "enum": ["前后", "并排"],
+            "default": "前后"
+        },
         "zoom": {
             "title": "字体大小(%)",
             "type": "integer",
             "default": 100
+        },
+        "verse_fullscreen": {
+            "title": "经节投影满屏",
+            "type": "boolean",
+            "default": false
         },
         "range_location": {
             "title": "经节范围注释位置",
@@ -49,6 +60,12 @@
             "type": "string",
             "enum": ["默认", "红蓝"],
             "default": "默认"
+        },
+        "chapter_highlight": {
+            "title": "高亮当前节",
+            "type": "string",
+            "enum": ["节号", "节号和文字"],
+            "default": "节号"
         },
         "menu_to_projector": {
             "title": "从圣经目录直接投影",
