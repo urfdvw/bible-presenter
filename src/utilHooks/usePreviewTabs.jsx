@@ -67,14 +67,14 @@ function isSameVerseRef(a, b) {
 }
 
 function findPreferredPreviewTabId(model, preferredTabId) {
-    const preferredNode = preferredTabId ? model.getNodeById(preferredTabId) : undefined;
-    if (isPreviewTabNode(preferredNode)) {
-        return preferredTabId;
-    }
-
     const selectedPreviewTab = getAllPreviewTabs(model).find((tabNode) => tabNode.isSelected());
     if (selectedPreviewTab) {
         return selectedPreviewTab.getId();
+    }
+
+    const preferredNode = preferredTabId ? model.getNodeById(preferredTabId) : undefined;
+    if (isPreviewTabNode(preferredNode)) {
+        return preferredTabId;
     }
 
     const firstPreviewTab = getAllPreviewTabs(model)[0];

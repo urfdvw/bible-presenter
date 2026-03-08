@@ -1,7 +1,6 @@
 import AppContext from "../AppContext";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { PreviewVerseBox } from "./VerseBox";
-import { scroller, Element } from "react-scroll";
 import { Button, Typography } from "@mui/material";
 import TabToolBar from "../utilComponents/TabToolBar";
 import { selectTabById } from "../layout/layoutUtils";
@@ -13,19 +12,24 @@ function PreviewList({ selected, setSelected, previewVerse, tabId }) {
     const containerId = `previewContainer-${tabId}`;
     const latestTargetNameRef = useRef("");
 
-    const scrollPrecisely = useCallback(
-        (targetName) => {
+    const scrollToTarget = useCallback(
+        (targetName, { animated = false } = {}) => {
             const container = document.getElementById(containerId);
             if (!container) {
-                return;
+                return false;
             }
-            const target = document.getElementById(targetName);
+            const target = container.querySelector(`[data-preview-anchor="${targetName}"]`);
             if (!target) {
-                return;
+                return false;
             }
             const top =
                 container.scrollTop + target.getBoundingClientRect().top - container.getBoundingClientRect().top;
-            container.scrollTop = top;
+            if (animated) {
+                container.scrollTo({ top, behavior: "smooth" });
+            } else {
+                container.scrollTop = top;
+            }
+            return true;
         },
         [containerId]
     );
@@ -34,28 +38,37 @@ function PreviewList({ selected, setSelected, previewVerse, tabId }) {
         if (!previewVerse.verse) {
             return;
         }
-        const targetName = `preview-verse-${previewVerse.verse}`;
+        const targetName = `preview-verse-${tabId}-${previewVerse.verse}`;
         latestTargetNameRef.current = targetName;
         if (!isMobileReadingMode) {
-            scroller.scrollTo(targetName, {
-                duration: 800,
-                delay: 0,
-                smooth: "easeInOutQuart",
-                containerId: containerId,
-            });
+            scrollToTarget(targetName, { animated: true });
             return;
         }
 
-        // Mobile: no animation, plus multiple recalculations for layout changes.
-        const rafId = requestAnimationFrame(() => scrollPrecisely(targetName));
-        const timeoutIds = [80, 180, 320, 520].map((delay) =>
-            setTimeout(() => scrollPrecisely(targetName), delay)
-        );
-        return () => {
-            cancelAnimationFrame(rafId);
-            timeoutIds.forEach(clearTimeout);
+        // Mobile: no animation. Retry via animation frame until the target is ready.
+        let cancelled = false;
+        let rafId = 0;
+        let attempts = 0;
+        const maxAttempts = 12;
+
+        const tryScroll = () => {
+            if (cancelled) {
+                return;
+            }
+            const scrolled = scrollToTarget(targetName, { animated: false });
+            if (scrolled || attempts >= maxAttempts) {
+                return;
+            }
+            attempts += 1;
+            rafId = requestAnimationFrame(tryScroll);
         };
-    }, [previewVerse, containerId, isMobileReadingMode, scrollPrecisely, verses.length]);
+        tryScroll();
+
+        return () => {
+            cancelled = true;
+            cancelAnimationFrame(rafId);
+        };
+    }, [previewVerse, tabId, isMobileReadingMode, scrollToTarget, verses.length]);
 
     useEffect(() => {
         if (!isMobileReadingMode) {
@@ -65,14 +78,25 @@ function PreviewList({ selected, setSelected, previewVerse, tabId }) {
         if (!container) {
             return;
         }
+        let rafId = 0;
         const resizeObserver = new ResizeObserver(() => {
             if (latestTargetNameRef.current) {
-                scrollPrecisely(latestTargetNameRef.current);
+                if (rafId) {
+                    cancelAnimationFrame(rafId);
+                }
+                rafId = requestAnimationFrame(() =>
+                    scrollToTarget(latestTargetNameRef.current, { animated: false })
+                );
             }
         });
         resizeObserver.observe(container);
-        return () => resizeObserver.disconnect();
-    }, [containerId, isMobileReadingMode, scrollPrecisely]);
+        return () => {
+            if (rafId) {
+                cancelAnimationFrame(rafId);
+            }
+            resizeObserver.disconnect();
+        };
+    }, [containerId, isMobileReadingMode, scrollToTarget]);
 
     useEffect(() => {
         if (selected && selected.book !== verses[0][0].book) {
@@ -81,30 +105,29 @@ function PreviewList({ selected, setSelected, previewVerse, tabId }) {
     }, [selected, verses, setSelected]);
 
     return (
-        <div id={containerId} style={{ height: "100%", overflowY: "auto" }}>
+        <div id={containerId} style={{ height: "100%", overflowY: "auto", scrollBehavior: "auto" }}>
             {verses.map((verseVersions) => {
+                const verseAnchorName = `preview-verse-${tabId}-${verseVersions[0].verse}`;
                 return (
-                    <Element key={verseVersions[0].verse} name={`preview-verse-${verseVersions[0].verse}`}>
-                        <div id={`preview-verse-${verseVersions[0].verse}`}>
-                            <PreviewVerseBox
-                                setSelected={setSelected}
-                                selected={selected}
-                                verseObj={
-                                    new VerseRef({
-                                        book: verseVersions[0].book,
-                                        chapter: verseVersions[0].chapter,
-                                        verse: verseVersions[0].verse,
-                                    })
-                                }
-                                highlighted={
-                                    selected &&
-                                    verseVersions[0].book === selected.book &&
-                                    verseVersions[0].chapter === selected.chapter &&
-                                    verseVersions[0].verse === selected.verse
-                                }
-                            />
-                        </div>
-                    </Element>
+                    <div key={verseAnchorName} id={verseAnchorName} data-preview-anchor={verseAnchorName}>
+                        <PreviewVerseBox
+                            setSelected={setSelected}
+                            selected={selected}
+                            verseObj={
+                                new VerseRef({
+                                    book: verseVersions[0].book,
+                                    chapter: verseVersions[0].chapter,
+                                    verse: verseVersions[0].verse,
+                                })
+                            }
+                            highlighted={
+                                selected &&
+                                verseVersions[0].book === selected.book &&
+                                verseVersions[0].chapter === selected.chapter &&
+                                verseVersions[0].verse === selected.verse
+                            }
+                        />
+                    </div>
                 );
             })}
         </div>

@@ -1,6 +1,6 @@
 {
     "name": "general",
-    "title": "通用设置",
+    "title": "通用",
     "type": "object",
     "properties": {
         "theme": {

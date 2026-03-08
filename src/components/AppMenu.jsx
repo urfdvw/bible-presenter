@@ -3,7 +3,7 @@ import { grey, red } from "@mui/material/colors";
 import { useContext } from "react";
 import AppContext from "../AppContext";
 import { selectTabById } from "../layout/layoutUtils";
-import {downloadUrlContent} from "../utilFunctions/jsHelper";
+import { downloadUrlContent } from "../utilFunctions/jsHelper";
 const DARK_RED = red[900];
 const DARK_GREY = grey[900];
 
@@ -41,7 +41,9 @@ export default function AppMenu() {
                 {
                     text: "下载到本地",
                     handler: () => {
-                        downloadUrlContent("https://github.com/urfdvw/bible-presenter/raw/refs/heads/main/docs/index.html");
+                        downloadUrlContent(
+                            "https://github.com/urfdvw/bible-presenter/raw/refs/heads/main/docs/index.html",
+                        );
                     },
                 },
             ],
@@ -57,14 +59,14 @@ export default function AppMenu() {
             text: (showHints ? "(⩲)" : "") + "放大",
             color: DARK_GREY,
             handler: () => {
-                appConfig.setConfigField("bible_display", "zoom", parseInt(appConfig.config.bible_display.zoom * 1.2));
+                appConfig.setConfigField("projector", "zoom", parseInt(appConfig.config.projector.zoom * 1.2));
             },
         },
         {
             text: (showHints ? "(-)" : "") + "缩小",
             color: DARK_GREY,
             handler: () => {
-                appConfig.setConfigField("bible_display", "zoom", parseInt(appConfig.config.bible_display.zoom / 1.2));
+                appConfig.setConfigField("projector", "zoom", parseInt(appConfig.config.projector.zoom / 1.2));
             },
         },
         {
@@ -78,11 +80,11 @@ export default function AppMenu() {
             text: (showHints ? "(D)" : "") + "切换显示方式",
             color: DARK_GREY,
             handler: () => {
-                if (appConfig.config.bible_display.display_type === "经节") {
-                    appConfig.setConfigField("bible_display", "display_type", "整章");
+                if (appConfig.config.projector.display_type === "经节") {
+                    appConfig.setConfigField("projector", "display_type", "整章");
                 }
-                if (appConfig.config.bible_display.display_type === "整章") {
-                    appConfig.setConfigField("bible_display", "display_type", "经节");
+                if (appConfig.config.projector.display_type === "整章") {
+                    appConfig.setConfigField("projector", "display_type", "经节");
                 }
             },
         },

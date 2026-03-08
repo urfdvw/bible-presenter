@@ -36,7 +36,7 @@ export default function Notes() {
             }
         }
     }, [content, setNoteList]);
-    const noteDisplay = appConfig.config.bible_display.note_display || "范围和笔记";
+    const noteDisplay = appConfig.config.misc.note_display || "范围和笔记";
     const isPrintMode = noteDisplay === "打印";
     const handlePrint = () => {
         const element = notePrintAreaRef.current;
@@ -181,19 +181,19 @@ export default function Notes() {
     const noteDisplayOptions = [
         {
             text: "范围",
-            handler: () => appConfig.setConfigField("bible_display", "note_display", "范围"),
+            handler: () => appConfig.setConfigField("misc", "note_display", "范围"),
         },
         {
             text: "范围和笔记",
-            handler: () => appConfig.setConfigField("bible_display", "note_display", "范围和笔记"),
+            handler: () => appConfig.setConfigField("misc", "note_display", "范围和笔记"),
         },
         {
             text: "经文和笔记",
-            handler: () => appConfig.setConfigField("bible_display", "note_display", "经文和笔记"),
+            handler: () => appConfig.setConfigField("misc", "note_display", "经文和笔记"),
         },
         {
             text: "打印",
-            handler: () => appConfig.setConfigField("bible_display", "note_display", "打印"),
+            handler: () => appConfig.setConfigField("misc", "note_display", "打印"),
         },
     ];
 

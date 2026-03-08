@@ -1,0 +1,20 @@
+{
+    "name": "misc",
+    "title": "其他",
+    "type": "object",
+    "properties": {
+        "note_display": {
+            "title": "笔记显示模式",
+            "description":"适用于笔记tab",
+            "type": "string",
+            "enum": ["范围", "范围和笔记", "经文和笔记", "打印"],
+            "default": "范围和笔记"
+        },
+        "menu_to_projector": {
+            "title": "从圣经目录直接投影",
+            "description":"适用于圣经目录tab",
+            "type": "boolean",
+            "default": false
+        }
+    }
+}

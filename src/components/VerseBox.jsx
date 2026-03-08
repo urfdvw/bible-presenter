@@ -389,7 +389,7 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted, printMode = fals
 
     const note = verseObj.note || "";
     const cardNote = note.length > 0 ? note : "";
-    const noteDisplay = appConfig.config.bible_display.note_display || "范围和笔记";
+    const noteDisplay = appConfig.config.misc.note_display || "范围和笔记";
     const rangeMarkdown = range[0] || "";
     const notePositionLabel = baseVerse.notePosition || "开头";
     const isCardShowingNote = noteDisplay !== "范围" && cardNote.length > 0;
@@ -637,8 +637,8 @@ export function ReaderVerseBox({ verseObjs, selected }) {
     const blue_background = "rgb(208, 210, 255)";
     const gray_background = "#e2e2e2";
     const { appConfig } = useContext(AppContext);
-    const red_blue = appConfig.config.bible_display.chapter_theme === "红蓝";
-    const highlightMode = appConfig.config.bible_display.chapter_highlight || "节号";
+    const red_blue = appConfig.config.projector.chapter_theme === "红蓝";
+    const highlightMode = appConfig.config.projector.chapter_highlight || "节号";
     const highlightWholeVerse = highlightMode === "节号和文字";
     const useParallelContrastLayout =
         appConfig.config.bible_display.language === "对照" &&
