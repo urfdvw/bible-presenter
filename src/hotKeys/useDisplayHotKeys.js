@@ -11,7 +11,7 @@ export default function useDisplayHotKeys(
         (event) => {
             event.preventDefault();
             console.log("hotkey: increase display size");
-            config.setConfigField("bible_display", "zoom", parseInt(config.config.bible_display.zoom * 1.2));
+            config.setConfigField("projector", "zoom", parseInt(config.config.projector.zoom * 1.2));
         },
         { enableOnFormTags: true }
     );
@@ -20,7 +20,7 @@ export default function useDisplayHotKeys(
         (event) => {
             event.preventDefault();
             console.log("hotkey: decrease display size");
-            config.setConfigField("bible_display", "zoom", parseInt(config.config.bible_display.zoom / 1.2));
+            config.setConfigField("projector", "zoom", parseInt(config.config.projector.zoom / 1.2));
         },
         { enableOnFormTags: true }
     );
@@ -29,18 +29,18 @@ export default function useDisplayHotKeys(
         (event) => {
             event.preventDefault();
             console.log("hotkey: display size reset");
-            config.setConfigField("bible_display", "zoom", 100);
+            config.setConfigField("projector", "zoom", 100);
         },
         { enableOnFormTags: true }
     );
     useHotkeys(
         "alt+d",
         () => {
-            if (config.config.bible_display.display_type === "经节") {
-                config.setConfigField("bible_display", "display_type", "整章");
+            if (config.config.projector.display_type === "经节") {
+                config.setConfigField("projector", "display_type", "整章");
             }
-            if (config.config.bible_display.display_type === "整章") {
-                config.setConfigField("bible_display", "display_type", "经节");
+            if (config.config.projector.display_type === "整章") {
+                config.setConfigField("projector", "display_type", "经节");
             }
         },
         { enableOnFormTags: true }

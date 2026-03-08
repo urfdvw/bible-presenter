@@ -9,10 +9,10 @@ import Reader, { ReaderMenu, ReaderTitle } from "./Reader";
 import { Typography } from "@mui/material";
 import VerseRef from "../models/VerseRef";
 
-function VerseProjectionContent({ displayVerse, bibleDisplayConfig, popupWindow }) {
-    const minZoom = Math.max(1, parseInt(bibleDisplayConfig.zoom, 10) || 100);
+function VerseProjectionContent({ displayVerse, projectorConfig, popupWindow }) {
+    const minZoom = Math.max(1, parseInt(projectorConfig.zoom, 10) || 100);
     const maxZoom = minZoom * 10;
-    const fillScreen = Boolean(bibleDisplayConfig.verse_fullscreen);
+    const fillScreen = Boolean(projectorConfig.verse_fullscreen);
     const containerRef = useRef(null);
     const contentRef = useRef(null);
     const [appliedZoom, setAppliedZoom] = useState(minZoom);
@@ -110,7 +110,7 @@ export default function Projector() {
     var Alt;
     var Children;
 
-    if (appConfig.config.bible_display.display_type === "经节") {
+    if (appConfig.config.projector.display_type === "经节") {
         Pop = null;
         Alt = (
             <Box sx={{ height: "100%", overflowY: "scroll" }}>
@@ -121,7 +121,7 @@ export default function Projector() {
         Children = projectorDisplay ? (
             <VerseProjectionContent
                 displayVerse={displayVerse}
-                bibleDisplayConfig={appConfig.config.bible_display}
+                projectorConfig={appConfig.config.projector}
                 popupWindow={popupWindow}
             />
         ) : (
@@ -129,10 +129,10 @@ export default function Projector() {
                 <div style={{ backgroundColor: "black", height: "100000px" }}></div>
             </NoTheme>
         );
-    } else if (appConfig.config.bible_display.display_type === "整章") {
+    } else if (appConfig.config.projector.display_type === "整章") {
         Pop = projectorDisplay ? (
             <Box
-                style={{ zoom: appConfig.config.bible_display.zoom / 100 }}
+                style={{ zoom: appConfig.config.projector.zoom / 100 }}
                 sx={{
                     height: "100%",
                     display: "flex",
@@ -184,7 +184,7 @@ export default function Projector() {
                     <ReaderMenu />
                 </Box>
                 <Box
-                    style={{ zoom: appConfig.config.bible_display.zoom / 100 }}
+                    style={{ zoom: appConfig.config.projector.zoom / 100 }}
                     sx={{ flexGrow: 1, overflowY: "auto" }}
                 >
                     <Reader popupWindow={popupWindow} />

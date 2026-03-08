@@ -100,7 +100,7 @@ export default function TableOfContents() {
         setPreviewVerse(new VerseRef({ book, chapter, verse: 1 }));
         if (isMobileReadingMode) {
             collapseLeftSidebar();
-        } else if (appConfig.config.bible_display.menu_to_projector) {
+        } else if (appConfig.config.misc.menu_to_projector) {
             setDisplayVerse(new VerseRef({ book, chapter, verse: 1 }));
         }
     }
