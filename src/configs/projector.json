@@ -16,17 +16,20 @@
         },
         "verse_fullscreen": {
             "title": "经节投影满屏",
+            "description":"适用于经节模式。当启用时，以上字体大小为最小字体大小",
             "type": "boolean",
             "default": false
         },
         "chapter_theme": {
             "title": "整章模式字体颜色",
+            "description":"适用于整章模式",
             "type": "string",
             "enum": ["默认", "红蓝"],
             "default": "默认"
         },
         "chapter_highlight": {
             "title": "高亮当前节",
+            "description":"适用于整章模式",
             "type": "string",
             "enum": ["节号", "节号和文字"],
             "default": "节号"
