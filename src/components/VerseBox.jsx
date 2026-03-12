@@ -392,13 +392,18 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted, printMode = fals
     const noteDisplay = appConfig.config.misc.note_display || "范围和笔记";
     const rangeMarkdown = range[0] || "";
     const notePositionLabel = baseVerse.notePosition || "开头";
-    const isCardShowingNote = noteDisplay !== "范围" && cardNote.length > 0;
-    const noteCardMarkdown =
-        noteDisplay === "范围"
-            ? rangeMarkdown
-            : [rangeMarkdown, cardNote].filter((text) => text && text.length > 0).join("\n\n");
+    const isNoteOnly = notePositionLabel === "仅笔记";
+    const isRangeDisplay = noteDisplay === "范围";
+    const isCardShowingNote = !isRangeDisplay && cardNote.length > 0;
+    const noteCardMarkdown = isNoteOnly
+        ? isRangeDisplay
+            ? "(仅笔记)"
+            : cardNote
+        : isRangeDisplay
+        ? rangeMarkdown
+        : [rangeMarkdown, cardNote].filter((text) => text && text.length > 0).join("\n\n");
     const previewMarkdown = draftNote || "";
-    const shouldShowFullVerse = noteDisplay === "经文和笔记" || noteDisplay === "打印";
+    const shouldShowFullVerse = !isNoteOnly && (noteDisplay === "经文和笔记" || noteDisplay === "打印");
     const rawBoxStyle = printMode ? printVerseBoxStyle : highlighted ? highlightedVerseBoxStyle : verseBoxStyle;
     const currentBoxStyle = rawBoxStyle;
 
@@ -529,6 +534,7 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted, printMode = fals
                                     <MenuItem value="开头">开头</MenuItem>
                                     <MenuItem value="结尾">结尾</MenuItem>
                                     <MenuItem value="不显示">不显示</MenuItem>
+                                    <MenuItem value="仅笔记">仅笔记</MenuItem>
                                 </Select>
                             </FormControl>
                         </Box>

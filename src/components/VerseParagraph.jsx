@@ -45,6 +45,7 @@ export default function VerseParagraph({ verseObj, forceNoteAfterVerse = false, 
         paragraphs.length === 2;
     const notePosition = verseObj.notePosition || "开头";
     const isNoteHidden = notePosition === "不显示";
+    const isNoteOnly = notePosition === "仅笔记";
     const noteText = verseObj.note || "";
     const hasNote = !isNoteHidden && noteText.length > 0;
     const showNoteBefore = hasNote && !forceNoteAfterVerse && notePosition === "开头";
@@ -52,30 +53,34 @@ export default function VerseParagraph({ verseObj, forceNoteAfterVerse = false, 
 
     return (
         <Box>
-            {showNoteBefore && <MarkdownExtended>{noteText}</MarkdownExtended>}
-            {useParallelContrastLayout ? (
-                <Box
-                    sx={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-                        gap: 2,
-                    }}
-                >
-                    <Box>
-                        {pureText ? <Typography>{paragraphs[0] || ""}</Typography> : <MarkdownExtended>{paragraphs[0] || ""}</MarkdownExtended>}
-                    </Box>
-                    <Box>
-                        {pureText ? <Typography>{paragraphs[1] || ""}</Typography> : <MarkdownExtended>{paragraphs[1] || ""}</MarkdownExtended>}
-                    </Box>
-                </Box>
+            {isNoteOnly ? (
+                hasNote ? <MarkdownExtended>{noteText}</MarkdownExtended> : null
             ) : (
-                pureText ? (
-                    paragraphs.map((paragraph, index) => <Typography key={index}>{paragraph}</Typography>)
-                ) : (
-                    <MarkdownExtended>{paragraphs.join("\n\n")}</MarkdownExtended>
-                )
+                <>
+                    {showNoteBefore && <MarkdownExtended>{noteText}</MarkdownExtended>}
+                    {useParallelContrastLayout ? (
+                        <Box
+                            sx={{
+                                display: "grid",
+                                gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+                                gap: 2,
+                            }}
+                        >
+                            <Box>
+                                {pureText ? <Typography>{paragraphs[0] || ""}</Typography> : <MarkdownExtended>{paragraphs[0] || ""}</MarkdownExtended>}
+                            </Box>
+                            <Box>
+                                {pureText ? <Typography>{paragraphs[1] || ""}</Typography> : <MarkdownExtended>{paragraphs[1] || ""}</MarkdownExtended>}
+                            </Box>
+                        </Box>
+                    ) : pureText ? (
+                        paragraphs.map((paragraph, index) => <Typography key={index}>{paragraph}</Typography>)
+                    ) : (
+                        <MarkdownExtended>{paragraphs.join("\n\n")}</MarkdownExtended>
+                    )}
+                    {showNoteAfter && <MarkdownExtended>{noteText}</MarkdownExtended>}
+                </>
             )}
-            {showNoteAfter && <MarkdownExtended>{noteText}</MarkdownExtended>}
         </Box>
     );
 }

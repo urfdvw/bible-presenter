@@ -6,8 +6,8 @@
  * @property {number | undefined | null} [endChapter]
  * @property {number | undefined | null} [endVerse]
  * @property {string | null | undefined} [note]
- * @property {"开头" | "结尾" | "不显示" | string | null | undefined} [notePosition]
- * @property {"开头" | "结尾" | "不显示" | string | null | undefined} [note_position]
+ * @property {"开头" | "结尾" | "不显示" | "仅笔记" | string | null | undefined} [notePosition]
+ * @property {"开头" | "结尾" | "不显示" | "仅笔记" | string | null | undefined} [note_position]
  */
 
 export class VerseRef {
