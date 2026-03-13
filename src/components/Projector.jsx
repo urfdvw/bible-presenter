@@ -6,7 +6,7 @@ import { NoTheme } from "react-lazy-dark-theme";
 
 import VerseParagraph from "./VerseParagraph";
 import Reader, { ReaderMenu, ReaderTitle } from "./Reader";
-import { Typography } from "@mui/material";
+import Typography from "@mui/material/Typography";
 import VerseRef from "../models/VerseRef";
 
 function VerseProjectionContent({ displayVerse, projectorConfig, popupWindow }) {

@@ -13,7 +13,7 @@ import AppMenu from "./components/AppMenu";
 import useNotification from "./utilHooks/useNotification";
 import Typography from "@mui/material/Typography";
 // config
-import { useConfig } from "./utilComponents/react-user-config";
+import useConfig from "./utilComponents/react-user-config/useConfig";
 import schemas from "./configs";
 // help
 import { useTabValueName } from "./utilHooks/useTabValueName";

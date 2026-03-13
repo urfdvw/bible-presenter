@@ -1,7 +1,8 @@
 import AppContext from "../AppContext";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { PreviewVerseBox } from "./VerseBox";
-import { Button, Typography } from "@mui/material";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
 import TabToolBar from "../utilComponents/TabToolBar";
 import { selectTabById } from "../layout/layoutUtils";
 import VerseRef from "../models/VerseRef";

@@ -1,4 +1,6 @@
-import { Typography, Toolbar, Button } from "@mui/material";
+import Typography from "@mui/material/Typography";
+import Toolbar from "@mui/material/Toolbar";
+import Button from "@mui/material/Button";
 import Menu from "./Menu";
 
 export default function TabToolBar({ children, title = "", tools = null, hiddenTools = null }) {

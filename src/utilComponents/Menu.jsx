@@ -1,9 +1,8 @@
 import * as React from "react";
 import Button from "@mui/material/Button";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
-import Grow from "@mui/material/Grow";
 import Paper from "@mui/material/Paper";
-import Popper from "@mui/material/Popper";
+import Popover from "@mui/material/Popover";
 import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
 
@@ -16,7 +15,7 @@ export default function Menu({ label, options, color }) {
     };
 
     const handleClose = (event) => {
-        if (anchorRef.current && anchorRef.current.contains(event.target)) {
+        if (event?.target && anchorRef.current && anchorRef.current.contains(event.target)) {
             return;
         }
 
@@ -59,47 +58,38 @@ export default function Menu({ label, options, color }) {
             >
                 {label}
             </Button>
-            <Popper
+            <Popover
                 open={open}
                 anchorEl={anchorRef.current}
-                role={undefined}
-                placement="bottom-start"
-                transition
                 disablePortal
-                style={{ zIndex: 200 }}
+                onClose={handleClose}
+                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+                transformOrigin={{ vertical: "top", horizontal: "left" }}
+                slotProps={{ paper: { style: { zIndex: 200 } } }}
             >
-                {({ TransitionProps, placement }) => (
-                    <Grow
-                        {...TransitionProps}
-                        style={{
-                            transformOrigin: placement === "bottom-start" ? "left top" : "left bottom",
-                        }}
-                    >
-                        <Paper>
-                            <ClickAwayListener onClickAway={handleClose}>
-                                <MenuList
-                                    autoFocusItem={open}
-                                    id="composition-menu"
-                                    aria-labelledby="composition-button"
-                                    onKeyDown={handleListKeyDown}
+                <Paper>
+                    <ClickAwayListener onClickAway={handleClose}>
+                        <MenuList
+                            autoFocusItem={open}
+                            id="composition-menu"
+                            aria-labelledby="composition-button"
+                            onKeyDown={handleListKeyDown}
+                        >
+                            {options.map((opt) => (
+                                <MenuItem
+                                    onClick={(event) => {
+                                        handleClose(event);
+                                        opt.handler();
+                                    }}
+                                    key={"item_key_" + opt.text}
                                 >
-                                    {options.map((opt) => (
-                                        <MenuItem
-                                            onClick={(event) => {
-                                                handleClose(event);
-                                                opt.handler();
-                                            }}
-                                            key={"item_key_" + opt.text}
-                                        >
-                                            {opt.text}
-                                        </MenuItem>
-                                    ))}
-                                </MenuList>
-                            </ClickAwayListener>
-                        </Paper>
-                    </Grow>
-                )}
-            </Popper>
+                                    {opt.text}
+                                </MenuItem>
+                            ))}
+                        </MenuList>
+                    </ClickAwayListener>
+                </Paper>
+            </Popover>
         </>
     );
 }

@@ -1,6 +1,9 @@
 import { useContext, useState } from "react";
 import AppContext from "../AppContext";
-import { Box, TextField, Button, Typography } from "@mui/material";
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
 import { SearchVerseBox } from "./VerseBox";
 import { searchVerses } from "../bible/utils";
 

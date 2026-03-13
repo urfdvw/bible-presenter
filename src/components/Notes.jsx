@@ -1,6 +1,6 @@
 import { NoteVerseBox } from "./VerseBox";
 import AppContext from "../AppContext";
-import { useContext, useEffect, useRef } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import TabToolBar from "../utilComponents/TabToolBar";
 import Menu from "../utilComponents/Menu";
 import { useSingleFileSystemAccess } from "../utilHooks/useSingleFileSystemAccess";
@@ -8,7 +8,34 @@ import { downloadFile } from "../utilFunctions/jsHelper";
 import { selectTabById } from "../layout/layoutUtils";
 import VerseRef from "../models/VerseRef";
 
-function NoteListBody({ printMode }) {
+function moveNoteToIndex(notes, sourceIndex, insertIndex) {
+    if (!Array.isArray(notes)) {
+        return notes;
+    }
+    if (sourceIndex < 0 || sourceIndex >= notes.length) {
+        return notes;
+    }
+    const next = [...notes];
+    const [moved] = next.splice(sourceIndex, 1);
+    const boundedInsertIndex = Math.max(0, Math.min(insertIndex, next.length));
+    next.splice(boundedInsertIndex, 0, moved);
+    return next;
+}
+
+function getDropPosition(event) {
+    const rect = event.currentTarget.getBoundingClientRect();
+    return event.clientY < rect.top + rect.height / 2 ? "before" : "after";
+}
+
+function NoteListBody({
+    printMode,
+    dragEnabled,
+    dropPreview,
+    onDragHandleStart,
+    onDragHandleEnd,
+    onDragOverTarget,
+    onDropTarget,
+}) {
     const { noteList } = useContext(AppContext);
     return noteList.map((verseObj, objIndex) => {
         return (
@@ -17,6 +44,13 @@ function NoteListBody({ printMode }) {
                 boxIndex={objIndex}
                 key={objIndex}
                 printMode={printMode}
+                dragEnabled={dragEnabled}
+                onDragHandleStart={(event) => onDragHandleStart(objIndex, event)}
+                onDragHandleEnd={onDragHandleEnd}
+                onDragOverTarget={(event) => onDragOverTarget(objIndex, event)}
+                onDropTarget={(event) => onDropTarget(objIndex, event)}
+                showDropLineTop={dropPreview?.targetIndex === objIndex && dropPreview.position === "before"}
+                showDropLineBottom={dropPreview?.targetIndex === objIndex && dropPreview.position === "after"}
             />
         );
     });
@@ -26,6 +60,8 @@ export default function Notes() {
     const { noteList, setNoteList, flexModel, helpTabSelection, appConfig, isMobileReadingMode } = useContext(AppContext);
     const { content, fileName, openFile, saveToFile } = useSingleFileSystemAccess();
     const notePrintAreaRef = useRef(null);
+    const [dragSourceIndex, setDragSourceIndex] = useState(null);
+    const [dropPreview, setDropPreview] = useState(null);
     useEffect(() => {
         if (content) {
             try {
@@ -38,6 +74,74 @@ export default function Notes() {
     }, [content, setNoteList]);
     const noteDisplay = appConfig.config.misc.note_display || "范围和笔记";
     const isPrintMode = noteDisplay === "打印";
+    const dragEnabled = !isPrintMode && !isMobileReadingMode;
+    const clearDragState = useCallback(() => {
+        setDragSourceIndex(null);
+        setDropPreview(null);
+    }, []);
+    const handleDragHandleStart = useCallback(
+        (sourceIndex, event) => {
+            if (!dragEnabled) {
+                return;
+            }
+            event.dataTransfer.setData("text/plain", String(sourceIndex));
+            event.dataTransfer.effectAllowed = "move";
+            setDragSourceIndex(sourceIndex);
+            setDropPreview(null);
+        },
+        [dragEnabled]
+    );
+    const handleDragHandleEnd = useCallback(() => {
+        clearDragState();
+    }, [clearDragState]);
+    const handleDragOverTarget = useCallback(
+        (targetIndex, event) => {
+            if (!dragEnabled) {
+                return;
+            }
+            event.preventDefault();
+            event.dataTransfer.dropEffect = "move";
+            const position = getDropPosition(event);
+            setDropPreview((preview) => {
+                if (preview?.targetIndex === targetIndex && preview.position === position) {
+                    return preview;
+                }
+                return { targetIndex, position };
+            });
+        },
+        [dragEnabled]
+    );
+    const handleDropTarget = useCallback(
+        (targetIndex, event) => {
+            if (!dragEnabled) {
+                return;
+            }
+            event.preventDefault();
+            const position = getDropPosition(event);
+            const fallbackSourceIndex = Number.parseInt(event.dataTransfer.getData("text/plain"), 10);
+            const sourceIndex = Number.isInteger(dragSourceIndex) ? dragSourceIndex : fallbackSourceIndex;
+            if (!Number.isInteger(sourceIndex)) {
+                clearDragState();
+                return;
+            }
+            let insertIndex = position === "before" ? targetIndex : targetIndex + 1;
+            if (sourceIndex < insertIndex) {
+                insertIndex -= 1;
+            }
+            if (insertIndex === sourceIndex) {
+                clearDragState();
+                return;
+            }
+            setNoteList((notes) => moveNoteToIndex(notes, sourceIndex, insertIndex));
+            clearDragState();
+        },
+        [dragEnabled, dragSourceIndex, setNoteList, clearDragState]
+    );
+    useEffect(() => {
+        if (!dragEnabled) {
+            clearDragState();
+        }
+    }, [dragEnabled, clearDragState]);
     const handlePrint = () => {
         const element = notePrintAreaRef.current;
         if (!element) {
@@ -221,7 +325,15 @@ export default function Notes() {
                 )}
             </div>
             <div className="notes-print-area" style={{ flexGrow: 1, overflowY: "auto" }} ref={notePrintAreaRef}>
-                <NoteListBody printMode={isPrintMode} />
+                <NoteListBody
+                    printMode={isPrintMode}
+                    dragEnabled={dragEnabled}
+                    dropPreview={dropPreview}
+                    onDragHandleStart={handleDragHandleStart}
+                    onDragHandleEnd={handleDragHandleEnd}
+                    onDragOverTarget={handleDragOverTarget}
+                    onDropTarget={handleDropTarget}
+                />
             </div>
         </div>
     );

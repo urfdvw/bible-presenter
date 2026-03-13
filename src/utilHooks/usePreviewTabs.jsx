@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import * as FlexLayout from "flexlayout-react";
-import { IconButton, Tooltip } from "@mui/material";
+import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/AddOutlined";
 import VerseRef from "../models/VerseRef";
 import { enNames, siNames, trNames } from "../bible";
@@ -246,17 +246,18 @@ export default function usePreviewTabs(flexModel, bibleDisplayConfig, isMobileRe
                 return;
             }
             renderValues.stickyButtons.push(
-                <Tooltip key={`preview-add-${tabSetNode.getId()}`} title="新增预览">
-                    <IconButton
-                        size="small"
-                        onClick={(event) => {
-                            event.stopPropagation();
-                            addPreviewTabToTabset(tabSetNode.getId());
-                        }}
-                    >
-                        <AddIcon fontSize="inherit" />
-                    </IconButton>
-                </Tooltip>
+                <IconButton
+                    key={`preview-add-${tabSetNode.getId()}`}
+                    title="新增预览"
+                    aria-label="新增预览"
+                    size="small"
+                    onClick={(event) => {
+                        event.stopPropagation();
+                        addPreviewTabToTabset(tabSetNode.getId());
+                    }}
+                >
+                    <AddIcon fontSize="inherit" />
+                </IconButton>
             );
         },
         [addPreviewTabToTabset]

@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { Modal, Box, Typography, Button } from "@mui/material";
+import Modal from "@mui/material/Modal";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
 import MarkdownExtended from "../utilComponents/MarkdownExtended";
 
 function getRandomIndex(length, currentIndex = -1) {

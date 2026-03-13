@@ -1,11 +1,19 @@
-import { Box, Typography, IconButton, Tooltip, Modal, TextField, Button, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
+import Modal from "@mui/material/Modal";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
 import PreviewIcon from "@mui/icons-material/PreviewOutlined";
-import ArrowUpwardIcon from "@mui/icons-material/ArrowUpwardOutlined";
-import ArrowDownwardIcon from "@mui/icons-material/ArrowDownwardOutlined";
 import CloseIcon from "@mui/icons-material/CloseOutlined";
 import NoteAddIcon from "@mui/icons-material/NoteAddOutlined";
 import ChecklistIcon from "@mui/icons-material/ChecklistOutlined";
 import EditIcon from "@mui/icons-material/EditOutlined";
+import DragIndicatorIcon from "@mui/icons-material/DragIndicatorOutlined";
 
 import { versesToRangeText } from "../bible/utils";
 import { siNames, trNames, enNames, siDict, trDict, enDict } from "../bible";
@@ -26,18 +34,18 @@ import { getBook, getChapterVerse } from "../bible/parser";
 
 function Icon({ tooltip, children, onClick }) {
     return (
-        <Tooltip title={tooltip}>
-            <IconButton
-                onClick={(event) => {
-                    // Prevent the box click event from firing
-                    event.stopPropagation();
-                    onClick(event);
-                }}
-                size="small"
-            >
-                {children}
-            </IconButton>
-        </Tooltip>
+        <IconButton
+            title={tooltip}
+            aria-label={tooltip}
+            onClick={(event) => {
+                // Prevent the box click event from firing
+                event.stopPropagation();
+                onClick(event);
+            }}
+            size="small"
+        >
+            {children}
+        </IconButton>
     );
 }
 
@@ -66,29 +74,27 @@ const printVerseBoxStyle = {
 export function PreviewVerseBox({ verseObj, highlighted, selected, setSelected }) {
     const { isMobileReadingMode, setDisplayVerse, setPreviewVerse, setHistory, setNoteList } = useContext(AppContext);
     const baseVerse = VerseRef.from(verseObj);
-    /** @type {[VerseRef | null, import("react").Dispatch<import("react").SetStateAction<VerseRef | null>>]} */
-    const [multipleVerses, setMultipleVerses] = useState(null);
-    useEffect(() => {
-        let verseObjToProject = VerseRef.from(baseVerse);
-
-        if (selected) {
-            if (selected.book === baseVerse.book) {
-                if (compareLists([selected.chapter, selected.verse], [baseVerse.chapter, baseVerse.verse]) > 0) {
-                    verseObjToProject.endChapter = selected.chapter;
-                    verseObjToProject.endVerse = selected.verse;
-                } else {
-                    verseObjToProject = new VerseRef({
-                        book: baseVerse.book,
-                        chapter: selected.chapter,
-                        verse: selected.verse,
-                        endChapter: baseVerse.chapter,
-                        endVerse: baseVerse.verse,
-                    });
-                }
-            }
+    const multipleVerses = (() => {
+        if (!selected || selected.book !== baseVerse.book) {
+            return VerseRef.from(baseVerse);
         }
-        setMultipleVerses(verseObjToProject);
-    }, [baseVerse, selected]);
+        if (compareLists([selected.chapter, selected.verse], [baseVerse.chapter, baseVerse.verse]) > 0) {
+            return new VerseRef({
+                book: baseVerse.book,
+                chapter: baseVerse.chapter,
+                verse: baseVerse.verse,
+                endChapter: selected.chapter,
+                endVerse: selected.verse,
+            });
+        }
+        return new VerseRef({
+            book: baseVerse.book,
+            chapter: selected.chapter,
+            verse: selected.verse,
+            endChapter: baseVerse.chapter,
+            endVerse: baseVerse.verse,
+        });
+    })();
 
     const handleShow = () => {
         if (!multipleVerses) {
@@ -120,7 +126,7 @@ export function PreviewVerseBox({ verseObj, highlighted, selected, setSelected }
         if (selected) {
             setSelected(null);
         } else {
-            setSelected(baseVerse);
+            setSelected(baseVerse.with({ endChapter: null, endVerse: null }));
         }
     };
 
@@ -203,9 +209,33 @@ export function HistoryVerseBox({ verseObj, highlighted }) {
 }
 
 /**
- * @param {{verseObj: VerseRefLike, boxIndex: number, highlighted?: boolean, printMode?: boolean}} props
+ * @param {{
+ *   verseObj: VerseRefLike,
+ *   boxIndex: number,
+ *   highlighted?: boolean,
+ *   printMode?: boolean,
+ *   dragEnabled?: boolean,
+ *   onDragHandleStart?: (event: import("react").DragEvent<HTMLElement>) => void,
+ *   onDragHandleEnd?: (event: import("react").DragEvent<HTMLElement>) => void,
+ *   onDragOverTarget?: (event: import("react").DragEvent<HTMLElement>) => void,
+ *   onDropTarget?: (event: import("react").DragEvent<HTMLElement>) => void,
+ *   showDropLineTop?: boolean,
+ *   showDropLineBottom?: boolean
+ * }} props
  */
-export function NoteVerseBox({ verseObj, boxIndex, highlighted, printMode = false }) {
+export function NoteVerseBox({
+    verseObj,
+    boxIndex,
+    highlighted,
+    printMode = false,
+    dragEnabled = false,
+    onDragHandleStart,
+    onDragHandleEnd,
+    onDragOverTarget,
+    onDropTarget,
+    showDropLineTop = false,
+    showDropLineBottom = false,
+}) {
     const { isMobileReadingMode, getMultipleVerses, setDisplayVerse, setNoteList, setPreviewVerse, appConfig, verseExists } =
         useContext(AppContext);
     const baseVerse = VerseRef.from(verseObj);
@@ -338,44 +368,6 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted, printMode = fals
         setPreviewVerse(VerseRef.from(verseObj));
     };
 
-    const handleMoveUp = () => {
-        if (boxIndex === 0) {
-            return;
-        }
-        setNoteList((notes) => {
-            const out = [];
-            for (var i = 0; i < notes.length; i++) {
-                if (i === boxIndex) {
-                    out.push(notes[boxIndex - 1]);
-                } else if (i === boxIndex - 1) {
-                    out.push(notes[boxIndex]);
-                } else {
-                    out.push(notes[i]);
-                }
-            }
-            return out;
-        });
-    };
-
-    const handleMoveDown = () => {
-        setNoteList((notes) => {
-            if (boxIndex === notes.length - 1) {
-                return notes;
-            }
-            const out = [];
-            for (var i = 0; i < notes.length; i++) {
-                if (i === boxIndex) {
-                    out.push(notes[boxIndex + 1]);
-                } else if (i === boxIndex + 1) {
-                    out.push(notes[boxIndex]);
-                } else {
-                    out.push(notes[i]);
-                }
-            }
-            return out;
-        });
-    };
-
     const handleRemove = () => {
         setNoteList((notes) =>
             notes
@@ -409,26 +401,59 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted, printMode = fals
 
     return (
         <>
-            <Box onClick={handleShow} sx={currentBoxStyle}>
-                <Box sx={{ flexGrow: 1 }}>
-                    {shouldShowFullVerse ? (
-                        <VerseParagraph
-                            verseObj={baseVerse.with({ notePosition: cardNote ? "结尾" : baseVerse.notePosition })}
-                            forceNoteAfterVerse={true}
-                        />
-                    ) : (
-                        <MarkdownExtended>{noteCardMarkdown}</MarkdownExtended>
-                    )}
-                    {isCardShowingNote && (
-                        <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mt: 0.5 }}>
-                            笔记位置：{notePositionLabel}
-                        </Typography>
-                    )}
-                </Box>
+            {showDropLineTop && (
+                <Box sx={{ height: 3, borderRadius: 999, backgroundColor: "primary.main", mx: 0.5, mb: 0.5 }} />
+            )}
+            <Box
+                sx={{ display: "flex", alignItems: "stretch", gap: 0.5 }}
+                onDragOver={dragEnabled ? onDragOverTarget : undefined}
+                onDrop={dragEnabled ? onDropTarget : undefined}
+            >
+                {dragEnabled && (
+                    <Box
+                        draggable={true}
+                        onDragStart={(event) => {
+                            event.stopPropagation();
+                            onDragHandleStart?.(event);
+                        }}
+                        onDragEnd={(event) => {
+                            event.stopPropagation();
+                            onDragHandleEnd?.(event);
+                        }}
+                        onClick={(event) => event.stopPropagation()}
+                        sx={{
+                            flexShrink: 0,
+                            width: 26,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            color: "text.secondary",
+                            cursor: "grab",
+                            userSelect: "none",
+                        }}
+                    >
+                        <DragIndicatorIcon fontSize="small" />
+                    </Box>
+                )}
+                <Box onClick={handleShow} sx={{ ...currentBoxStyle, flexGrow: 1 }}>
+                    <Box sx={{ flexGrow: 1 }}>
+                        {shouldShowFullVerse ? (
+                            <VerseParagraph
+                                verseObj={baseVerse.with({ notePosition: cardNote ? "结尾" : baseVerse.notePosition })}
+                                forceNoteAfterVerse={true}
+                            />
+                        ) : (
+                            <MarkdownExtended>{noteCardMarkdown}</MarkdownExtended>
+                        )}
+                        {isCardShowingNote && (
+                            <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mt: 0.5 }}>
+                                笔记位置：{notePositionLabel}
+                            </Typography>
+                        )}
+                    </Box>
 
-                {!printMode && (
-                    <Box sx={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
-                        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                    {!printMode && (
+                        <Box sx={{ flexShrink: 0, display: "flex", alignItems: "flex-start" }}>
                             <Icon tooltip={"编辑"} onClick={handleEdit}>
                                 <EditIcon />
                             </Icon>
@@ -437,21 +462,16 @@ export function NoteVerseBox({ verseObj, boxIndex, highlighted, printMode = fals
                                     <PreviewIcon />
                                 </Icon>
                             )}
-                        </Box>
-                        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                            <Icon tooltip={"上移"} onClick={handleMoveUp}>
-                                <ArrowUpwardIcon />
-                            </Icon>
-                            <Icon tooltip={"下移"} onClick={handleMoveDown}>
-                                <ArrowDownwardIcon />
-                            </Icon>
                             <Icon tooltip={"删除"} onClick={handleRemove}>
                                 <CloseIcon />
                             </Icon>
                         </Box>
-                    </Box>
-                )}
+                    )}
+                </Box>
             </Box>
+            {showDropLineBottom && (
+                <Box sx={{ height: 3, borderRadius: 999, backgroundColor: "primary.main", mx: 0.5, mt: 0.5 }} />
+            )}
             <Modal open={editOpen} onClose={() => setEditOpen(false)}>
                 <Box
                     sx={{

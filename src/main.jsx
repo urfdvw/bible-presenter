@@ -1,5 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import "@mui/material/styles/styled";
 import "./index.css";
 import App from "./App.jsx";
 import { register as registerServiceWorker } from "./serviceWorkerRegistration";

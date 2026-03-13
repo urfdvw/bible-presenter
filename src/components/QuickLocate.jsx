@@ -2,7 +2,7 @@ import TabToolBar from "../utilComponents/TabToolBar";
 import { selectTabById } from "../layout/layoutUtils";
 import { useContext, useEffect, useState } from "react";
 import AppContext from "../AppContext";
-import { Box } from "@mui/material";
+import Box from "@mui/material/Box";
 import IMETextArea from "./IMETextArea";
 import { siDict, trDict, enDict } from "../bible";
 import { getBook, getChapterVerse } from "../bible/parser";
